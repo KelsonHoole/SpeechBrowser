@@ -55,6 +55,7 @@ public class MainActivity extends Activity implements ShakeListener{
 	private static Vibrator mVibrator;
 	Button btn_start = null;
 	long lastTime = 0l;
+	
 	long lastShakeTime = 0l;
 	// ÓïÒôÌıĞ´¶ÔÏó
 	private SpeechRecognizer mIat;

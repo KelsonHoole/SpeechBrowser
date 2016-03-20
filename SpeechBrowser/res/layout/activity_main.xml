@@ -23,14 +23,29 @@
                 android:textSize="23sp"
                 android:text="语音浏览器"
                 android:layout_weight="1"/>
+            
+            <Button
+                android:id="@+id/btn_setting"
+                android:layout_gravity="center_vertical"
+                android:background="@drawable/setting"
+                android:layout_marginLeft="13dp"
+                android:layout_marginRight="3dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp" />
 
         </LinearLayout>
+    
+    
+    <cn.hukecn.speechbrowser.util.CutWebView 
+        android:id="@+id/webview"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_width="match_parent"/>
     <ScrollView 
         android:id="@+id/scrollview"
  		android:background="#ddd"
-        android:layout_margin="8dp"
         android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_weight="0"
         android:layout_width="match_parent">
         <TextView
             android:id="@+id/info"
@@ -38,17 +53,49 @@
             android:layout_height="wrap_content"
             android:layout_width="match_parent"/>
     </ScrollView>
+    
     <View 
         android:layout_height="1dp"
         android:layout_width="match_parent"
         android:background="#888"/>
-    <TextView
-        android:padding="8dp"
-        	android:background="#ffffff"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:text="摇一摇说话"
-            android:gravity="center_horizontal"
-            android:textSize="22sp"/>
+    <LinearLayout 
+        android:layout_marginTop="3dp"
+        android:background="#ffffff"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:layout_marginLeft="3dp"
+	        android:id="@+id/btn_exit"
+	        android:padding="8dp"
+	       	android:layout_height="wrap_content"
+	        android:layout_width="0dp"
+	        android:layout_weight="0.5"
+	        android:text="退出"
+	        android:textColor="#fff"
+	        android:background="@drawable/selector"
+	        android:gravity="center_horizontal"
+	        android:textSize="22sp"/>
+        
+      <!--   <View 
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="#888"/> -->
+    
+	    <Button
+	        android:layout_marginLeft="5dp"
+	        android:layout_marginRight="3dp"
+	        android:id="@+id/btn_stop"
+	        android:padding="8dp"
+	       	android:layout_height="wrap_content"
+	       	android:layout_width="0dp"
+        	android:layout_weight="1"
+        	android:textColor="#fff"
+	        android:text="停止播报"
+	        android:background="@drawable/selector"
+	        android:gravity="center_horizontal"
+	        android:textSize="22sp"/>
+    </LinearLayout>
+    
 
 </LinearLayout>

@@ -4,5 +4,6 @@
     <string name="app_name">多功能语音浏览器</string>
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_webview">WebviewActivity</string>
+    <string name="title_activity_setting">SettingActivity</string>
 
 </resources>

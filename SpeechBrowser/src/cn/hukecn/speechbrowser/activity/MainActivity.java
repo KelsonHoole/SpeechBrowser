@@ -1,26 +1,40 @@
 package cn.hukecn.speechbrowser.activity;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+
+import org.apache.http.util.EncodingUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.w3c.dom.Text;
+
 import cn.hukecn.speechbrowser.JsonParser;
 import cn.hukecn.speechbrowser.R;
 import cn.hukecn.speechbrowser.Shake;
 import cn.hukecn.speechbrowser.Shake.ShakeListener;
 import cn.hukecn.speechbrowser.StaticString;
+import cn.hukecn.speechbrowser.bean.MailListBean;
 import cn.hukecn.speechbrowser.bean.NewsBean;
+import cn.hukecn.speechbrowser.bean.WeatherBean;
 import cn.hukecn.speechbrowser.http.MyHttp;
 import cn.hukecn.speechbrowser.http.MyHttp.HttpCallBackListener;
+import cn.hukecn.speechbrowser.util.BaiduSearch;
+import cn.hukecn.speechbrowser.util.CutWebView;
+import cn.hukecn.speechbrowser.util.CutWebView.ReceiveHTMLListener;
+import cn.hukecn.speechbrowser.util.CutWebView.ShouldOverrideUrlListener;
 import cn.hukecn.speechbrowser.util.PraseCommand;
+import cn.hukecn.speechbrowser.util.PraseMailContent;
+import cn.hukecn.speechbrowser.util.PraseMailList;
 import cn.hukecn.speechbrowser.util.PraseNews;
-import cn.hukecn.speechbrowser.util.TencentNews;
-import cn.hukecn.speechbrowser.util.TencentNews.NewsCallback;
+import cn.hukecn.speechbrowser.util.PraseTencentNews;
+import cn.hukecn.speechbrowser.util.PraseWeatherHtml;
 
 import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
@@ -37,34 +51,61 @@ import com.iflytek.cloud.SpeechUtility;
 import com.iflytek.cloud.SynthesizerListener;
 import com.iflytek.cloud.ui.RecognizerDialog;
 import com.iflytek.cloud.ui.RecognizerDialogListener;
+
+import android.accounts.Account;
+import android.accounts.OnAccountsUpdateListener;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Service;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Intent;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
+import android.os.Message;
 import android.os.Vibrator;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.webkit.JavascriptInterface;
+import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-public class MainActivity extends Activity implements ShakeListener{
-
+public class MainActivity extends Activity implements ShakeListener,ReceiveHTMLListener,ShouldOverrideUrlListener{
+	List<Integer> cmdList = new ArrayList<Integer>();
 	private SoundPool sp;//声明一个SoundPool
 	private int music;//定义一个整型用load（）；来设置suondID
+	private int newsNumber = -1;
 	private static Vibrator mVibrator;
-	Button btn_start = null;
+	Button btn_exit = null;
+	Button btn_stop = null;
+	Button btn_setting = null;
+	int browserState = PraseCommand.Cmd_Original;
 	long lastTime = 0l;
 	long lastShakeTime = 0l;
+	String mailCookie = "";
+	String msid = "";
 	// 语音听写对象
 	private SpeechRecognizer mIat;
 	// 语音听写UI
 	private RecognizerDialog mIatDialog;
-	private ScrollView scrollView = null;
+	TextView title = null;
 	TextView tv_info = null;
 	SpeechSynthesizer mTts;
 	List<NewsBean> newsList = new ArrayList<NewsBean>();
+	List<MailListBean> mailList = new ArrayList<MailListBean>();
+	CutWebView webView = null;
 	public LocationClient mLocationClient = null;
+	BDLocation location = null;
 	public BDLocationListener myListener = new MyLocationListener();
 	
 	@Override
@@ -78,7 +119,40 @@ public class MainActivity extends Activity implements ShakeListener{
 		mIatDialog.setListener(mRecognizerDialogListener);
 		
 		tv_info = (TextView) findViewById(R.id.info);		
-		scrollView  = (ScrollView) findViewById(R.id.scrollview);
+		webView = (CutWebView) findViewById(R.id.webview);
+		webView.setOnReceiveHTMLListener(this);
+		webView.setOnShouldOverrideUrlListener(this);
+		title = (TextView) findViewById(R.id.title);
+		btn_exit = (Button) findViewById(R.id.btn_exit);
+		
+		btn_exit.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+				exitApp();
+			}
+		});
+		
+		btn_stop = (Button)findViewById(R.id.btn_stop);
+		btn_stop.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+				if(mTts.isSpeaking())
+					mTts.stopSpeaking();
+			}
+		});
+		
+		btn_setting = (Button) findViewById(R.id.btn_setting);
+		btn_setting.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+				Intent intent = new Intent(MainActivity.this,SettingActivity.class);
+				startActivity(intent);
+			}
+		});
 		
 		mTts= SpeechSynthesizer.createSynthesizer(this, null);  
 		mTts.setParameter(SpeechConstant.VOICE_NAME, "xiaoqi");
@@ -86,30 +160,6 @@ public class MainActivity extends Activity implements ShakeListener{
 		mTts.setParameter(SpeechConstant.VOLUME, "50");
 		mTts.setParameter(SpeechConstant.ENGINE_TYPE, SpeechConstant.TYPE_CLOUD); //设置云端  
 		
-		//mTts.startSpeaking("欢迎使用多功能语音浏览器，摇动手机可以发出语音指令", mSynListener);
-		
-//		try {
-//			Log.e("00",PraseBaiduResult.getHTML("腾讯游戏"));
-//			
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		AsyncHttpClient client = new AsyncHttpClient();
-//		client.get("http://m.baidu.com/s?word=腾讯游戏", new AsyncHttpResponseHandler(){
-//			public void onSuccess(int arg0, Header[] arg1, byte[] arg2) {
-//				
-//					tv_info.setText(new String(arg2));
-//				
-//			}
-//
-//			@Override
-//			public void onFailure(int arg0, Header[] arg1, byte[] arg2,
-//					Throwable arg3) {
-//				// TODO Auto-generated method stub
-//				
-//			};
-//		});
 		sp= new SoundPool(10, AudioManager.STREAM_SYSTEM, 5);
 		music = sp.load(this, R.raw.shake, 1);
 	
@@ -141,56 +191,97 @@ public class MainActivity extends Activity implements ShakeListener{
 			int minute = c.get(Calendar.MINUTE);
 			int secend = c.get(Calendar.SECOND);
 			
-			tv_info.append(hour+":"+minute+":"+secend+"  ");
-			for(String temp:list)
-				tv_info.append(temp);
-			tv_info.append("\n");
-			
-			scrollView.post(new Runnable() {
-				
-				@Override
-				public void run() {
-					// TODO Auto-generated method stub
-					scrollView.fullScroll(ScrollView.FOCUS_DOWN);
-				}
-			});
 			if(current - lastTime > 800)
 			{
-				//mTts.startSpeaking("正在为您"+tv_info.getText(), mSynListener);
-				int cmd = PraseCommand.prase(list);
+				browserState = PraseCommand.prase(list);
 				lastTime = current;
-				switch (cmd) {
+				if(browserState != PraseCommand.Cmd_NewsNum)
+					cmdList.add(browserState);
+				
+				switch (browserState) {
 				case PraseCommand.Cmd_Search:
 					cmdSearch(list);
 					break;
 				case PraseCommand.Cmd_News:
 					cmdReadNews();
+					
 					break;
 				case PraseCommand.Cmd_Weather:
-					cmdWeather(list.get(list.size()-2));
+					String cityname = "";
+					for(String item:list)
+						cityname += item;
+					
+					if(cityname.indexOf("天气") != -1)
+						cityname = cityname.replace("天气", "");
+					
+					cmdWeather(cityname);
+					
+//					else
+//					{
+//						cityname = location.getCity();
+//						if(cityname != null && cityname.length() > 0)
+//						{
+//							cityname = cityname.replace("市", "");
+//							cmdWeather(cityname);
+//						}else
+//						{
+//							cmdWeather("武汉");
+//						}
+//					}
 					break;
-				case PraseCommand.Cmd_Err:
-				case PraseCommand.Cmd_Other:
-					mTts.startSpeaking("指令错误，请输入正确指令",mSynListener);
-					break;
+				
 				case PraseCommand.Cmd_NewsNum:
 //					tv_info.append(PraseCommand.praseNewsIndex(list)+"\n");
-					if(newsList != null)
-						readNewsContent(PraseCommand.praseNewsIndex(list));
-					else
+					if(cmdList.size() == 0)
+					{
 						mTts.startSpeaking("指令错误，请输入正确指令",mSynListener);
+						break;
+					}
+					
+					if(cmdList.get(cmdList.size() -1) == PraseCommand.Cmd_Mail)
+					{
+						//进入读邮件详情
+						if(mailList != null && mailList.size()>0)
+						{
+							browserState = PraseCommand.Cmd_Mail_MailContent;
+							readMailContent(PraseCommand.praseNewsIndex(list));
+						}else
+							mTts.startSpeaking("获取邮件详情失败，请稍后再试",mSynListener);
+						break;
+					}
+					
+					if(cmdList.get(cmdList.size() -1) == PraseCommand.Cmd_News)
+					{
+						//进入读新闻详情
+						if(newsList != null && newsList.size() > 0)
+						{	
+							readNewsContent(PraseCommand.praseNewsIndex(list));
+						}else
+							mTts.startSpeaking("获取新闻详情失败，请稍后再试",mSynListener);
+						break;
+					}
+					
+					mTts.startSpeaking("指令错误，请输入正确指令",mSynListener);
 					break;
 				case PraseCommand.Cmd_Location:
-					if(mLocationClient.isStarted())
-						mLocationClient.stop();
-			        mLocationClient.start();;
-			        break;
+//					if(mLocationClient.isStarted())
+//						mLocationClient.stop();
+//			        mLocationClient.start();
+					mTts.startSpeaking("您当前位于："+location.getAddrStr()+"附近",mSynListener);
+					String url = "http://m.baidu.com/s?word="+location.getProvince()+location.getCity();
+					webView.loadUrl(url);
+					break;
 				case PraseCommand.Cmd_Exit:
 					mTts.startSpeaking("正在关闭机器人。。。", mSynListener);
 					handler.sendEmptyMessageDelayed(0, 3000);
 					break;
+				case PraseCommand.Cmd_Mail:
+					cmdMail();
+					break;
+				case PraseCommand.Cmd_Err:
+				case PraseCommand.Cmd_Other:
 				default:
-					tv_info.append(results.getResultString()+"\n");
+					mTts.startSpeaking("指令错误，请输入正确指令",mSynListener);
 					break;
 				}
 			}
@@ -202,24 +293,43 @@ public class MainActivity extends Activity implements ShakeListener{
 			//showTip(error.getPlainDescription(true));
 		}
 	};
+	
+	private void cmdMail()
+	{
+		/*
+		f:xhtmlmp
+		delegate_url:
+		f:xhtmlmp
+		action:
+		tfcont:
+		uin:hukecn
+		aliastype:@qq.com
+		pwd:00220388066
+		mss:1
+		mtk:
+		btlogin:登录
+		*/
+		
+		String url = StaticString.mailLogin;
+		String postDate = "f=xhtmlmp&uin=hukecn&aliastype=@qq.com&pwd=00220388066&mss=1&btlogin=登陆";
+		webView.postUrl(url, EncodingUtils.getBytes(postDate, "utf-8"));
+	}
+	
+	protected void readMailContent(int praseNewsIndex) {
+		// TODO Auto-generated method stub
+		if(praseNewsIndex > mailList.size())
+			mTts.startSpeaking("该条数不存在，请重新输入指令", mSynListener);
+		else
+			webView.loadUrl(mailList.get(praseNewsIndex - 1).mailUrl);
+	}
+
 	private void readNewsContent(final int praseNewsIndex) {
 		// TODO Auto-generated method stub
-		//mTts.startSpeaking(, mSynListener);
-		TencentNews.getNewsContent(newsList.get(praseNewsIndex - 1).newsUrl, new NewsCallback() {
-			
-			@Override
-			public void onNewsListCallBack(List<NewsBean> list) {
-				// TODO Auto-generated method stub
-				//获取新闻内容时不用实现
-			}
-			
-			@Override
-			public void onNewsContentCallBack(String content) {
-				// TODO Auto-generated method stub
-				tv_info.append(content);
-				mTts.startSpeaking("第" + praseNewsIndex + "条新闻，标题：" + newsList.get(praseNewsIndex-1).newsTitle+content, mSynListener);
-			}
-		});
+		newsNumber = praseNewsIndex;
+		if(praseNewsIndex > newsList.size())
+			mTts.startSpeaking("该条数不存在，请重新输入指令", mSynListener);
+		else
+			webView.loadUrl(newsList.get(praseNewsIndex - 1).newsUrl);
 	}
 	@Override
 	public void onShake() {
@@ -258,133 +368,141 @@ public class MainActivity extends Activity implements ShakeListener{
 	
 	private void cmdWeather(final String cityname) {
 		// TODO Auto-generated method stub
-		MyHttp.get(StaticString.weatherUrl, "cityname="+cityname, new HttpCallBackListener() {
-			
+		MyHttp.get(StaticString.weatherUrl, "cityname="+cityname, new HttpCallBackListener() 
+		{
 			@Override
 			public void onHttpCallBack(int statusCode, String responseStr) {
 				// TODO Auto-generated method stub
 				if(statusCode == 200)
 				{
+					//说出了正确的城市名
 					try {
 						JSONObject jsonObject = new JSONObject(responseStr);
 						int errNum = jsonObject.getInt("errNum");
 						if(errNum == 0)
 						{
 							JSONObject jsonData = jsonObject.getJSONObject("retData");
-							String l_tmp = jsonData.getString("l_tmp");
-							String h_tmp = jsonData.getString("h_tmp");
-							String temp = jsonData.getString("temp");
-							String weather = jsonData.getString("weather");
-							String wd = jsonData.getString("WD");
-							String ws = jsonData.getString("WS");
-							int start = ws.indexOf("(");
-							if(start != -1)
-							{
-								ws = ws.substring(0, start);
-							}
-
-							mTts.startSpeaking("今日"+cityname+"天气，"+weather+
-									"，温度"+l_tmp+"到"+h_tmp+"摄氏度，当前气温："+temp+"摄氏度，"+
-									"风力："+ws,mSynListener);
-							tv_info.append("今日"+cityname+"天气："+weather+
-									"\n温度："+l_tmp+"-"+h_tmp+"℃\n当前气温："+temp+"℃\n"+
-									"风力："+ws+"\n");
+//							String city = jsonData.getString("city");
+//							
+//							if(city == null || city.length() == 0)
+//							{
+//								city= "武汉";
+//							}
+							String url = "http://m.baidu.com/s?word="+cityname+"天气";
+							webView.loadUrl(url);
+							
+							
+							String windStr = jsonData.getString("WS");
+							int start = windStr.indexOf("(");
+							if(start > 0)
+								windStr = windStr.substring(0,start);
+							
+							mTts.startSpeaking(jsonData.getString("city")+",今日天气："+
+									jsonData.getString("weather")+",最高气温："+
+									jsonData.getString("h_tmp")+"摄氏度，最低气温："+
+									jsonData.getString("l_tmp")+"摄氏度，"+
+									jsonData.getString("WD")+"，风力："+
+									windStr, mSynListener);
+							
 							return;
 						}
 						
 					} catch (JSONException e) {
 						// TODO Auto-generated catch block
-						e.printStackTrace();
 					}
 				}
-				
-				mTts.startSpeaking("请输入正确的国内城市名，如：武汉天气",mSynListener);
+				//没有说出正确的城市名,默认本地天气
+				String cityname = "test";
+				if(cityname != null && cityname.length() > 0)
+				{
+					cityname = location.getCity();
+					cityname = cityname.replace("市", "");
+					MyHttp.get(StaticString.weatherUrl, "cityname="+cityname, new HttpCallBackListener()
+					{
+						@Override
+						public void onHttpCallBack(int statusCode, String responseStr) {
+							// TODO Auto-generated method stub
+							if(statusCode == 200)
+							{
+								try {
+									JSONObject jsonObject = new JSONObject(responseStr);
+									int errNum = jsonObject.getInt("errNum");
+									if(errNum == 0)
+									{
+										JSONObject jsonData = jsonObject.getJSONObject("retData");
+										String citycode = jsonData.getString("city");
+										if(citycode == null || citycode.length() == 0)
+										{
+											citycode= "武汉";
+										}
+										
+										String url = "http://m.baidu.com/s?word="+ citycode +"天气";
+										webView.loadUrl(url);
+										
+										String windStr = jsonData.getString("WS");
+										int start = windStr.indexOf("(");
+										if(start > 0)
+											windStr = windStr.substring(0,start);
+										
+										mTts.startSpeaking(jsonData.getString("city")+",今日天气："+
+												jsonData.getString("weather")+",最高气温："+
+												jsonData.getString("h_tmp")+"摄氏度，最低气温："+
+												jsonData.getString("l_tmp")+"摄氏度，"+
+												jsonData.getString("WD")+"，风力："+
+												windStr, mSynListener);
+										return;
+										}	
+											
+									} catch(JSONException e) {
+										Toast.makeText(getApplicationContext(), "天气失败", Toast.LENGTH_SHORT).show();
+										mTts.startSpeaking("获取天气失败，请稍后再试",mSynListener);
+									}
+								}else
+								{
+									Toast.makeText(getApplicationContext(), "天气失败", Toast.LENGTH_SHORT).show();
+									mTts.startSpeaking("获取天气失败，请稍后再试",mSynListener);
+								}
+						}});	
+					}
+				return;
 			}
 		});
 	}
 	
 	private void cmdReadNews(){
-		//tv_info.setText("");
-//		MyHttp.get(StaticString.newsUrl,
-//				"channelId=5572a109b3cdc86cf39001db&page=1", new HttpCallBackListener() {
-//					@Override
-//					public void onHttpCallBack(int statusCode, String responseStr) {
-//						// TODO Auto-generated method stub
-//						
-//						List<NewsBean> list = PraseNews.prase(responseStr);
-//						
-//						String newsStr = "";
-//						for(int i = 0;i < list.size();i++)
-//						{
-//							newsStr+=i+1 + "、" + list.get(i).newsTitle+"\n";
-//						}
-//						
-//						tv_info.append(newsStr);
-//						mTts.startSpeaking("即将为您播报今日新闻.\n"+newsStr, mSynListener);
-//					}
-//				});
-		
-		TencentNews.getNewsList(new NewsCallback() {
-			@Override
-			public void onNewsListCallBack(List<NewsBean> list) {
-				// TODO Auto-generated method stub
-				newsList = list;
-				String titleStr = "";
-				for(int i = 1;i <= list.size();i++)
-				{
-					titleStr += "第"+i+"条、"+list.get(i-1).newsTitle+"\n";	
-					tv_info.append(i+"、"+list.get(i-1).newsTitle+"\n");
-				}
-				mTts.startSpeaking("即将为您播报今日新闻。\n" + titleStr, mSynListener);
-			}
-
-			@Override
-			public void onNewsContentCallBack(String content) {
-				// TODO Auto-generated method stub
-				//获取标题时不用实现该方法
-			}
-		});
+		webView.loadUrl(PraseTencentNews.HOMEURL);
+//		
+//		PraseTencentNews.getNewsList(new NewsCallback() {
+//			@Override
+//			public void onNewsListCallBack(List<NewsBean> list) {
+//				// TODO Auto-generated method stub
+//				newsList = list;
+//				String titleStr = "";
+//				for(int i = 1;i <= list.size();i++)
+//				{
+//					titleStr += "第"+i+"条、"+list.get(i-1).newsTitle+"\n";	
+////					tv_info.append(i+"、"+list.get(i-1).newsTitle+"\n");
+//				}
+//				mTts.startSpeaking("即将为您播报今日新闻。\n" + titleStr, mSynListener);
+//			}
+//
+//			@Override
+//			public void onNewsContentCallBack(String content) {
+//				// TODO Auto-generated method stub
+//				//获取标题时不用实现该方法
+//			}
+//		});
 	}
 	
 	private void cmdSearch(List<String> list) {
-		
 		String str = "";
 		for(String temp:list)
 		{
 			str += temp;
 		}
-		
-		//mTts.startSpeaking("正在为您"+str, mSynListener);
 		str = str.replace("搜索", "");
-//		String url = "http://www.baidu.com/s?wd="+str+"&ie=UTF-8";
 		String url = "http://m.baidu.com/s?word="+str;
-//		Intent intent = new Intent(this,WebviewActivity.class);
-//		intent.putExtra("url", url);
-//		startActivity(intent);
-		
-			MyHttp.get(url, "", new HttpCallBackListener() {
-				
-				@Override
-				public void onHttpCallBack(int statusCode, String responseStr) {
-					// TODO Auto-generated method stub
-					//tv_info.append(responseStr+"\n_________________________\n");
-
-					Document doc = Jsoup.parse(responseStr);
-					//Element result = doc.getElementById("page-res");
-					Elements elements = doc.getElementsByClass("result_title");
-//					Elements elements = results.getElementsByClass("result c-result c-clk-recommend");
-							
-					String speakStr = "";
-					String tvter = "";
-					for(int i = 1;i <= elements.size();i++)
-					{
-						speakStr += "第"+i+"条："+elements.get(i-1).text()+'\n';
-						tvter += i + "、"+elements.get(i-1).text()+"\n";
-					}
-					mTts.startSpeaking("以下是搜索结果："+speakStr, mSynListener);
-					tv_info.append(tvter);
-				}
-			});	
+		webView.loadUrl(url);
 	}
 	private void initLocation(){
         LocationClientOption option = new LocationClientOption();
@@ -401,21 +519,30 @@ public class MainActivity extends Activity implements ShakeListener{
         option.SetIgnoreCacheException(false);//可选，默认false，设置是否收集CRASH信息，默认收集
         option.setEnableSimulateGps(false);//可选，默认false，设置是否需要过滤gps仿真结果，默认需要
         mLocationClient.setLocOption(option);
+        mLocationClient.start();
     }
 	
 	
 	public class MyLocationListener implements BDLocationListener {
 		@Override
 		public void onReceiveLocation(BDLocation arg0) {
-			// TODO Auto-generated method stub
-			tv_info.append(arg0.getLocationDescribe()+"\n");
-			mTts.startSpeaking(arg0.getLocationDescribe(), mSynListener);
+			location = arg0;
+			//Toast.makeText(getApplicationContext(), arg0.getCity(), Toast.LENGTH_SHORT).show();
+			//mTts.startSpeaking(arg0.getLocationDescribe(), mSynListener);
 		}
 	}
 	
 	Handler handler = new Handler(){
 		public void handleMessage(android.os.Message msg) {
-			exitApp();
+			switch (msg.what) {
+			case 0:
+				exitApp();
+				break;
+			case 1:
+				List<String> resList = (List<String>) msg.obj;
+				
+				break;
+			}
 		}
 	};
 	
@@ -448,5 +575,164 @@ public class MainActivity extends Activity implements ShakeListener{
 		System.exit(0);
 		android.os.Process.killProcess(android.os.Process.myPid());
 	}
+	 
+	 	@Override
+	    public void onBackPressed() {
+	 		if(mTts.isSpeaking())
+				mTts.stopSpeaking();
+	 		browserState = PraseCommand.Cmd_Original;
+	        if(webView.canGoBack())
+	            webView.goBack();
+	        else
+	            super.onBackPressed();
+	    }
+	 	
+	    public static void writeFileSdcard(String fileName,String message)
+	    { 
+	    	try {  
+	    	    File file = new File(Environment.getExternalStorageDirectory(),  
+	    	            "c.txt");  
+	    	        FileOutputStream fos = new FileOutputStream(file, false);  
+	    	 
+	    	           fos.write(message.getBytes("utf-8"));  
+	    	           fos.close();  
+	    	           //Toast.makeText(getApplicationContext(), "写入成功", Toast.LENGTH_SHORT).show();
+	    	} catch (Exception e) {
+	    	    e.printStackTrace();  
+	    	}  
+	    }
+	    
+		@Override
+		public void onReceiveHTML(String html) {
+			// TODO Auto-generated method stub
+			//Document doc = Jsoup.parse(html);
+			//title.setText(doc.getElementsByTag("title").get(0).text());
+			switch (browserState) {
+			case PraseCommand.Cmd_Search:
+				List<String> resList = BaiduSearch.praseSearchResultList(html);
+				if(resList.size() != 0)
+				{
+					for(int i = 1;i <= resList.size();i++)
+						tv_info.append("第"+i+"条、"+resList.get(i-1)+"\n");
+					mTts.startSpeaking("以下是搜索结果："+tv_info.getText().toString(), mSynListener);
+				}else
+				{
+					mTts.startSpeaking("搜索出错，请重试。", mSynListener);
+				}
+				break;
+			case PraseCommand.Cmd_News:
+				writeFileSdcard("",html);
+				newsList = PraseTencentNews.getNewsList(html);
+				String titleStr = "";
+				for(int i = 1;i <= newsList.size();i++)
+				{
+					titleStr += "第"+i+"条、"+newsList.get(i-1).newsTitle+"\n";
+				}
+				mTts.startSpeaking("即将为您播报今日新闻。\n" + titleStr, mSynListener);
+				break;
+			case PraseCommand.Cmd_NewsNum:
+				String content = PraseTencentNews.getNewsContent(html);
+				mTts.startSpeaking("第" + newsNumber + "条新闻，标题：" + newsList.get(newsNumber-1).newsTitle+content, mSynListener);
+				break;
+			case PraseCommand.Cmd_Mail:
+				//Log.e("111",webView.getCookie());
+				mailCookie = webView.getCookie();
+				int cookieStart = mailCookie.indexOf("msid=") + 5;
+				int cookieEnd = mailCookie.indexOf(";", cookieStart);
+				if(cookieStart != -1 && cookieEnd != -1 && cookieEnd > cookieStart)
+				{
+					msid = mailCookie.substring(cookieStart,cookieEnd);
+					browserState = PraseCommand.Cmd_Mail_Home;
+					
+					//webView.loadUrl(StaticString.mailHome + msid + "&first=1&bmkey=");
+					webView.loadUrl(StaticString.mailHome2 + msid);
 
+					mTts.startSpeaking("正在登陆邮箱...", mSynListener);
+				}else
+				{
+					mTts.startSpeaking("邮箱登陆失败，请稍后再试", mSynListener);
+				}
+				break;
+			case PraseCommand.Cmd_Weather:
+				//Toast.makeText(getApplicationContext(), "天气", Toast.LENGTH_SHORT).show();
+//				List<WeatherBean> list = PraseWeatherHtml.praseWeatherList(html);
+//				if(list.size() == 0)
+//				{
+//					mTts.startSpeaking("获取天气信息失败，请稍后再试", mSynListener);
+//				}else
+//				{
+//					int start = html.indexOf("更换城市")+6;
+//					int end = html.indexOf("<", start);
+//					String weatherStr = "";
+//					if(start != -1 && end != -1 && end > start)
+//					{
+//						String cityname = html.substring(start,end);
+//						if(cityname != null && cityname.length() > 0)
+//							weatherStr += "即将为您播报"+cityname+"未来七天天气状况：";
+//					}
+//					if(weatherStr.length() == 0)
+//						weatherStr += "即将为您播报未来七天天气状况：";
+//
+//					for(WeatherBean bean:list)
+//					{
+//						weatherStr+= bean.date +"天气："+bean.weather+"，温度："+bean.temp+"。\n";
+//					}
+//					mTts.startSpeaking(weatherStr, mSynListener);
+//				}
+				
+				
+				break;
+			case PraseCommand.Cmd_Mail_Home:
+			{
+				browserState = PraseCommand.Cmd_Mail_InBox;
+				webView.loadUrl(StaticString.mailInboxList2+msid+"&folderid=1&page=0&pagesize=10&sorttype=time&t=mail_list&loc=today,,,151&version=html");
+				break;
+			}
+			case PraseCommand.Cmd_Mail_InBox:				
+				Toast.makeText(getApplicationContext(), "邮件列表", Toast.LENGTH_LONG).show();
+				if(html.length() > 0)
+				{
+					mailList = PraseMailList.parseMailList(html);
+					if(mailList.size() == 0)
+						mTts.startSpeaking("邮件列表读取失败，请稍后再试", mSynListener);
+					else
+					{
+						String mailListStr = "最近"+mailList.size()+"封邮件信息如下：";
+						for(int i = 1;i <= mailList.size();i++)
+						{
+							mailListStr += "第"+i+"条："+mailList.get(i-1).descStr+"。";
+						}
+						mTts.startSpeaking(mailListStr, mSynListener);
+					}
+				}else
+				{
+					mTts.startSpeaking("邮件列表读取失败，请稍后再试", mSynListener);
+				}
+				break;
+			case PraseCommand.Cmd_Mail_MailContent:
+			{
+				if(html.length() > 0)
+				{
+					String mailContent = PraseMailContent.praseMailContent(html);
+					mTts.startSpeaking("邮件内容如下："+mailContent, mSynListener);
+				}
+				else
+				{
+					mTts.startSpeaking("邮件详情读取失败，请稍后再试", mSynListener);
+				}
+			}
+			default:
+				
+				break;
+			}
+			
+		}
+
+		@Override
+		public void onShouldOverrideUrl(String url) {
+			// TODO Auto-generated method stub
+			browserState = PraseCommand.Cmd_Original;
+			if(mTts.isSpeaking())
+				mTts.stopSpeaking();
+		}
 }

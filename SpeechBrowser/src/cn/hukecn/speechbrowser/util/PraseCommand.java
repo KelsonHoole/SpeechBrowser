@@ -3,6 +3,7 @@ package cn.hukecn.speechbrowser.util;
 import java.util.List;
 
 public class PraseCommand {
+	public static final int Cmd_Original = -2;
 	public static final int Cmd_Err = -1;
 	public static final int Cmd_Search = 0;
 	public static final int Cmd_Open = 1;
@@ -13,6 +14,9 @@ public class PraseCommand {
 	public static final int Cmd_Location = 6;
 	public static final int Cmd_Route = 7;
 	public static final int Cmd_Exit = 8;
+	public static final int Cmd_Mail_Home = 9;
+	public static final int Cmd_Mail_InBox = 10;
+	public static final int Cmd_Mail_MailContent = 11;
 	public static final int Cmd_Other = 99;
 	
 	public static int prase(List<String> list)
@@ -30,11 +34,15 @@ public class PraseCommand {
 		
 		if(listStr.indexOf("天气") != -1)
 		{
-			if(list.size() > 1)
+			//if(list.size() > 1)
 				return Cmd_Weather;
-			else
-				return Cmd_Err;
+			//else
+			//	return Cmd_Err;
 		}
+		
+		if(listStr.indexOf("邮箱") != -1)
+			return Cmd_Mail;
+		
 		if(listStr.indexOf("新闻") != -1)
 			return Cmd_News;
 		if(list.get(0).indexOf("搜索") != -1)

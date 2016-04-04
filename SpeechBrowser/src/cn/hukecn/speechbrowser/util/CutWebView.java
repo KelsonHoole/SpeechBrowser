@@ -2,6 +2,7 @@ package cn.hukecn.speechbrowser.util;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
@@ -10,23 +11,29 @@ import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.webkit.GeolocationPermissions.Callback;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 public class CutWebView extends WebView {
 
 	ReceiveHTMLListener listener = null;
 	String cookieStr = "";
+	Context context = null;
+	String instantUrl = "";
 	ShouldOverrideUrlListener mShouldOverrideUrlListener = null;
 	Handler handler = new Handler(){
 		public void handleMessage(Message msg) 
 		{
 			if(listener != null)
-				listener.onReceiveHTML((String)msg.obj);
+				listener.onReceiveHTML(instantUrl,(String)msg.obj);
 		};
 	};
 	private ProgressBar progressbar;
+	@SuppressLint("SetJavaScriptEnabled")
 	public CutWebView(Context context, AttributeSet attrs) {
 		super(context, attrs);
+		this.context = context;
         progressbar = new ProgressBar(context, null, android.R.attr.progressBarStyleHorizontal);
         progressbar.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT,0,0));
         addView(progressbar);
@@ -34,7 +41,8 @@ public class CutWebView extends WebView {
         setWebViewClient(new WebViewCLient());
         WebSettings settings = getSettings();
         settings.setAllowFileAccess(true);
-        settings.setUserAgentString("Mozilla/5.0 (Linux; U; Android 6.0; zh-cn; PLK-UL00 Build/HONORPLK-UL00) AppleWebKit/537.36 (KHTML, like Gecko)Version/4.0 Chrome/37.0.0.0 MQQBrowser/6.0 Mobile Safari/537.36");
+//        settings.setUserAgentString("Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.101 Safari/537.36");
+        settings.setUserAgentString("Mozilla/5.0 (Linux; U; Android 5.1.1; zh-cn; PLK-UL00 Build/HONORPLK-UL00) AppleWebKit/537.36 (KHTML, like Gecko)Version/4.0 MQQBrowser/5.3 Mobile Safari/537.36");
         settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
         settings.setJavaScriptEnabled(true);
         settings.setSupportZoom(true);
@@ -42,6 +50,7 @@ public class CutWebView extends WebView {
         settings.setAppCacheEnabled(true);
         settings.setDomStorageEnabled(true);
         settings.setDatabaseEnabled(true);
+        settings.setGeolocationEnabled(true); 
         addJavascriptInterface(new JSLinster(),"HTML");
         loadUrl("http://m.baidu.com");
 	}
@@ -62,6 +71,13 @@ public class CutWebView extends WebView {
 	            }
 	            super.onProgressChanged(view, newProgress);
 	        }
+	        
+	        @Override
+	        public void onGeolocationPermissionsShowPrompt(String origin, Callback callback) {
+	        // TODO Auto-generated method stub
+	        	callback.invoke(origin, true, false);
+	        	super.onGeolocationPermissionsShowPrompt(origin, callback);
+	        }
 
 	    }
 	 
@@ -77,11 +93,13 @@ public class CutWebView extends WebView {
 
 	        @Override
 	        public void onPageFinished(WebView view, String url) {
+	        	instantUrl = url;
 	        	view.loadUrl("javascript:window.HTML.getHtml(document.getElementsByTagName('html')[0].innerHTML);");
 	        	CookieManager cookieManager = CookieManager.getInstance();
 	            cookieStr = cookieManager.getCookie(url);
 	        	super.onPageFinished(view, url);
 	        }
+	        
 	    }
 	 
 	 @Override
@@ -106,7 +124,7 @@ public class CutWebView extends WebView {
 	    }
 	 
 	 public interface ReceiveHTMLListener{
-		 public void onReceiveHTML(String html);
+		 public void onReceiveHTML(String url,String html);
 	 }
 	 
 	 public String getCookie(){

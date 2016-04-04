@@ -11,30 +11,73 @@ public final class R {
     public static final class attr {
     }
     public static final class drawable {
-        public static final int ic_launcher=0x7f020000;
-        public static final int luncher=0x7f020001;
-        public static final int selector=0x7f020002;
-        public static final int setting=0x7f020003;
-        public static final int shape_common=0x7f020004;
-        public static final int shape_press=0x7f020005;
+        public static final int bookmark=0x7f020000;
+        public static final int down=0x7f020001;
+        public static final int email=0x7f020002;
+        public static final int exit=0x7f020003;
+        public static final int ic_launcher=0x7f020004;
+        public static final int left=0x7f020005;
+        public static final int luncher=0x7f020006;
+        public static final int menu=0x7f020007;
+        public static final int menu_setting=0x7f020008;
+        public static final int microphone=0x7f020009;
+        public static final int pause=0x7f02000a;
+        public static final int popupMenuCommon=0x7f020015;
+        public static final int popup_menu_selector=0x7f02000b;
+        public static final int right=0x7f02000c;
+        public static final int selector=0x7f02000d;
+        public static final int setting=0x7f02000e;
+        public static final int shape_common=0x7f02000f;
+        public static final int shape_press=0x7f020010;
+        public static final int start=0x7f020011;
+        public static final int stop=0x7f020012;
+        public static final int toolsBarCommon=0x7f020014;
+        public static final int toolsBarPressed=0x7f020016;
+        public static final int toolsbar_selector=0x7f020013;
     }
     public static final class id {
-        public static final int btn_add=0x7f070009;
-        public static final int btn_exit=0x7f070005;
-        public static final int btn_setting=0x7f070001;
-        public static final int btn_stop=0x7f070006;
-        public static final int edt_id=0x7f070007;
-        public static final int edt_pw=0x7f070008;
-        public static final int info=0x7f070004;
-        public static final int scrollview=0x7f070003;
-        public static final int title=0x7f070000;
-        public static final int webView=0x7f07000a;
-        public static final int webview=0x7f070002;
+        public static final int btn_add=0x7f080005;
+        public static final int btn_insert=0x7f080002;
+        public static final int btn_left=0x7f08000d;
+        public static final int btn_m_bookmark=0x7f080015;
+        public static final int btn_m_email=0x7f080016;
+        public static final int btn_m_exit=0x7f080018;
+        public static final int btn_m_menu=0x7f080014;
+        public static final int btn_m_setting=0x7f080017;
+        public static final int btn_menu=0x7f08000f;
+        public static final int btn_microphone=0x7f080007;
+        public static final int btn_right=0x7f08000e;
+        public static final int btn_state=0x7f080010;
+        public static final int edt_id=0x7f080003;
+        public static final int edt_pw=0x7f080004;
+        public static final int et_head=0x7f080006;
+        public static final int info=0x7f08000a;
+        public static final int item1=0x7f080019;
+        public static final int item2=0x7f08001a;
+        public static final int item3=0x7f08001b;
+        public static final int item4=0x7f08001c;
+        public static final int item5=0x7f08001d;
+        public static final int listview=0x7f080001;
+        public static final int scrollview=0x7f080009;
+        public static final int speechProgressBar=0x7f08000b;
+        public static final int title=0x7f080000;
+        public static final int toolsBar=0x7f08000c;
+        public static final int tv_title=0x7f080012;
+        public static final int tv_url=0x7f080013;
+        public static final int webView=0x7f080011;
+        public static final int webview=0x7f080008;
     }
     public static final class layout {
-        public static final int activity_main=0x7f030000;
-        public static final int activity_setting=0x7f030001;
-        public static final int activity_webview=0x7f030002;
+        public static final int activity_book_mark=0x7f030000;
+        public static final int activity_mail_manager=0x7f030001;
+        public static final int activity_main=0x7f030002;
+        public static final int activity_setting=0x7f030003;
+        public static final int activity_webview=0x7f030004;
+        public static final int book_mark_item=0x7f030005;
+        public static final int menu_popup_window=0x7f030006;
+    }
+    public static final class menu {
+        public static final int menus=0x7f070000;
     }
     public static final class raw {
         public static final int shake=0x7f040000;
@@ -42,6 +85,7 @@ public final class R {
     public static final class string {
         public static final int app_name=0x7f050000;
         public static final int hello_world=0x7f050001;
+        public static final int title_activity_book_mark=0x7f050004;
         public static final int title_activity_setting=0x7f050003;
         public static final int title_activity_webview=0x7f050002;
     }

@@ -8,6 +8,7 @@ public class PraseCommand {
 	public static final int Cmd_Search = 0;
 	public static final int Cmd_Open = 1;
 	public static final int Cmd_Weather = 2;
+	public static final int Cmd_WeatherComCn = 12;
 	public static final int Cmd_News = 3;
 	public static final int Cmd_Mail = 4;
 	public static final int Cmd_NewsNum = 5;

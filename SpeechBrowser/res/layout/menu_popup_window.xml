@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" 
+    android:baselineAligned="false">
+    
+    <View 
+        android:background="#bbb"
+        android:layout_height="1dp"
+        android:layout_width="match_parent"/>
+    <LinearLayout 
+        android:background="#fff"
+        android:id="@+id/btn_m_menu"
+        
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent">
+
+			<TextView 
+	        android:id="@+id/btn_m_bookmark"
+			    android:text="书签"
+			    android:padding="10dp"
+			    android:layout_height="wrap_content"
+			    android:layout_width="0dp"
+			    android:layout_weight="1"
+			    android:gravity="center_horizontal"
+			    android:textSize="18sp"
+			    android:background="@drawable/popup_menu_selector"
+			    android:drawableTop="@drawable/bookmark"/>
+	    
+			<TextView 
+	        android:id="@+id/btn_m_email"
+			    android:text="邮箱"
+			    android:padding="10dp"
+			    android:layout_height="wrap_content"
+			    android:layout_width="0dp"
+			    android:layout_weight="1"
+			    android:gravity="center_horizontal"
+			    android:textSize="18sp"
+			    android:background="@drawable/popup_menu_selector"
+			    android:drawableTop="@drawable/email"/>
+
+			<TextView 
+	        android:id="@+id/btn_m_setting"
+			    android:text="设置"
+			    android:padding="10dp"
+			    android:layout_height="wrap_content"
+			    android:layout_width="0dp"
+			    android:layout_weight="1"
+			    android:gravity="center_horizontal"
+			    android:textSize="18sp"
+			    android:background="@drawable/popup_menu_selector"
+			    android:drawableTop="@drawable/menu_setting"/>
+
+			<TextView 
+	        android:id="@+id/btn_m_exit"
+			    android:text="退出"
+			    android:padding="10dp"
+			    android:layout_height="wrap_content"
+			    android:layout_width="0dp"
+			    android:layout_weight="1"
+			    android:gravity="center_horizontal"
+			    android:textSize="18sp"
+			    android:background="@drawable/popup_menu_selector"
+			    android:drawableTop="@drawable/exit"/>
+
+	</LinearLayout>
+	    <View 
+        android:background="#bbb"
+        android:layout_height="1dp"
+        android:layout_width="match_parent"/>
+</LinearLayout>

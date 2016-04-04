@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu 
+    xmlns:android="http://schemas.android.com/apk/res/android" >
+    
+    <item android:id="@+id/item1" android:title="加入书签" android:icon="@drawable/bookmark"></item>
+    <item android:id="@+id/item2" android:title="邮箱管理"></item>
+	<item android:id="@+id/item3" android:title="历史记录"></item>
+	<item android:id="@+id/item4" android:title="设置"></item>
+	<item android:id="@+id/item5" android:title="退出"></item>
+</menu>

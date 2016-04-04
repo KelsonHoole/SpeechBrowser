@@ -8,8 +8,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import android.util.Log;
-import cn.hukecn.speechbrowser.activity.MainActivity;
 import cn.hukecn.speechbrowser.bean.MailListBean;
 
 public class PraseMailList {
@@ -17,35 +15,21 @@ public class PraseMailList {
 	{
 		List<MailListBean> list = new ArrayList<MailListBean>();
 		Document doc = Jsoup.parse(html);
-		String body = doc.body().text();
-		Elements gs = doc.getElementsByClass("g");
-		
-		int size = gs.size();
-		int start = html.indexOf("c m_list") + 10;
-		int end = html.indexOf("</p>",start);
-		
-		if(start > 10 && end != -1 && end > start)
+		Elements maillist_listItems = doc.getElementsByClass("maillist_listItem");
+		for(Element item:maillist_listItems)
 		{
-			String content = html.substring(start, end);
-			
-			//Document list = Jsoup.parse(content);
-			
-			//String cc = list.text();
-			start = 0;
-			for(int i = 0;i < size;i++)
-			{
-				MailListBean bean = new MailListBean();
-				end = content.indexOf("class=\"hr4\"",start)+16;
-				Document item = Jsoup.parse(content.substring(start,end));
-				start = end;
-				bean.descStr = item.text();
-				//bean.mailUrl = item.attr("href");
-				bean.mailUrl = "http://w.mail.qq.com"+item.getElementsByTag("a").get(0).attr("href");
-				//Log.e("1111", );
-				list.add(bean);
-			}
-			//MainActivity.writeFileSdcard("",cc);
+			MailListBean bean = new MailListBean();
+			Element maillist_listItemRight = item.getElementsByClass("maillist_listItemRight").get(0);
+			bean.mailFrom = maillist_listItemRight.getElementsByClass("maillist_listItemLineFirst").get(0).text();
+			bean.mailDesc = maillist_listItemRight.getElementsByClass("maillist_listItemLineThird").get(0).text();
+			int start = maillist_listItemRight.html().indexOf("LineSecond");
+			int end = maillist_listItemRight.html().indexOf("</div>",start);
+			if(start != -1 && end != -1)
+				bean.mailTitle = maillist_listItemRight.html().substring(start+27, end);
+			bean.mailUrl = "https://w.mail.qq.com" + maillist_listItemRight.attr("href");
+			list.add(bean);
 		}
+		
 		
 		return list;
 		//Log.e("1111", ""+size);

@@ -6,4 +6,10 @@
     <string name="title_activity_webview">WebviewActivity</string>
     <string name="title_activity_setting">SettingActivity</string>
 
+    <drawable name="toolsBarCommon">#eee</drawable>
+    <drawable name="popupMenuCommon">#fff</drawable>
+    <drawable name="toolsBarPressed">#bbb</drawable>
+
+    <string name="title_activity_book_mark">BookMarkActivity</string>
+
 </resources>

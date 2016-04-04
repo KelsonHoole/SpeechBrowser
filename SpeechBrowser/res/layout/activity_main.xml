@@ -2,38 +2,60 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="#eee"
+    android:orientation="vertical"
     tools:context="${relativePackage}.${activityClass}" >
 
-    <LinearLayout
+    <RelativeLayout
             android:layout_width="match_parent"
-            android:orientation="horizontal"
             android:background="#3f51b5"
-            android:padding="13dp"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:layout_gravity="center_vertical"
-                android:gravity="center_vertical"
-                android:id="@+id/title"
-                android:textColor="#fff"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:textSize="23sp"
-                android:text="语音浏览器"
-                android:layout_weight="1"/>
             
-            <Button
-                android:id="@+id/btn_setting"
-                android:layout_gravity="center_vertical"
-                android:background="@drawable/setting"
-                android:layout_marginLeft="13dp"
-                android:layout_marginRight="3dp"
-                android:layout_width="30dp"
-                android:layout_height="30dp" />
+            android:layout_height="wrap_content">
+            
+        <View 
+            android:layout_margin="10dp"
+            android:layout_centerVertical="true"
+            android:layout_height="40dp"
+            android:layout_width="match_parent"
+            android:background="#fff"/>
 
+        <LinearLayout 
+            android:layout_margin="10dp"
+            android:layout_centerVertical="true"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:orientation="horizontal">
+            
+	        <EditText
+	            android:layout_gravity="center_vertical"
+	            android:gravity="center_vertical"
+	            android:id="@+id/et_head"
+	            android:layout_width="0dp"
+	            android:layout_weight="1"
+	            android:layout_height="wrap_content"
+	            android:singleLine="true"
+	            android:ellipsize="end"
+	            android:imeOptions="actionSearch"
+	            android:padding="5dp"
+	            android:textSize="20sp"
+	            android:textColor="#000"
+	            android:background="@drawable/popup_menu_selector"
+	            android:hint="欢迎使用多功能语音浏览器"
+	            android:ems="10" />
+	
+	            <ImageButton 
+	                android:id="@+id/btn_microphone"
+	                android:layout_gravity="center_vertical"
+	                android:paddingRight="10dp"
+	                android:paddingLeft="10dp"
+	                android:layout_height="wrap_content"
+	                android:layout_width="wrap_content"
+	                android:background="@drawable/popup_menu_selector"
+	                android:src="@drawable/microphone"/>
         </LinearLayout>
+
+
+    </RelativeLayout>
     
     
     <cn.hukecn.speechbrowser.util.CutWebView 
@@ -45,7 +67,8 @@
         android:id="@+id/scrollview"
  		android:background="#ddd"
         android:layout_height="0dp"
-        android:layout_weight="0"
+        android:layout_weight="0.2"
+        android:visibility="visible"
         android:layout_width="match_parent">
         <TextView
             android:id="@+id/info"
@@ -53,48 +76,65 @@
             android:layout_height="wrap_content"
             android:layout_width="match_parent"/>
     </ScrollView>
+
+    <ProgressBar
+        android:id="@+id/speechProgressBar"
+        android:visibility="gone"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
     
     <View 
         android:layout_height="1dp"
         android:layout_width="match_parent"
-        android:background="#888"/>
+        android:background="#bbb"/>
     <LinearLayout 
-        android:layout_marginTop="3dp"
-        android:background="#ffffff"
+        android:id="@+id/toolsBar"
+        android:background="#eee"
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <Button
-            android:layout_marginLeft="3dp"
-	        android:id="@+id/btn_exit"
-	        android:padding="8dp"
-	       	android:layout_height="wrap_content"
-	        android:layout_width="0dp"
-	        android:layout_weight="0.5"
-	        android:text="退出"
-	        android:textColor="#fff"
-	        android:background="@drawable/selector"
-	        android:gravity="center_horizontal"
-	        android:textSize="22sp"/>
+        android:layout_height="50dp">
         
-      <!--   <View 
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:background="#888"/> -->
-    
-	    <Button
-	        android:layout_marginLeft="5dp"
-	        android:layout_marginRight="3dp"
-	        android:id="@+id/btn_stop"
-	        android:padding="8dp"
-	       	android:layout_height="wrap_content"
-	       	android:layout_width="0dp"
-        	android:layout_weight="1"
-        	android:textColor="#fff"
-	        android:text="停止播报"
-	        android:background="@drawable/selector"
-	        android:gravity="center_horizontal"
-	        android:textSize="22sp"/>
+       
+			<ImageButton 
+			    android:background="@drawable/toolsbar_selector"
+            	android:id="@+id/btn_left"
+			    android:layout_gravity="center_vertical"
+			    android:layout_width="0dp"
+			    android:layout_weight="1"
+			    android:layout_height="match_parent"
+			    android:src="@drawable/left"/>
+
+			<ImageButton 
+			    android:background="@drawable/toolsbar_selector"
+			    android:id="@+id/btn_right"
+			    android:layout_gravity="center_vertical"
+			    android:layout_width="0dp"
+			    android:layout_weight="1"
+			    android:layout_height="match_parent"
+			    android:src="@drawable/right"/>
+
+       
+			<ImageButton 
+			    android:background="@drawable/toolsbar_selector"
+			    android:id="@+id/btn_menu"
+			    android:layout_gravity="center_vertical"
+			    android:layout_width="0dp"
+			    android:layout_weight="1"
+			    android:layout_height="match_parent"
+			    android:src="@drawable/menu"/>
+
+			<ImageButton 
+			    android:background="@drawable/toolsbar_selector"
+			    android:id="@+id/btn_state"
+			    android:layout_gravity="center_vertical"
+			    android:layout_width="0dp"
+			    android:layout_weight="1"
+			    android:layout_height="match_parent"
+			    android:src="@drawable/stop"/>
+
+	    
+		
     </LinearLayout>
     
 

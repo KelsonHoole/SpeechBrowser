@@ -8,9 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import cn.hukecn.speechbrowser.bean.BookMarkBean;
 import cn.hukecn.speechbrowser.bean.LocationBean;
-
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -35,13 +33,23 @@ public class MyDataBase extends SQLiteOpenHelper {
     private static String CREAT_TABLE_BookMark = "CREATE TABLE "+TableBookMark+" (_id INTEGER DEFAULT '1' NOT NULL PRIMARY KEY AUTOINCREMENT,"+ColumnTitle+" TEXT  NOT NULL,"+ColumnUrl+" TEXT  NOT NULL)";
 
     private SQLiteDatabase db;
+    private static MyDataBase myDB;
+    
+    public static MyDataBase getInstance()
+    {
+    	return myDB;
+    }
+    
+    public static void init(Context context){
+    	myDB = new MyDataBase(context);
+    }
 
-    public MyDataBase(Context context) {
+    private MyDataBase(Context context) {
         this(context, DBNAME, null,DB_VERSION);
     }
 
-    public MyDataBase(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
-        super(context, DBNAME, null, DB_VERSION);
+    private MyDataBase(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
+    	super(context, DBNAME, null, DB_VERSION);
     }
 
     @Override

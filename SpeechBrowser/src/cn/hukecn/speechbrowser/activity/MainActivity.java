@@ -6,32 +6,33 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import org.jsoup.Jsoup;
-
 import cn.hukecn.speechbrowser.JsonParser;
 import cn.hukecn.speechbrowser.R;
 import cn.hukecn.speechbrowser.Shake;
 import cn.hukecn.speechbrowser.Shake.ShakeListener;
 import cn.hukecn.speechbrowser.DAO.MyDataBase;
+import cn.hukecn.speechbrowser.bean.BookMarkBean;
 import cn.hukecn.speechbrowser.bean.HtmlBean;
 import cn.hukecn.speechbrowser.bean.LocationBean;
 import cn.hukecn.speechbrowser.bean.MailListBean;
 import cn.hukecn.speechbrowser.bean.NewsBean;
 import cn.hukecn.speechbrowser.util.BaiduSearch;
-import cn.hukecn.speechbrowser.util.CutWebView;
-import cn.hukecn.speechbrowser.util.MenuPopupWindow;
-import cn.hukecn.speechbrowser.util.CutWebView.ReceiveHTMLListener;
-import cn.hukecn.speechbrowser.util.CutWebView.ShouldOverrideUrlListener;
 import cn.hukecn.speechbrowser.util.PraseCommand;
 import cn.hukecn.speechbrowser.util.PraseMailContent;
 import cn.hukecn.speechbrowser.util.PraseMailList;
 import cn.hukecn.speechbrowser.util.PraseTencentNews;
 import cn.hukecn.speechbrowser.util.PraseWeatherHtml;
-
+import cn.hukecn.speechbrowser.util.ToastUtil;
+import cn.hukecn.speechbrowser.view.CutWebView;
+import cn.hukecn.speechbrowser.view.MenuPopupWindow;
+import cn.hukecn.speechbrowser.view.CutWebView.ReceiveHTMLListener;
+import cn.hukecn.speechbrowser.view.CutWebView.ShouldOverrideUrlListener;
 import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
 import com.baidu.location.LocationClientOption.LocationMode;
+import com.baidu.tts.client.SpeechSynthesizerListener;
 import com.iflytek.cloud.InitListener;
 import com.iflytek.cloud.RecognizerResult;
 import com.iflytek.cloud.SpeechConstant;
@@ -51,40 +52,27 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Vibrator;
-import android.support.v4.view.TintableBackgroundView;
-import android.util.Log;
-import android.view.ContextMenu;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
-import android.view.Gravity;
 import android.view.View.OnClickListener;
-import android.view.View.OnCreateContextMenuListener;
-import android.view.View.OnFocusChangeListener;
-import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Gallery;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.PopupWindow.OnDismissListener;
 import android.widget.ProgressBar;
-import android.widget.SeekBar;
-import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
-import android.widget.Toast;
 
-public class MainActivity extends Activity implements ShakeListener,ReceiveHTMLListener,ShouldOverrideUrlListener,OnClickListener{
+public class MainActivity extends Activity implements ShakeListener
+			,ReceiveHTMLListener,ShouldOverrideUrlListener
+			,OnClickListener{
 	public final int REQUEST_CODE_BOOKMARK = 1;
 	List<Integer> cmdList = new ArrayList<Integer>();
 	private SoundPool sp;//声明一个SoundPool
 	private int music;//定义一个整型用load（）；来设置suondID
 	private int newsNumber = -1;
+//	private BDTts mBDTts = null;
 	private static Vibrator mVibrator;
 	private HtmlBean htmlBean = new HtmlBean();
 	boolean isPause = false;
@@ -119,14 +107,25 @@ public class MainActivity extends Activity implements ShakeListener,ReceiveHTMLL
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
-		SpeechUtility.createUtility(MainActivity.this, SpeechConstant.APPID +"=568fba83");   
 	
-		mIatDialog = new RecognizerDialog(MainActivity.this, mInitListener);
-		mIatDialog.setListener(mRecognizerDialogListener);
+		initView();
+		initSpeechUtil();
 		
+		sp= new SoundPool(10, AudioManager.STREAM_SYSTEM, 5);
+		music = sp.load(this, R.raw.shake, 1);
+	
+        mVibrator = (Vibrator)getSystemService(Service.VIBRATOR_SERVICE);  
+
+        mLocationClient = new LocationClient(getApplicationContext());     //声明LocationClient类
+        mLocationClient.registerLocationListener(myListener);    //注册监听函数
+        initLocation();
+        
+//        mBDTts = new BDTts(this,this);
+	}
+	private void initView() {
+		// TODO Auto-generated method stub
 		title = (TextView) findViewById(R.id.title);
-		tv_info = (TextView) findViewById(R.id.info);		
+		tv_info = (TextView) findViewById(R.id.info);		 
 		webView = (CutWebView) findViewById(R.id.webview);
 		et_head = (EditText) findViewById(R.id.et_head);
 		btn_left = (ImageButton) findViewById(R.id.btn_left);
@@ -144,29 +143,7 @@ public class MainActivity extends Activity implements ShakeListener,ReceiveHTMLL
 	
 		webView.setOnReceiveHTMLListener(this);
 		webView.setOnShouldOverrideUrlListener(this);
-//		btn_exit = (Button) findViewById(R.id.btn_exit);
-		
-//		btn_exit.setOnClickListener(new OnClickListener() {
-//			@Override
-//			public void onClick(View arg0) {
-//				// TODO Auto-generated method stub
-////				exitApp();
-//			}
-//		});
-		
-//		btn_stop = (Button)findViewById(R.id.btn_stop);
-//		btn_stop.setOnClickListener(new OnClickListener() {
-//			@Override
-//			public void onClick(View arg0) {
-//				// TODO Auto-generated method stub
-//				if(mTts.isSpeaking())
-//					mTts.stopSpeaking();
-//			}
-//		});
-		
-		
 
-		
 		et_head.setOnEditorActionListener(new OnEditorActionListener() {
 			
 			@Override
@@ -176,7 +153,7 @@ public class MainActivity extends Activity implements ShakeListener,ReceiveHTMLL
 				boolean isOpen=imm.isActive();//isOpen若返回true，则表示输入法打开  
 				if(isOpen)
 					imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);  
-				if (actionId==EditorInfo.IME_ACTION_SEARCH)
+				if (actionId == EditorInfo.IME_ACTION_SEARCH)
 				{
 			        webView.getSettings().setUserAgentString("Mozilla/5.0 (Linux; U; Android 5.1.1; zh-cn; PLK-UL00 Build/HONORPLK-UL00) AppleWebKit/537.36 (KHTML, like Gecko)Version/4.0 MQQBrowser/5.3 Mobile Safari/537.36");
 					browserState = PraseCommand.Cmd_Original;
@@ -198,30 +175,18 @@ public class MainActivity extends Activity implements ShakeListener,ReceiveHTMLL
 					return false;
 			}
 		});
-		
-		et_head.setOnFocusChangeListener(new OnFocusChangeListener() {
-			
-			@Override
-			public void onFocusChange(View v, boolean hasFocus) {
-				// TODO Auto-generated method stub
-				Toast.makeText(getApplicationContext(), hasFocus+"", Toast.LENGTH_SHORT).show();
-			}
-		});
+	}
+	private void initSpeechUtil(){
+		SpeechUtility.createUtility(getApplicationContext(), SpeechConstant.APPID +"=568fba83");   
+
+		mIatDialog = new RecognizerDialog(MainActivity.this, mInitListener);
+		mIatDialog.setListener(mRecognizerDialogListener);
 		
 		mTts= SpeechSynthesizer.createSynthesizer(this, null);  
 		mTts.setParameter(SpeechConstant.VOICE_NAME, "xiaoqi");
 		mTts.setParameter(SpeechConstant.SPEED, "50");
 		mTts.setParameter(SpeechConstant.VOLUME, "50");
-		mTts.setParameter(SpeechConstant.ENGINE_TYPE, SpeechConstant.TYPE_CLOUD); //设置云端  
-		
-		sp= new SoundPool(10, AudioManager.STREAM_SYSTEM, 5);
-		music = sp.load(this, R.raw.shake, 1);
-	
-        mVibrator = (Vibrator)getSystemService(Service.VIBRATOR_SERVICE);  
-
-        mLocationClient = new LocationClient(getApplicationContext());     //声明LocationClient类
-        mLocationClient.registerLocationListener(myListener);    //注册监听函数
-        initLocation();
+		mTts.setParameter(SpeechConstant.ENGINE_TYPE, SpeechConstant.TYPE_AUTO); //设置云端  
 	}
 	private InitListener mInitListener = new InitListener() {
 		@Override
@@ -231,6 +196,7 @@ public class MainActivity extends Activity implements ShakeListener,ReceiveHTMLL
 	
 	private RecognizerDialogListener mRecognizerDialogListener = new RecognizerDialogListener() {
 		public void onResult(RecognizerResult results, boolean isLast) {
+			
 			tv_info.setText("");
 			speechProgressBar.setVisibility(View.GONE);
 			htmlBean.content = "";
@@ -299,6 +265,18 @@ public class MainActivity extends Activity implements ShakeListener,ReceiveHTMLL
 						break;
 					}
 					
+					if(cmdList.get(cmdList.size() -1) == PraseCommand.Cmd_Query_Bookmark)
+					{
+						//进入书签处理
+//						if(mailList != null && mailList.size()>0)
+//						{
+							browserState = PraseCommand.Cmd_Original;
+							openUrlFromBookmark(PraseCommand.praseNewsIndex(list));
+//						}else
+//							mTts.startSpeaking("打开网页失败，请稍后再试",mSynListener);
+						break;
+					}
+					
 					mTts.startSpeaking("指令错误，请输入正确指令",mSynListener);
 					break;
 				case PraseCommand.Cmd_Location:
@@ -311,16 +289,22 @@ public class MainActivity extends Activity implements ShakeListener,ReceiveHTMLL
 				case PraseCommand.Cmd_Mail:
 					cmdMail();
 					break;
+				case PraseCommand.Cmd_Query_Bookmark:
+					cmdQueryBookmark();
+					break;
+				case PraseCommand.Cmd_Add_Bookmark:
+					cmdAddBookmark();
+					break;
 				case PraseCommand.Cmd_Err:
 				case PraseCommand.Cmd_Other:
 				default:
 					mTts.startSpeaking("指令错误，请输入正确指令",mSynListener);
 					break;
 				}
-				
 			}
-			
 		}
+		
+		
 		/**
 		 * 识别回调错误.
 		 */
@@ -328,7 +312,57 @@ public class MainActivity extends Activity implements ShakeListener,ReceiveHTMLL
 			//showTip(error.getPlainDescription(true));
 		}
 	};
+	private void cmdQueryBookmark() {
+		// TODO Auto-generated method stub
+		MyDataBase db = MyDataBase.getInstance();
+		List<BookMarkBean> list = db.queryBookMark();
+		if(list.size() == 0)
+		{
+			mTts.startSpeaking("您尚未添加书签...", mSynListener);
+		}
+		else
+		{
+			int count = list.size();
+			String str = "您的书签共有" + count+"条：\n";
+			for(int i = 1;i <= count;i++)
+			{
+				str+="第"+i+"条:"+list.get(i - 1).title+"\n";
+			}
+			mTts.startSpeaking(str, mSynListener);
+		}
+	}
 	
+	protected void openUrlFromBookmark(int praseNewsIndex) {
+		// TODO Auto-generated method stub
+		MyDataBase db = MyDataBase.getInstance();
+		List<BookMarkBean> list = db.queryBookMark();
+		if(praseNewsIndex > list.size())
+			mTts.startSpeaking("书签不存在", mSynListener);
+		else
+		{
+			String url = list.get(praseNewsIndex - 1).url;
+			String title = list.get(praseNewsIndex - 1).title;
+			webView.loadUrl(url);
+			mTts.startSpeaking("正在为您打开"+title+"，请稍后", mSynListener);
+		}
+		
+	}
+
+	protected void cmdAddBookmark() {
+		// TODO Auto-generated method stub
+		MyDataBase db = MyDataBase.getInstance();
+		BookMarkBean bean = new BookMarkBean();
+		bean.url = htmlBean.url;
+		bean.title = Jsoup.parse(htmlBean.html).title();
+		if(db.insertBookMark(bean) != -1)
+		{
+			mTts.startSpeaking("已成功将"+bean.title+"添加到书签", mSynListener);
+		}else
+		{
+			mTts.startSpeaking("书签添加失败", mSynListener);
+		}
+	}
+
 	private void cmdMail()
 	{
 		webView.getSettings().setUserAgentString("Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.101 Safari/537.36");
@@ -354,6 +388,7 @@ public class MainActivity extends Activity implements ShakeListener,ReceiveHTMLL
 	@Override
 	public void onShake() {
 		// TODO Auto-generated method stub
+//		mBDTts.stop();
 		if(mTts.isSpeaking())
 			mTts.stopSpeaking();
 		if(System.currentTimeMillis() - lastShakeTime > 1200)
@@ -452,7 +487,7 @@ public class MainActivity extends Activity implements ShakeListener,ReceiveHTMLL
 		public void onReceiveLocation(BDLocation arg0) {
 			//Toast.makeText(getApplicationContext(), arg0.getCity(), Toast.LENGTH_SHORT).show();
 			//mTts.startSpeaking(arg0.getLocationDescribe(), mSynListener);
-			MyDataBase db = new MyDataBase(MainActivity.this);
+			MyDataBase db = MyDataBase.getInstance();
 			LocationBean bean = new LocationBean();
 			bean.latitude = arg0.getLatitude()+"";
 			bean.longitude = arg0.getLongitude()+"";
@@ -699,7 +734,7 @@ public class MainActivity extends Activity implements ShakeListener,ReceiveHTMLL
 		            webView.goBack();
 		        else
 		        {
-		        	Toast.makeText(getApplicationContext(), "已经是第一页了", Toast.LENGTH_SHORT).show();
+		        	ToastUtil.toast("已经是第一页了");
 		        }
 				break;
 			case R.id.btn_right:
@@ -710,7 +745,7 @@ public class MainActivity extends Activity implements ShakeListener,ReceiveHTMLL
 					webView.goForward();
 				else
 				{
-					Toast.makeText(getApplicationContext(), "已经是最后一页了", Toast.LENGTH_SHORT).show();
+					ToastUtil.toast("已经是最后一页了");
 				}
 				break;
 			case R.id.btn_state:
@@ -847,6 +882,16 @@ public class MainActivity extends Activity implements ShakeListener,ReceiveHTMLL
 			
 			htmlBean.content = "即将为您播报今日新闻:\n" + titleStr;
 			mTts.startSpeaking(htmlBean.content, mSynListener);
+//			mBDTts.speak(htmlBean.content);
+		}
+		
+		public void processNewsContent()
+		{
+			String html = htmlBean.html;
+			String content = PraseTencentNews.getNewsContent(html);
+			htmlBean.content = "第" + newsNumber + "条新闻\n标题：" + newsList.get(newsNumber-1).newsTitle+"\n"+content;
+			mTts.startSpeaking(htmlBean.content, mSynListener);
+//			mBDTts.speak(htmlBean.content);
 		}
 		
 		public void processSearchResult()
@@ -864,14 +909,6 @@ public class MainActivity extends Activity implements ShakeListener,ReceiveHTMLL
 			{
 				mTts.startSpeaking("搜索出错，请重试。", mSynListener);
 			}
-		}
-		
-		public void processNewsContent()
-		{
-			String html = htmlBean.html;
-			String content = PraseTencentNews.getNewsContent(html);
-			htmlBean.content = "第" + newsNumber + "条新闻\n标题：" + newsList.get(newsNumber-1).newsTitle+"\n"+content;
-			mTts.startSpeaking(htmlBean.content, mSynListener);
 		}
 		
 		

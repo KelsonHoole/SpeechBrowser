@@ -8,7 +8,6 @@ public class PraseCommand {
 	public static final int Cmd_Search = 0;
 	public static final int Cmd_Open = 1;
 	public static final int Cmd_Weather = 2;
-	public static final int Cmd_WeatherComCn = 12;
 	public static final int Cmd_News = 3;
 	public static final int Cmd_Mail = 4;
 	public static final int Cmd_NewsNum = 5;
@@ -18,6 +17,9 @@ public class PraseCommand {
 	public static final int Cmd_Mail_Home = 9;
 	public static final int Cmd_Mail_InBox = 10;
 	public static final int Cmd_Mail_MailContent = 11;
+	public static final int Cmd_WeatherComCn = 12;
+	public static final int Cmd_Add_Bookmark = 13;
+	public static final int Cmd_Query_Bookmark = 14;
 	public static final int Cmd_Other = 99;
 	
 	public static int prase(List<String> list)
@@ -56,6 +58,10 @@ public class PraseCommand {
 			return Cmd_Location;
 		if(listStr.indexOf("关闭") != -1 || listStr.indexOf("退出") != -1)
 			return Cmd_Exit;
+		if(listStr.indexOf("我的书签") != -1 || listStr.equals("书签"))
+			return Cmd_Query_Bookmark;
+		if(listStr.indexOf("书签") != -1 && listStr.indexOf("加") != -1)
+			return Cmd_Add_Bookmark;
 		return 100;
 	}
 	

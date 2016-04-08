@@ -1,12 +1,21 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="${relativePackage}.${activityClass}" >
 
-    <TextView
-        android:layout_width="wrap_content"
+    
+    <EditText 
+        android:singleLine="true"
         android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:id="@+id/et_input"/>
+    <TextView
+        android:id="@+id/tv_info"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:text="@string/hello_world" />
 
-</RelativeLayout>
+</LinearLayout>

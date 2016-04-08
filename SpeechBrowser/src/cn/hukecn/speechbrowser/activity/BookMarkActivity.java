@@ -42,7 +42,7 @@ public class BookMarkActivity extends Activity {
 		lv_bookmark = (ListView) findViewById(R.id.listview);
 		lv_bookmark.setAdapter(adapter);
 		
-		MyDataBase db = new MyDataBase(BookMarkActivity.this);
+		MyDataBase db = MyDataBase.getInstance();
 		List<BookMarkBean> list = db.queryBookMark();
 		if(list != null && list.size() > 0)
 			adapter.insert(list);
@@ -55,7 +55,7 @@ public class BookMarkActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				MyDataBase db = new MyDataBase(BookMarkActivity.this);
+				MyDataBase db = MyDataBase.getInstance();
 				BookMarkBean bean = new BookMarkBean();
 				bean.title = title;
 				bean.url = url;

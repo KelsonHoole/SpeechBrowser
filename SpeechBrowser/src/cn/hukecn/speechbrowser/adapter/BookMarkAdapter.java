@@ -90,7 +90,7 @@ public class BookMarkAdapter extends BaseAdapter{
 	public void deleteItem(int position) {
 		// TODO Auto-generated method stub
 		BookMarkBean bean = (BookMarkBean) getItem(position);
-        MyDataBase db = new MyDataBase(context);
+		MyDataBase db = MyDataBase.getInstance();
         if(db.delete(bean) != 0)
         	Toast.makeText(context, "É¾³ý³É¹¦", Toast.LENGTH_SHORT).show();
         else

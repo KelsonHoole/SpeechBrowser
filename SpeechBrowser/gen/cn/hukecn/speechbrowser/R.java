@@ -39,11 +39,11 @@ public final class R {
         public static final int btn_add=0x7f080005;
         public static final int btn_insert=0x7f080002;
         public static final int btn_left=0x7f08000d;
-        public static final int btn_m_bookmark=0x7f080015;
-        public static final int btn_m_email=0x7f080016;
-        public static final int btn_m_exit=0x7f080018;
-        public static final int btn_m_menu=0x7f080014;
-        public static final int btn_m_setting=0x7f080017;
+        public static final int btn_m_bookmark=0x7f080017;
+        public static final int btn_m_email=0x7f080018;
+        public static final int btn_m_exit=0x7f08001a;
+        public static final int btn_m_menu=0x7f080016;
+        public static final int btn_m_setting=0x7f080019;
         public static final int btn_menu=0x7f08000f;
         public static final int btn_microphone=0x7f080007;
         public static final int btn_right=0x7f08000e;
@@ -51,20 +51,22 @@ public final class R {
         public static final int edt_id=0x7f080003;
         public static final int edt_pw=0x7f080004;
         public static final int et_head=0x7f080006;
+        public static final int et_input=0x7f080011;
         public static final int info=0x7f08000a;
-        public static final int item1=0x7f080019;
-        public static final int item2=0x7f08001a;
-        public static final int item3=0x7f08001b;
-        public static final int item4=0x7f08001c;
-        public static final int item5=0x7f08001d;
+        public static final int item1=0x7f08001b;
+        public static final int item2=0x7f08001c;
+        public static final int item3=0x7f08001d;
+        public static final int item4=0x7f08001e;
+        public static final int item5=0x7f08001f;
         public static final int listview=0x7f080001;
         public static final int scrollview=0x7f080009;
         public static final int speechProgressBar=0x7f08000b;
         public static final int title=0x7f080000;
         public static final int toolsBar=0x7f08000c;
-        public static final int tv_title=0x7f080012;
-        public static final int tv_url=0x7f080013;
-        public static final int webView=0x7f080011;
+        public static final int tv_info=0x7f080012;
+        public static final int tv_title=0x7f080014;
+        public static final int tv_url=0x7f080015;
+        public static final int webView=0x7f080013;
         public static final int webview=0x7f080008;
     }
     public static final class layout {

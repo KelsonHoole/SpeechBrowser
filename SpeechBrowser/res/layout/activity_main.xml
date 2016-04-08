@@ -58,7 +58,7 @@
     </RelativeLayout>
     
     
-    <cn.hukecn.speechbrowser.util.CutWebView 
+    <cn.hukecn.speechbrowser.view.CutWebView 
         android:id="@+id/webview"
         android:layout_height="0dp"
         android:layout_weight="1"

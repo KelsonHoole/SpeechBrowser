@@ -70,7 +70,8 @@ public class MainActivity extends Activity implements ShakeListener
 	public final int REQUEST_CODE_BOOKMARK = 1;
 	List<Integer> cmdList = new ArrayList<Integer>();
 	private SoundPool sp;//声明一个SoundPool
-	private int music;//定义一个整型用load（）；来设置suondID
+	private int musicStart;//定义一个整型用load（）；来设置suondID
+	private int musicEnd;
 	private int newsNumber = -1;
 //	private BDTts mBDTts = null;
 	private static Vibrator mVibrator;
@@ -112,7 +113,8 @@ public class MainActivity extends Activity implements ShakeListener
 		initSpeechUtil();
 		
 		sp= new SoundPool(10, AudioManager.STREAM_SYSTEM, 5);
-		music = sp.load(this, R.raw.shake, 1);
+		musicStart = sp.load(this, R.raw.shake, 1);
+		musicEnd = sp.load(this, R.raw.bdspeech_recognition_success,1);
 	
         mVibrator = (Vibrator)getSystemService(Service.VIBRATOR_SERVICE);  
 
@@ -196,7 +198,7 @@ public class MainActivity extends Activity implements ShakeListener
 	
 	private RecognizerDialogListener mRecognizerDialogListener = new RecognizerDialogListener() {
 		public void onResult(RecognizerResult results, boolean isLast) {
-			
+			sp.play(musicEnd, 1, 1, 0, 0, 1);
 			tv_info.setText("");
 			speechProgressBar.setVisibility(View.GONE);
 			htmlBean.content = "";
@@ -394,7 +396,7 @@ public class MainActivity extends Activity implements ShakeListener
 		if(System.currentTimeMillis() - lastShakeTime > 1200)
 		{	
 			mVibrator.vibrate(500);
-			sp.play(music, 1, 1, 0, 0, 1);
+			sp.play(musicStart, 1, 1, 0, 0, 1);
 			mIatDialog.show();
 		}
 		lastShakeTime = System.currentTimeMillis();

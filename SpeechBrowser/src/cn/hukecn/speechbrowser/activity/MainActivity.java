@@ -14,14 +14,15 @@ import cn.hukecn.speechbrowser.DAO.MyDataBase;
 import cn.hukecn.speechbrowser.bean.BookMarkBean;
 import cn.hukecn.speechbrowser.bean.HtmlBean;
 import cn.hukecn.speechbrowser.bean.LocationBean;
+import cn.hukecn.speechbrowser.bean.MailBean;
 import cn.hukecn.speechbrowser.bean.MailListBean;
 import cn.hukecn.speechbrowser.bean.NewsBean;
 import cn.hukecn.speechbrowser.util.BaiduSearch;
-import cn.hukecn.speechbrowser.util.PraseCommand;
-import cn.hukecn.speechbrowser.util.PraseMailContent;
-import cn.hukecn.speechbrowser.util.PraseMailList;
-import cn.hukecn.speechbrowser.util.PraseTencentNews;
-import cn.hukecn.speechbrowser.util.PraseWeatherHtml;
+import cn.hukecn.speechbrowser.util.ParseCommand;
+import cn.hukecn.speechbrowser.util.ParseMailContent;
+import cn.hukecn.speechbrowser.util.ParseMailList;
+import cn.hukecn.speechbrowser.util.ParseTencentNews;
+import cn.hukecn.speechbrowser.util.ParseWeatherHtml;
 import cn.hukecn.speechbrowser.util.ToastUtil;
 import cn.hukecn.speechbrowser.view.CutWebView;
 import cn.hukecn.speechbrowser.view.MenuPopupWindow;
@@ -32,7 +33,6 @@ import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
 import com.baidu.location.LocationClientOption.LocationMode;
-import com.baidu.tts.client.SpeechSynthesizerListener;
 import com.iflytek.cloud.InitListener;
 import com.iflytek.cloud.RecognizerResult;
 import com.iflytek.cloud.SpeechConstant;
@@ -84,7 +84,7 @@ public class MainActivity extends Activity implements ShakeListener
 			btn_right = null,
 			btn_state = null;
 	ImageButton btn_microphone = null;
-	int browserState = PraseCommand.Cmd_Original;
+	int browserState = ParseCommand.Cmd_Original;
 	long lastTime = 0l;
 	long lastShakeTime = 0l;
 	String mailCookie = "";
@@ -158,7 +158,7 @@ public class MainActivity extends Activity implements ShakeListener
 				if (actionId == EditorInfo.IME_ACTION_SEARCH)
 				{
 			        webView.getSettings().setUserAgentString("Mozilla/5.0 (Linux; U; Android 5.1.1; zh-cn; PLK-UL00 Build/HONORPLK-UL00) AppleWebKit/537.36 (KHTML, like Gecko)Version/4.0 MQQBrowser/5.3 Mobile Safari/537.36");
-					browserState = PraseCommand.Cmd_Original;
+					browserState = ParseCommand.Cmd_Original;
 			        if(v.getText().toString().indexOf(".com") != -1 || v.getText().toString().indexOf(".cn") != -1)
 					{
 						if(v.getText().toString().indexOf("http") == -1)
@@ -217,26 +217,26 @@ public class MainActivity extends Activity implements ShakeListener
 			
 			if(current - lastTime > 800)
 			{
-				browserState = PraseCommand.prase(list);
+				browserState = ParseCommand.prase(list);
 				lastTime = current;
-				if(browserState != PraseCommand.Cmd_NewsNum)
+				if(browserState != ParseCommand.Cmd_NewsNum)
 					cmdList.add(browserState);
 				
 				switch (browserState) {
-				case PraseCommand.Cmd_Search:
+				case ParseCommand.Cmd_Search:
 					cmdSearch(list);
 					break;
-				case PraseCommand.Cmd_News:
+				case ParseCommand.Cmd_News:
 					cmdReadNews();
 					
 					break;
-				case PraseCommand.Cmd_Weather:
+				case ParseCommand.Cmd_Weather:
 //					String url = "http://m.baidu.com/s?word=天气预报";
 					String url = "http://weather1.sina.cn/?vt=4";
 					webView.loadUrl(url);
 					break;
 				
-				case PraseCommand.Cmd_NewsNum:
+				case ParseCommand.Cmd_NewsNum:
 //					tv_info.append(PraseCommand.praseNewsIndex(list)+"\n");
 					if(cmdList.size() == 0)
 					{
@@ -244,36 +244,36 @@ public class MainActivity extends Activity implements ShakeListener
 						break;
 					}
 					
-					if(cmdList.get(cmdList.size() -1) == PraseCommand.Cmd_Mail)
+					if(cmdList.get(cmdList.size() -1) == ParseCommand.Cmd_Mail)
 					{
 						//进入读邮件详情
 						if(mailList != null && mailList.size()>0)
 						{
-							browserState = PraseCommand.Cmd_Mail_MailContent;
-							readMailContent(PraseCommand.praseNewsIndex(list));
+							browserState = ParseCommand.Cmd_Mail_MailContent;
+							readMailContent(ParseCommand.praseNewsIndex(list));
 						}else
 							mTts.startSpeaking("获取邮件详情失败，请稍后再试",mSynListener);
 						break;
 					}
 					
-					if(cmdList.get(cmdList.size() -1) == PraseCommand.Cmd_News)
+					if(cmdList.get(cmdList.size() -1) == ParseCommand.Cmd_News)
 					{
 						//进入读新闻详情
 						if(newsList != null && newsList.size() > 0)
 						{	
-							readNewsContent(PraseCommand.praseNewsIndex(list));
+							readNewsContent(ParseCommand.praseNewsIndex(list));
 						}else
 							mTts.startSpeaking("获取新闻详情失败，请稍后再试",mSynListener);
 						break;
 					}
 					
-					if(cmdList.get(cmdList.size() -1) == PraseCommand.Cmd_Query_Bookmark)
+					if(cmdList.get(cmdList.size() -1) == ParseCommand.Cmd_Query_Bookmark)
 					{
 						//进入书签处理
 //						if(mailList != null && mailList.size()>0)
 //						{
-							browserState = PraseCommand.Cmd_Original;
-							openUrlFromBookmark(PraseCommand.praseNewsIndex(list));
+							browserState = ParseCommand.Cmd_Original;
+							openUrlFromBookmark(ParseCommand.praseNewsIndex(list));
 //						}else
 //							mTts.startSpeaking("打开网页失败，请稍后再试",mSynListener);
 						break;
@@ -281,24 +281,24 @@ public class MainActivity extends Activity implements ShakeListener
 					
 					mTts.startSpeaking("指令错误，请输入正确指令",mSynListener);
 					break;
-				case PraseCommand.Cmd_Location:
+				case ParseCommand.Cmd_Location:
 					webView.loadUrl("http://map.baidu.com/mobile/webapp/index/index/foo=bar/vt=map");
 					break;
-				case PraseCommand.Cmd_Exit:
+				case ParseCommand.Cmd_Exit:
 					mTts.startSpeaking("正在关闭机器人。。。", mSynListener);
 					handler.sendEmptyMessageDelayed(0, 3000);
 					break;
-				case PraseCommand.Cmd_Mail:
+				case ParseCommand.Cmd_Mail:
 					cmdMail();
 					break;
-				case PraseCommand.Cmd_Query_Bookmark:
+				case ParseCommand.Cmd_Query_Bookmark:
 					cmdQueryBookmark();
 					break;
-				case PraseCommand.Cmd_Add_Bookmark:
+				case ParseCommand.Cmd_Add_Bookmark:
 					cmdAddBookmark();
 					break;
-				case PraseCommand.Cmd_Err:
-				case PraseCommand.Cmd_Other:
+				case ParseCommand.Cmd_Err:
+				case ParseCommand.Cmd_Other:
 				default:
 					mTts.startSpeaking("指令错误，请输入正确指令",mSynListener);
 					break;
@@ -452,7 +452,7 @@ public class MainActivity extends Activity implements ShakeListener
 
 	
 	private void cmdReadNews(){
-		webView.loadUrl(PraseTencentNews.HOMEURL);
+		webView.loadUrl(ParseTencentNews.HOMEURL);
 	}
 	
 	private void cmdSearch(List<String> list) {
@@ -545,7 +545,7 @@ public class MainActivity extends Activity implements ShakeListener
 	    public void onBackPressed() {
 	 		if(mTts.isSpeaking())
 				mTts.stopSpeaking();
-	 		browserState = PraseCommand.Cmd_Original;
+	 		browserState = ParseCommand.Cmd_Original;
 	        if(webView.canGoBack())
 	            webView.goBack();
 	        else
@@ -569,7 +569,7 @@ public class MainActivity extends Activity implements ShakeListener
 	    
 		@Override
 		public void onReceiveHTML(String url,String html) {
-			// TODO Auto-generated method stub
+			// TODO Auto-geerated method stub
 //			tv_info.setText(html);
 			int start = 0,end = 0;
 			et_head.setHint(Jsoup.parse(html).title());
@@ -580,23 +580,34 @@ public class MainActivity extends Activity implements ShakeListener
 			btntate = 0;
 			
 			switch (browserState) {
-			case PraseCommand.Cmd_Search:
+			case ParseCommand.Cmd_Search:
 				processSearchResult();
 				break;
-			case PraseCommand.Cmd_News:
+			case ParseCommand.Cmd_News:
 				processNewsList();
 				break;
-			case PraseCommand.Cmd_NewsNum:
+			case ParseCommand.Cmd_NewsNum:
 				processNewsContent();
 				break;
-			case PraseCommand.Cmd_Mail:
-				browserState = PraseCommand.Cmd_Mail_Home;
-				webView.loadUrl("javascript:"
-						+ "document.getElementById(\"u\").value= \"229164940\";"
-						+ "document.getElementById(\"p\").value= \"huke2851550\";"
-						+ "document.getElementById(\"go\").click();");
+			case ParseCommand.Cmd_Mail:
+				browserState = ParseCommand.Cmd_Mail_Home;
+				MyDataBase db = MyDataBase.getInstance();
+				List<MailBean> mailList = db.queryMail("QQ");
+				if(mailList != null && mailList.size() > 0)
+				{
+					MailBean bean = mailList.get(mailList.size() - 1);
+					ToastUtil.toast("正在为您登陆"+bean.type+"邮箱...");
+					webView.loadUrl("javascript:"
+							+ "document.getElementById(\"u\").value= \"" + bean.username + "\";"
+							+ "document.getElementById(\"p\").value= \"" + bean.password + "\";"
+							+ "document.getElementById(\"go\").click();");
+				}else
+				{
+					ToastUtil.toast("请配置您的QQ邮箱账号，以便使用邮件服务...");
+				}
+				
 				break;
-			case PraseCommand.Cmd_Weather:
+			case ParseCommand.Cmd_Weather:
 				
 //				int start = html.indexOf("http://baidu.weather.com.cn");
 //				if(start == -1)
@@ -623,7 +634,7 @@ public class MainActivity extends Activity implements ShakeListener
 //					Toast.makeText(getApplicationContext(), "未获取到天气，请检查位置权限", Toast.LENGTH_SHORT).show();
 //					return;
 //				}
-				htmlBean.content = PraseWeatherHtml.praseWeatherList(html);
+				htmlBean.content = ParseWeatherHtml.praseWeatherList(html);
 				mTts.startSpeaking(htmlBean.content,mSynListener);
 				break;
 //			case PraseCommand.Cmd_WeatherComCn:
@@ -631,7 +642,7 @@ public class MainActivity extends Activity implements ShakeListener
 //				processWeather();
 //				break;
 //			}
-			case PraseCommand.Cmd_Mail_Home:
+			case ParseCommand.Cmd_Mail_Home:
 			{
 				mailCookie = webView.getCookie();
 				int cookieStart = mailCookie.indexOf("msid=") + 5;
@@ -644,7 +655,7 @@ public class MainActivity extends Activity implements ShakeListener
 					//判断是否是邮箱主界面
 					if(start != -1)
 					{
-						browserState = PraseCommand.Cmd_Mail_InBox;
+						browserState = ParseCommand.Cmd_Mail_InBox;
 						end = html.indexOf(">", start);
 						if(end != -1)
 						{
@@ -659,10 +670,10 @@ public class MainActivity extends Activity implements ShakeListener
 				}
 				break;
 			}
-			case PraseCommand.Cmd_Mail_InBox:	
+			case ParseCommand.Cmd_Mail_InBox:	
 				processMailList();
 				break;
-			case PraseCommand.Cmd_Mail_MailContent:
+			case ParseCommand.Cmd_Mail_MailContent:
 				processMailContent();
 			default:
 				break;
@@ -682,8 +693,8 @@ public class MainActivity extends Activity implements ShakeListener
 		public void onShouldOverrideUrl(String url) {
 			// TODO Auto-generated method stub
 			et_head.clearFocus();
-			if(browserState != PraseCommand.Cmd_Mail_Home && browserState != PraseCommand.Cmd_Mail_InBox)
-				browserState = PraseCommand.Cmd_Original;
+			if(browserState != ParseCommand.Cmd_Mail_Home && browserState != ParseCommand.Cmd_Mail_InBox)
+				browserState = ParseCommand.Cmd_Original;
 			if(mTts.isSpeaking())
 				mTts.stopSpeaking();
 			
@@ -731,7 +742,7 @@ public class MainActivity extends Activity implements ShakeListener
 			case R.id.btn_left:
 				if(mTts.isSpeaking())
 					mTts.stopSpeaking();
-		 		browserState = PraseCommand.Cmd_Original;
+		 		browserState = ParseCommand.Cmd_Original;
 		        if(webView.canGoBack())
 		            webView.goBack();
 		        else
@@ -742,7 +753,7 @@ public class MainActivity extends Activity implements ShakeListener
 			case R.id.btn_right:
 				if(mTts.isSpeaking())
 					mTts.stopSpeaking();
-		 		browserState = PraseCommand.Cmd_Original;
+		 		browserState = ParseCommand.Cmd_Original;
 				if(webView.canGoForward())
 					webView.goForward();
 				else
@@ -797,7 +808,7 @@ public class MainActivity extends Activity implements ShakeListener
 		{
 			if(htmlBean.html.length() > 0)
 			{
-				String mailContent = PraseMailContent.praseMailContent(htmlBean.html);
+				String mailContent = ParseMailContent.praseMailContent(htmlBean.html);
 				htmlBean.content = mailContent;
 				mTts.startSpeaking(htmlBean.content, mSynListener);
 			}
@@ -811,8 +822,8 @@ public class MainActivity extends Activity implements ShakeListener
 		public void processMailList()
 		{
 			String html = htmlBean.html;
-			browserState = PraseCommand.Cmd_Original;
-			List<MailListBean> list = PraseMailList.parseMailList(html);
+			browserState = ParseCommand.Cmd_Original;
+			List<MailListBean> list = ParseMailList.parseMailList(html);
 			if(list.size() == 0)
 				mTts.startSpeaking("读取失败，请稍后再试", mSynListener);
 			else
@@ -875,7 +886,7 @@ public class MainActivity extends Activity implements ShakeListener
 		{
 			String html = htmlBean.html;
 			writeFileSdcard("",html);
-			newsList = PraseTencentNews.getNewsList(html);
+			newsList = ParseTencentNews.getNewsList(html);
 			String titleStr = "";
 			for(int i = 1;i <= newsList.size();i++)
 			{
@@ -890,7 +901,7 @@ public class MainActivity extends Activity implements ShakeListener
 		public void processNewsContent()
 		{
 			String html = htmlBean.html;
-			String content = PraseTencentNews.getNewsContent(html);
+			String content = ParseTencentNews.getNewsContent(html);
 			htmlBean.content = "第" + newsNumber + "条新闻\n标题：" + newsList.get(newsNumber-1).newsTitle+"\n"+content;
 			mTts.startSpeaking(htmlBean.content, mSynListener);
 //			mBDTts.speak(htmlBean.content);
@@ -924,7 +935,7 @@ public class MainActivity extends Activity implements ShakeListener
 				{
 					String url = data.getStringExtra("url");
 					webView.getSettings().setUserAgentString("Mozilla/5.0 (Linux; U; Android 5.1.1; zh-cn; PLK-UL00 Build/HONORPLK-UL00) AppleWebKit/537.36 (KHTML, like Gecko)Version/4.0 MQQBrowser/5.3 Mobile Safari/537.36");
-					browserState = PraseCommand.Cmd_Original;
+					browserState = ParseCommand.Cmd_Original;
 					webView.loadUrl(url);
 				}
 				break;

@@ -8,6 +8,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import cn.hukecn.speechbrowser.bean.BookMarkBean;
 import cn.hukecn.speechbrowser.bean.LocationBean;
+import cn.hukecn.speechbrowser.bean.MailBean;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,11 +29,17 @@ public class MyDataBase extends SQLiteOpenHelper {
     private static String ColumnUrl = "url";
     private static String ColumnTitle = "title";
     
+    private static String TableMail = "mail";
+    private static String ColumnType = "type";
+    private static String ColumnUserName = "username";
+    private static String ColumnPassword = "password";
     
     private static int DB_VERSION = 2;
     private static String CREAT_TABLE = "CREATE TABLE "+TABLE_NAME+" (_id INTEGER DEFAULT '1' NOT NULL PRIMARY KEY AUTOINCREMENT,"+COLUMN1+" TEXT  NOT NULL,"+COLUMN2+" TEXT  NOT NULL,"+COLUMN3+" TEXT  NOT NULL)";
     private static String CREAT_TABLE_BookMark = "CREATE TABLE "+TableBookMark+" (_id INTEGER DEFAULT '1' NOT NULL PRIMARY KEY AUTOINCREMENT,"+ColumnTitle+" TEXT  NOT NULL,"+ColumnUrl+" TEXT  NOT NULL)";
+    private static String CREAT_TABLE_Mail = "CREATE TABLE "+TableMail+" (_id INTEGER DEFAULT '1' NOT NULL PRIMARY KEY AUTOINCREMENT,"+ColumnType+" TEXT  NOT NULL,"+ColumnUserName+" TEXT  NOT NULL,"+ColumnPassword+" TEXT  NOT NULL)";
 
+    
     private SQLiteDatabase db;
     private static MyDataBase myDB;
     
@@ -56,6 +64,7 @@ public class MyDataBase extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREAT_TABLE);
         db.execSQL(CREAT_TABLE_BookMark);
+        db.execSQL(CREAT_TABLE_Mail);
     }
 
     @Override
@@ -100,6 +109,47 @@ public class MyDataBase extends SQLiteOpenHelper {
         return bean;
     }
 
+    public long insertMail(MailBean bean)
+    {
+    	db = getWritableDatabase();
+        ContentValues valus = new ContentValues();
+        valus.put(ColumnType,bean.type);
+        valus.put(ColumnUserName, bean.username);
+        valus.put(ColumnPassword, bean.password);
+        long ret = db.insert(TableMail, null, valus);
+        db.close();
+        return ret;
+    }
+    
+    public List<MailBean> queryMail(String type)
+    {
+    	List<MailBean> list = new ArrayList<MailBean>();
+    	db = getReadableDatabase();
+
+        Cursor cursor = db.query(
+                TableMail,
+                new String[]{"_id", ColumnType, ColumnUserName,ColumnPassword},
+                null,
+                null, null, null, "_id");
+        
+        if (cursor.getCount() == 0) {
+			return null;
+		}
+        
+        while(cursor.moveToNext())
+        {
+        	MailBean bean = new MailBean();
+        	bean.type = cursor.getString(1);
+        	bean.username= cursor.getString(2);
+        	bean.password= cursor.getString(3);
+        	list.add(bean);
+        }
+        
+        cursor.close();
+        db.close();
+    	return list;
+    }
+    
     public long insertBookMark(BookMarkBean bean)
     {
     	db = getWritableDatabase();

@@ -36,13 +36,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:singleLine="true"
-                android:maxLength="6"
                 android:hint="输入邮箱账号"/>
             <EditText
                 android:id="@+id/edt_pw"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:singleLine="true"
+                android:password="true"
                 android:hint="输入邮箱密码"/>
 
             <Button

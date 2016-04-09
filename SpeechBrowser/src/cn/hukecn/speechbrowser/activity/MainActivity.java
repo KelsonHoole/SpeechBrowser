@@ -21,9 +21,11 @@ import cn.hukecn.speechbrowser.util.BaiduSearch;
 import cn.hukecn.speechbrowser.util.ParseCommand;
 import cn.hukecn.speechbrowser.util.ParseMailContent;
 import cn.hukecn.speechbrowser.util.ParseMailList;
+import cn.hukecn.speechbrowser.util.ParsePageType;
 import cn.hukecn.speechbrowser.util.ParseTencentNews;
 import cn.hukecn.speechbrowser.util.ParseWeatherHtml;
 import cn.hukecn.speechbrowser.util.ToastUtil;
+import cn.hukecn.speechbrowser.util.Trans2PinYin;
 import cn.hukecn.speechbrowser.view.CutWebView;
 import cn.hukecn.speechbrowser.view.MenuPopupWindow;
 import cn.hukecn.speechbrowser.view.CutWebView.ReceiveHTMLListener;
@@ -52,6 +54,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Vibrator;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -68,6 +71,7 @@ public class MainActivity extends Activity implements ShakeListener
 			,ReceiveHTMLListener,ShouldOverrideUrlListener
 			,OnClickListener{
 	public final int REQUEST_CODE_BOOKMARK = 1;
+	BDLocation location;
 	List<Integer> cmdList = new ArrayList<Integer>();
 	private SoundPool sp;//声明一个SoundPool
 	private int musicStart;//定义一个整型用load（）；来设置suondID
@@ -84,7 +88,7 @@ public class MainActivity extends Activity implements ShakeListener
 			btn_right = null,
 			btn_state = null;
 	ImageButton btn_microphone = null;
-	int browserState = ParseCommand.Cmd_Original;
+//	int browserState = ParseCommand.Cmd_Original;
 	long lastTime = 0l;
 	long lastShakeTime = 0l;
 	String mailCookie = "";
@@ -158,8 +162,9 @@ public class MainActivity extends Activity implements ShakeListener
 				if (actionId == EditorInfo.IME_ACTION_SEARCH)
 				{
 			        webView.getSettings().setUserAgentString("Mozilla/5.0 (Linux; U; Android 5.1.1; zh-cn; PLK-UL00 Build/HONORPLK-UL00) AppleWebKit/537.36 (KHTML, like Gecko)Version/4.0 MQQBrowser/5.3 Mobile Safari/537.36");
-					browserState = ParseCommand.Cmd_Original;
-			        if(v.getText().toString().indexOf(".com") != -1 || v.getText().toString().indexOf(".cn") != -1)
+//					browserState = ParseCommand.Cmd_Original;
+					String input = v.getText().toString();
+			        if(input.indexOf("http") != -1||input.indexOf("www") != -1||input.indexOf(".com") != -1 || input.indexOf(".cn") != -1||input.indexOf(".edu") != -1||input.indexOf(".net") != -1)
 					{
 						if(v.getText().toString().indexOf("http") == -1)
 						{
@@ -217,7 +222,7 @@ public class MainActivity extends Activity implements ShakeListener
 			
 			if(current - lastTime > 800)
 			{
-				browserState = ParseCommand.prase(list);
+				int browserState = ParseCommand.prase(list);
 				lastTime = current;
 				if(browserState != ParseCommand.Cmd_NewsNum)
 					cmdList.add(browserState);
@@ -231,13 +236,19 @@ public class MainActivity extends Activity implements ShakeListener
 					
 					break;
 				case ParseCommand.Cmd_Weather:
-//					String url = "http://m.baidu.com/s?word=天气预报";
-					String url = "http://weather1.sina.cn/?vt=4";
+					String url = null;
+					if(location != null)
+					{
+						String cityname = location.getCity().replace("市", "");
+						cityname = Trans2PinYin.trans2PinYin(cityname);
+						url = "http://weather1.sina.cn/?code="+cityname+"&vt=4";
+					}else
+						url = "http://weather1.sina.cn/?vt=4";
+						
 					webView.loadUrl(url);
 					break;
 				
 				case ParseCommand.Cmd_NewsNum:
-//					tv_info.append(PraseCommand.praseNewsIndex(list)+"\n");
 					if(cmdList.size() == 0)
 					{
 						mTts.startSpeaking("指令错误，请输入正确指令",mSynListener);
@@ -489,12 +500,13 @@ public class MainActivity extends Activity implements ShakeListener
 		public void onReceiveLocation(BDLocation arg0) {
 			//Toast.makeText(getApplicationContext(), arg0.getCity(), Toast.LENGTH_SHORT).show();
 			//mTts.startSpeaking(arg0.getLocationDescribe(), mSynListener);
-			MyDataBase db = MyDataBase.getInstance();
-			LocationBean bean = new LocationBean();
-			bean.latitude = arg0.getLatitude()+"";
-			bean.longitude = arg0.getLongitude()+"";
-			bean.time = arg0.getTime()+"";
-			long log = db.insert(bean);
+//			MyDataBase db = MyDataBase.getInstance();
+//			LocationBean bean = new LocationBean();
+//			bean.latitude = arg0.getLatitude()+"";
+//			bean.longitude = arg0.getLongitude()+"";
+//			bean.time = arg0.getTime()+"";
+//			long log = db.insert(bean);
+			location = arg0;
 		}
 	}
 	
@@ -545,7 +557,7 @@ public class MainActivity extends Activity implements ShakeListener
 	    public void onBackPressed() {
 	 		if(mTts.isSpeaking())
 				mTts.stopSpeaking();
-	 		browserState = ParseCommand.Cmd_Original;
+//	 		browserState = ParseCommand.Cmd_Original;
 	        if(webView.canGoBack())
 	            webView.goBack();
 	        else
@@ -571,113 +583,119 @@ public class MainActivity extends Activity implements ShakeListener
 		public void onReceiveHTML(String url,String html) {
 			// TODO Auto-geerated method stub
 //			tv_info.setText(html);
+			int tag = ParsePageType.getPageType(url);
+			Log.e("url", url);
+			Log.e("tag",tag+"");
+			
 			int start = 0,end = 0;
-			et_head.setHint(Jsoup.parse(html).title());
+//			et_head.setHint(Jsoup.parse(html).title());
+			et_head.setText(url);
 			htmlBean.url = url;
 			htmlBean.html = html;
-			
+
 			btn_state.setImageResource(R.drawable.start);
 			btntate = 0;
 			
-			switch (browserState) {
-			case ParseCommand.Cmd_Search:
-				processSearchResult();
+			switch (tag) {
+			case ParsePageType.MailLoginTag:
+				processLoginQQMail();
 				break;
-			case ParseCommand.Cmd_News:
-				processNewsList();
+			case ParsePageType.MailHomePageTag:
+				processQQMailHome();
 				break;
-			case ParseCommand.Cmd_NewsNum:
-				processNewsContent();
-				break;
-			case ParseCommand.Cmd_Mail:
-				browserState = ParseCommand.Cmd_Mail_Home;
-				MyDataBase db = MyDataBase.getInstance();
-				List<MailBean> mailList = db.queryMail("QQ");
-				if(mailList != null && mailList.size() > 0)
-				{
-					MailBean bean = mailList.get(mailList.size() - 1);
-					ToastUtil.toast("正在为您登陆"+bean.type+"邮箱...");
-					webView.loadUrl("javascript:"
-							+ "document.getElementById(\"u\").value= \"" + bean.username + "\";"
-							+ "document.getElementById(\"p\").value= \"" + bean.password + "\";"
-							+ "document.getElementById(\"go\").click();");
-				}else
-				{
-					ToastUtil.toast("请配置您的QQ邮箱账号，以便使用邮件服务...");
-				}
-				
-				break;
-			case ParseCommand.Cmd_Weather:
-				
-//				int start = html.indexOf("http://baidu.weather.com.cn");
-//				if(start == -1)
-//				{
-//					Toast.makeText(getApplicationContext(), "未获取到天气，请检查位置权限", Toast.LENGTH_SHORT).show();
-//					return;
-//				}
-//				int end = html.indexOf("}", start);
-//				if(end == -1)
-//				{
-//					Toast.makeText(getApplicationContext(), "未获取到天气，请检查位置权限", Toast.LENGTH_SHORT).show();
-//					return;
-//				}
-//				
-//				end--;
-//				String weatherurl = html.substring(start, end);
-//				if(weatherurl != null && weatherurl.length() > 0)
-//				{
-//					browserState = PraseCommand.Cmd_WeatherComCn;
-//					webView.loadUrl(weatherurl);
-//				}
-//				else
-//				{
-//					Toast.makeText(getApplicationContext(), "未获取到天气，请检查位置权限", Toast.LENGTH_SHORT).show();
-//					return;
-//				}
-				htmlBean.content = ParseWeatherHtml.praseWeatherList(html);
-				mTts.startSpeaking(htmlBean.content,mSynListener);
-				break;
-//			case PraseCommand.Cmd_WeatherComCn:
-//			{
-//				processWeather();
-//				break;
-//			}
-			case ParseCommand.Cmd_Mail_Home:
-			{
-				mailCookie = webView.getCookie();
-				int cookieStart = mailCookie.indexOf("msid=") + 5;
-				int cookieEnd = mailCookie.indexOf(";", cookieStart);
-				if(cookieStart != -1 && cookieEnd != -1 && cookieEnd > cookieStart)
-				{
-					msid = mailCookie.substring(cookieStart,cookieEnd);
-					
-					start = html.indexOf("/cgi-bin/mail_list?");
-					//判断是否是邮箱主界面
-					if(start != -1)
-					{
-						browserState = ParseCommand.Cmd_Mail_InBox;
-						end = html.indexOf(">", start);
-						if(end != -1)
-						{
-							webView.loadUrl("https://w.mail.qq.com/cgi-bin/mail_list?fromsidebar=1&sid="+msid+"&folderid=1&page=0&pagesize=10&sorttype=time&t=mail_list&loc=today,,,151&version=html");	
-							break;
-						}else
-							mTts.startSpeaking("邮箱登陆失败，请稍后再试", mSynListener);
-					}
-				}else
-				{
-					mTts.startSpeaking("邮箱登陆失败，请稍后再试", mSynListener);
-				}
-				break;
-			}
-			case ParseCommand.Cmd_Mail_InBox:	
+			case ParsePageType.MailListTag:
 				processMailList();
 				break;
-			case ParseCommand.Cmd_Mail_MailContent:
+			case ParsePageType.MailContentTag:
 				processMailContent();
+				break;
+			case ParsePageType.SinaWeatherTag:
+				processSinaWeather();
+				break;
+			case ParsePageType.BaiduResultUrlTag:
+				processSearchResult();
+				break;
+			case ParsePageType.NewsListTag:
+				processNewsList();
+				break;
+			case ParsePageType.NewsContentTag:
+				processNewsContent();
+				break;
+	
 			default:
+				ToastUtil.toast("暂不支持特定的解析方式...");
 				break;
 			}
+			
+//			switch (browserState) {
+//			case ParseCommand.Cmd_Search:
+////				processSearchResult();
+//				break;
+//			case ParseCommand.Cmd_News:
+////				processNewsList();
+//				break;
+//			case ParseCommand.Cmd_NewsNum:
+////				processNewsContent();
+//				break;
+//			case ParseCommand.Cmd_Mail:
+//////				browserState = ParseCommand.Cmd_Original;
+////				browserState = ParseCommand.Cmd_Mail_Home;
+////				MyDataBase db = MyDataBase.getInstance();
+////				List<MailBean> mailList = db.queryMail("QQ");
+////				if(mailList != null && mailList.size() > 0)
+////				{
+////					MailBean bean = mailList.get(mailList.size() - 1);
+////					ToastUtil.toast("正在为您登陆"+bean.type+"邮箱...");
+////					webView.loadUrl("javascript:"
+////							+ "document.getElementById(\"u\").value= \"" + bean.username + "\";"
+////							+ "document.getElementById(\"p\").value= \"" + bean.password + "\";"
+////							+ "document.getElementById(\"go\").click();");
+////				}else
+////				{
+////					ToastUtil.toast("请配置您的QQ邮箱账号，以便使用邮件服务...");
+////				}
+//				
+//				break;
+//			case ParseCommand.Cmd_Weather:
+////				htmlBean.content = ParseWeatherHtml.praseWeatherList(html);
+////				mTts.startSpeaking(htmlBean.content,mSynListener);
+//				break;
+//			case ParseCommand.Cmd_Mail_Home:
+//			{
+////				mailCookie = webView.getCookie();
+////				int cookieStart = mailCookie.indexOf("msid=") + 5;
+////				int cookieEnd = mailCookie.indexOf(";", cookieStart);
+////				if(cookieStart != -1 && cookieEnd != -1 && cookieEnd > cookieStart)
+////				{
+////					msid = mailCookie.substring(cookieStart,cookieEnd);
+////					
+////					start = html.indexOf("/cgi-bin/mail_list?");
+////					//判断是否是邮箱主界面
+////					if(start != -1)
+////					{
+////						browserState = ParseCommand.Cmd_Mail_InBox;
+////						end = html.indexOf(">", start);
+////						if(end != -1)
+////						{
+////							webView.loadUrl("https://w.mail.qq.com/cgi-bin/mail_list?fromsidebar=1&sid="+msid+"&folderid=1&page=0&pagesize=10&sorttype=time&t=mail_list&loc=today,,,151&version=html");	
+////							break;
+////						}else
+////							mTts.startSpeaking("邮箱登陆失败，请稍后再试", mSynListener);
+////					}
+////				}else
+////				{
+////					mTts.startSpeaking("邮箱登陆失败，请稍后再试", mSynListener);
+////				}
+//				break;
+//			}
+//			case ParseCommand.Cmd_Mail_InBox:	
+////				processMailList();
+//				break;
+//			case ParseCommand.Cmd_Mail_MailContent:
+////				processMailContent();
+//			default:
+//				break;
+//			}
 			
 			if(htmlBean.content.length() == 0)
 			{
@@ -693,10 +711,10 @@ public class MainActivity extends Activity implements ShakeListener
 		public void onShouldOverrideUrl(String url) {
 			// TODO Auto-generated method stub
 			et_head.clearFocus();
-			if(browserState != ParseCommand.Cmd_Mail_Home && browserState != ParseCommand.Cmd_Mail_InBox)
-				browserState = ParseCommand.Cmd_Original;
-			if(mTts.isSpeaking())
-				mTts.stopSpeaking();
+//			if(browserState != ParseCommand.Cmd_Mail_Home && browserState != ParseCommand.Cmd_Mail_InBox)
+//				browserState = ParseCommand.Cmd_Original;
+//			if(mTts.isSpeaking())
+//				mTts.stopSpeaking();
 			
 			htmlBean.content = "";
 			tv_info.setText("");
@@ -742,7 +760,7 @@ public class MainActivity extends Activity implements ShakeListener
 			case R.id.btn_left:
 				if(mTts.isSpeaking())
 					mTts.stopSpeaking();
-		 		browserState = ParseCommand.Cmd_Original;
+//		 		browserState = ParseCommand.Cmd_Original;
 		        if(webView.canGoBack())
 		            webView.goBack();
 		        else
@@ -753,7 +771,7 @@ public class MainActivity extends Activity implements ShakeListener
 			case R.id.btn_right:
 				if(mTts.isSpeaking())
 					mTts.stopSpeaking();
-		 		browserState = ParseCommand.Cmd_Original;
+//		 		browserState = ParseCommand.Cmd_Original;
 				if(webView.canGoForward())
 					webView.goForward();
 				else
@@ -804,6 +822,53 @@ public class MainActivity extends Activity implements ShakeListener
 			}
 		}
 		
+		
+		public void processLoginQQMail()
+		{
+			MyDataBase db = MyDataBase.getInstance();
+			List<MailBean> mailList = db.queryMail("QQ");
+			if(mailList != null && mailList.size() > 0)
+			{
+				MailBean bean = mailList.get(mailList.size() - 1);
+				ToastUtil.toast("正在为您登陆"+bean.type+"邮箱...");
+				webView.loadUrl("javascript:"
+						+ "document.getElementById(\"u\").value= \"" + bean.username + "\";"
+						+ "document.getElementById(\"p\").value= \"" + bean.password + "\";"
+						+ "document.getElementById(\"go\").click();");
+			}else
+			{
+				ToastUtil.toast("请配置您的QQ邮箱账号，以便使用邮件服务...");
+			}
+		}
+		
+		public void processQQMailHome()
+		{
+			mailCookie = webView.getCookie();
+			int cookieStart = mailCookie.indexOf("msid=") + 5;
+			int cookieEnd = mailCookie.indexOf(";", cookieStart);
+			if(cookieStart != -1 && cookieEnd != -1 && cookieEnd > cookieStart)
+			{
+				msid = mailCookie.substring(cookieStart,cookieEnd);
+				
+				String html = htmlBean.html;
+				int start = html.indexOf("/cgi-bin/mail_list?");
+				//判断是否是邮箱主界面
+				if(start != -1)
+				{
+//					browserState = ParseCommand.Cmd_Mail_InBox;
+					int end = html.indexOf(">", start);
+					if(end != -1)
+					{
+						webView.loadUrl("https://w.mail.qq.com/cgi-bin/mail_list?fromsidebar=1&sid="+msid+"&folderid=1&page=0&pagesize=10&sorttype=time&t=mail_list&loc=today,,,151&version=html");	
+						return;
+					}else
+						mTts.startSpeaking("邮箱登陆失败，请稍后再试", mSynListener);
+				}
+			}else
+			{
+				mTts.startSpeaking("邮箱登陆失败，请稍后再试", mSynListener);
+			}
+		}
 		public void processMailContent()
 		{
 			if(htmlBean.html.length() > 0)
@@ -822,7 +887,7 @@ public class MainActivity extends Activity implements ShakeListener
 		public void processMailList()
 		{
 			String html = htmlBean.html;
-			browserState = ParseCommand.Cmd_Original;
+//			browserState = ParseCommand.Cmd_Original;
 			List<MailListBean> list = ParseMailList.parseMailList(html);
 			if(list.size() == 0)
 				mTts.startSpeaking("读取失败，请稍后再试", mSynListener);
@@ -885,7 +950,7 @@ public class MainActivity extends Activity implements ShakeListener
 		public void processNewsList()
 		{
 			String html = htmlBean.html;
-			writeFileSdcard("",html);
+//			writeFileSdcard("",html);
 			newsList = ParseTencentNews.getNewsList(html);
 			String titleStr = "";
 			for(int i = 1;i <= newsList.size();i++)
@@ -904,7 +969,6 @@ public class MainActivity extends Activity implements ShakeListener
 			String content = ParseTencentNews.getNewsContent(html);
 			htmlBean.content = "第" + newsNumber + "条新闻\n标题：" + newsList.get(newsNumber-1).newsTitle+"\n"+content;
 			mTts.startSpeaking(htmlBean.content, mSynListener);
-//			mBDTts.speak(htmlBean.content);
 		}
 		
 		public void processSearchResult()
@@ -924,6 +988,11 @@ public class MainActivity extends Activity implements ShakeListener
 			}
 		}
 		
+		public void processSinaWeather()
+		{
+			htmlBean.content = ParseWeatherHtml.praseWeatherList(htmlBean.html);
+			mTts.startSpeaking(htmlBean.content,mSynListener);
+		}
 		
 		@Override
 		protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -935,7 +1004,7 @@ public class MainActivity extends Activity implements ShakeListener
 				{
 					String url = data.getStringExtra("url");
 					webView.getSettings().setUserAgentString("Mozilla/5.0 (Linux; U; Android 5.1.1; zh-cn; PLK-UL00 Build/HONORPLK-UL00) AppleWebKit/537.36 (KHTML, like Gecko)Version/4.0 MQQBrowser/5.3 Mobile Safari/537.36");
-					browserState = ParseCommand.Cmd_Original;
+//					browserState = ParseCommand.Cmd_Original;
 					webView.loadUrl(url);
 				}
 				break;

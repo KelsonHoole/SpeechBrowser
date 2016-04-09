@@ -9,8 +9,4 @@ public class StaticString {
 	public static final String mailLogin = "https://w.mail.qq.com/cgi-bin/login";
 	public static final String mailInboxList = "http://w.mail.qq.com/cgi-bin/mail_list?hittype=0&sid=";
 	public static final String mailInboxList2 = "http://w.mail.qq.com/cgi-bin/mail_list?fromsidebar=1&sid=";
-	//ÍøÒ³URLÌØÕ÷
-	public static final String urlQQMailList = "w.mail.qq.com/cgi-bin/mail_list";
-	public static final String urlQQMailContent = "w.mail.qq.com/cgi-bin/readmail";
-	
 }

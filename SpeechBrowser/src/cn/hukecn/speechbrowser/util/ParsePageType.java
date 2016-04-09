@@ -1,5 +1,8 @@
 package cn.hukecn.speechbrowser.util;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class ParsePageType {
 	//QQ邮箱登录页
 	public static final String MailLoginUrl = "ui.ptlogin2.qq.com/cgi-bin/login?style=";
@@ -17,11 +20,14 @@ public class ParsePageType {
 	public static final String MailContentUrl = "w.mail.qq.com/cgi-bin/readmail";
 	public static final int MailContentTag = 3;
 	
-	//腾讯国内新闻列表
-	public static final String NewsListUrl = "info.3g.qq.com/g/s?icfa=infocenter&aid=template&tid=news_guoneiss&i_f=703";
+	//腾讯国内新闻列表 aid = infocenter  aid = template
+//	public static final String NewsListUrl = "info.3g.qq.com/g/s?icfa=infocenter&aid=template&tid=news_guoneiss&i_f=703";
+	public static final String NewsListUrl1 = "aid=infocenter";
+	public static final String NewsListUrl2 = "aid=template"; 
 	public static final int NewsListTag = 4;
 	//腾讯国内新闻内容
-	public static final String NewsContentUrl = "info.3g.qq.com/g/s?icfa=news_guoneiss&aid=news_ss&id=news_";
+//	public static final String NewsContentUrl = "info.3g.qq.com/g/s?icfa=news_guoneiss&aid=news_ss&id=news_";
+	public static final String NewsContentUrl = "&id=news_20";
 	public static final int NewsContentTag = 5;
 	//新浪天气
 	public static final String SinaWeatherUrl = "weather1.sina.cn";
@@ -35,6 +41,10 @@ public class ParsePageType {
 	private ParsePageType(){};
 	
 	public static int getPageType(String url){
+		
+		if(url.length() == 0)
+			return NoSupportTag;
+		
 		if(url.indexOf(MailLoginUrl) != -1)
 			return MailLoginTag;
 		
@@ -47,11 +57,18 @@ public class ParsePageType {
 		if(url.indexOf(MailContentUrl) != -1)
 			return MailContentTag;
 		
-		if(url.indexOf(NewsListUrl) != -1)
+		if(url.indexOf(NewsListUrl1) != -1 || url.indexOf(NewsListUrl2) != -1)
 			return NewsListTag;
 		
-		if(url.indexOf(NewsContentUrl) != -1)
+		String regex = "&id=\\w*_\\d*&";
+		Pattern p = Pattern.compile(regex);
+
+		Matcher m = p.matcher(url);
+		if(m.find())
 			return NewsContentTag;
+		
+//		if(url.indexOf(NewsContentUrl) != -1)
+//			return NewsContentTag;
 		
 		if(url.indexOf(SinaWeatherUrl) != -1)
 			return SinaWeatherTag;

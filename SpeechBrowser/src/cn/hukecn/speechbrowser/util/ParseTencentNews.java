@@ -40,10 +40,18 @@ public class ParseTencentNews {
 				bean.newsResource = resource;
 				
 				Elements e_urls = element.getElementsByTag("a");
-				bean.newsUrl="http://info.3g.qq.com"+e_urls.get(0).attr("href");
+				String url = e_urls.get(0).attr("href");
+				if(url.indexOf("info.3g.qq.com") == -1)
+					bean.newsUrl="http://info.3g.qq.com"+url;
+				else
+					bean.newsUrl = url;
+				
 				if(bean.newsUrl.indexOf("c.gdt.qq.com") == -1)
 				{
-					list.add(bean);
+					if(bean.newsTitle.length() > 0 && bean.newsUrl.length() > 0)
+						list.add(bean);
+					else
+						continue;
 				}
 			}
 			return list;

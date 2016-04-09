@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import org.jsoup.Jsoup;
+
+import cn.edu.hfut.dmic.contentextractor.ContentExtractor;
+import cn.edu.hfut.dmic.contentextractor.News;
 import cn.hukecn.speechbrowser.JsonParser;
 import cn.hukecn.speechbrowser.R;
 import cn.hukecn.speechbrowser.Shake;
@@ -125,8 +128,6 @@ public class MainActivity extends Activity implements ShakeListener
         mLocationClient = new LocationClient(getApplicationContext());     //声明LocationClient类
         mLocationClient.registerLocationListener(myListener);    //注册监听函数
         initLocation();
-        
-//        mBDTts = new BDTts(this,this);
 	}
 	private void initView() {
 		// TODO Auto-generated method stub
@@ -249,13 +250,13 @@ public class MainActivity extends Activity implements ShakeListener
 					break;
 				
 				case ParseCommand.Cmd_NewsNum:
-					if(cmdList.size() == 0)
-					{
-						mTts.startSpeaking("指令错误，请输入正确指令",mSynListener);
-						break;
-					}
-					
-					if(cmdList.get(cmdList.size() -1) == ParseCommand.Cmd_Mail)
+//					if(cmdList.size() == 0)
+//					{
+//						mTts.startSpeaking("指令错误，请输入正确指令",mSynListener);
+//						break;
+//					}
+					int pageType = ParsePageType.getPageType(htmlBean.url);
+					if( pageType== ParsePageType.MailListTag || pageType == ParsePageType.MailContentTag)
 					{
 						//进入读邮件详情
 						if(mailList != null && mailList.size()>0)
@@ -267,7 +268,7 @@ public class MainActivity extends Activity implements ShakeListener
 						break;
 					}
 					
-					if(cmdList.get(cmdList.size() -1) == ParseCommand.Cmd_News)
+					if(pageType == ParsePageType.NewsListTag || pageType == ParsePageType.NewsContentTag)
 					{
 						//进入读新闻详情
 						if(newsList != null && newsList.size() > 0)
@@ -278,7 +279,7 @@ public class MainActivity extends Activity implements ShakeListener
 						break;
 					}
 					
-					if(cmdList.get(cmdList.size() -1) == ParseCommand.Cmd_Query_Bookmark)
+					if(cmdList.size() >0 && cmdList.get(cmdList.size() -1) == ParseCommand.Cmd_Query_Bookmark)
 					{
 						//进入书签处理
 //						if(mailList != null && mailList.size()>0)
@@ -623,7 +624,7 @@ public class MainActivity extends Activity implements ShakeListener
 				break;
 	
 			default:
-				ToastUtil.toast("暂不支持特定的解析方式...");
+				ToastUtil.toast("暂不支持该网页的解析...");
 				break;
 			}
 			
@@ -713,11 +714,13 @@ public class MainActivity extends Activity implements ShakeListener
 			et_head.clearFocus();
 //			if(browserState != ParseCommand.Cmd_Mail_Home && browserState != ParseCommand.Cmd_Mail_InBox)
 //				browserState = ParseCommand.Cmd_Original;
-//			if(mTts.isSpeaking())
-//				mTts.stopSpeaking();
+			if(mTts.isSpeaking())
+				mTts.stopSpeaking();
+			
+			isPause = false;
 			
 			htmlBean.content = "";
-			tv_info.setText("");
+			tv_info.setText("正在为您努力加载...");
 			speechProgressBar.setVisibility(View.GONE);
 		}
 
@@ -838,6 +841,7 @@ public class MainActivity extends Activity implements ShakeListener
 			}else
 			{
 				ToastUtil.toast("请配置您的QQ邮箱账号，以便使用邮件服务...");
+				mTts.startSpeaking("请配置您的QQ邮箱账号，以便使用邮件服务...", mSynListener);
 			}
 		}
 		
@@ -953,22 +957,39 @@ public class MainActivity extends Activity implements ShakeListener
 //			writeFileSdcard("",html);
 			newsList = ParseTencentNews.getNewsList(html);
 			String titleStr = "";
-			for(int i = 1;i <= newsList.size();i++)
+			for(int i = 1;i <= 100 && i <= newsList.size();i++)
 			{
 				titleStr += "第"+i+"条、"+newsList.get(i-1).newsTitle+"\n";
 			}
 			
-			htmlBean.content = "即将为您播报今日新闻:\n" + titleStr;
+			htmlBean.content = titleStr;
+//			mTts.startSpeaking(htmlBean.content, mSynListener);
 			mTts.startSpeaking(htmlBean.content, mSynListener);
-//			mBDTts.speak(htmlBean.content);
 		}
 		
 		public void processNewsContent()
 		{
 			String html = htmlBean.html;
 			String content = ParseTencentNews.getNewsContent(html);
-			htmlBean.content = "第" + newsNumber + "条新闻\n标题：" + newsList.get(newsNumber-1).newsTitle+"\n"+content;
+			String title = Jsoup.parse(htmlBean.html).title();
+			title = title.replace("-手机腾讯网", "");
+			htmlBean.content = "标题：" + title+"\n"+content;
 			mTts.startSpeaking(htmlBean.content, mSynListener);
+			
+//			try {
+//				String content = ContentExtractor.getContentByHtml(htmlBean.html);
+//				if(content != null && content.length() > 0)
+//				{
+//					htmlBean.content = content;
+//					mTts.startSpeaking(htmlBean.content, mSynListener);
+//				}else
+//					mTts.startSpeaking("新闻解析异常", mSynListener);
+//				
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				mTts.startSpeaking("新闻解析异常", mSynListener);
+//
+//			}
 		}
 		
 		public void processSearchResult()

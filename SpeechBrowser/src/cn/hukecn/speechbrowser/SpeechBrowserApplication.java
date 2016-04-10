@@ -17,5 +17,7 @@ public class SpeechBrowserApplication extends Application {
 		// TODO Auto-generated method stub
 		ToastUtil.init(getApplicationContext());
 		MyDataBase.init(getApplicationContext());
+		CrashHandler catchHandler = CrashHandler.getInstance();  
+        catchHandler.init(getApplicationContext());
 	}
 }

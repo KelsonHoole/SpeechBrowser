@@ -8,15 +8,14 @@ import java.util.List;
 import org.jsoup.Jsoup;
 
 import cn.edu.hfut.dmic.contentextractor.ContentExtractor;
-import cn.edu.hfut.dmic.contentextractor.News;
 import cn.hukecn.speechbrowser.JsonParser;
+import cn.hukecn.speechbrowser.LogActivity;
 import cn.hukecn.speechbrowser.R;
 import cn.hukecn.speechbrowser.Shake;
 import cn.hukecn.speechbrowser.Shake.ShakeListener;
 import cn.hukecn.speechbrowser.DAO.MyDataBase;
 import cn.hukecn.speechbrowser.bean.BookMarkBean;
 import cn.hukecn.speechbrowser.bean.HtmlBean;
-import cn.hukecn.speechbrowser.bean.LocationBean;
 import cn.hukecn.speechbrowser.bean.MailBean;
 import cn.hukecn.speechbrowser.bean.MailListBean;
 import cn.hukecn.speechbrowser.bean.NewsBean;
@@ -75,6 +74,7 @@ public class MainActivity extends Activity implements ShakeListener
 			,OnClickListener{
 	public final int REQUEST_CODE_BOOKMARK = 1;
 	BDLocation location;
+	MenuPopupWindow popWindow;
 	List<Integer> cmdList = new ArrayList<Integer>();
 	private SoundPool sp;//声明一个SoundPool
 	private int musicStart;//定义一个整型用load（）；来设置suondID
@@ -183,6 +183,13 @@ public class MainActivity extends Activity implements ShakeListener
 					return false;
 			}
 		});
+		popWindow = new MenuPopupWindow(MainActivity.this,MainActivity.this,getWindow(),new OnDismissListener(){
+			@Override
+			public void onDismiss() {
+				// TODO Auto-generated method stub
+				btn_menu.setImageResource(R.drawable.menu);
+			}
+		});
 	}
 	private void initSpeechUtil(){
 		SpeechUtility.createUtility(getApplicationContext(), SpeechConstant.APPID +"=568fba83");   
@@ -204,10 +211,7 @@ public class MainActivity extends Activity implements ShakeListener
 	
 	private RecognizerDialogListener mRecognizerDialogListener = new RecognizerDialogListener() {
 		public void onResult(RecognizerResult results, boolean isLast) {
-			sp.play(musicEnd, 1, 1, 0, 0, 1);
-			tv_info.setText("");
-			speechProgressBar.setVisibility(View.GONE);
-			htmlBean.content = "";
+			
 			List<String> list= JsonParser.parseIatResult(results.getResultString());
 
 			long current = System.currentTimeMillis();
@@ -223,6 +227,11 @@ public class MainActivity extends Activity implements ShakeListener
 			
 			if(current - lastTime > 800)
 			{
+				sp.play(musicEnd, 1, 1, 0, 0, 1);
+				tv_info.setText("");
+				speechProgressBar.setVisibility(View.GONE);
+				htmlBean.content = "";
+				
 				int browserState = ParseCommand.prase(list);
 				lastTime = current;
 				if(browserState != ParseCommand.Cmd_NewsNum)
@@ -284,7 +293,7 @@ public class MainActivity extends Activity implements ShakeListener
 						//进入书签处理
 //						if(mailList != null && mailList.size()>0)
 //						{
-							browserState = ParseCommand.Cmd_Original;
+//							browserState = ParseCommand.Cmd_Original;
 							openUrlFromBookmark(ParseCommand.praseNewsIndex(list));
 //						}else
 //							mTts.startSpeaking("打开网页失败，请稍后再试",mSynListener);
@@ -294,7 +303,9 @@ public class MainActivity extends Activity implements ShakeListener
 					mTts.startSpeaking("指令错误，请输入正确指令",mSynListener);
 					break;
 				case ParseCommand.Cmd_Location:
-					webView.loadUrl("http://map.baidu.com/mobile/webapp/index/index/foo=bar/vt=map");
+					if(location != null)
+						mTts.startSpeaking("您当前位于："+location.getAddrStr(), mSynListener);
+					webView.loadUrl("http://map.qq.com/m/index/map");
 					break;
 				case ParseCommand.Cmd_Exit:
 					mTts.startSpeaking("正在关闭机器人。。。", mSynListener);
@@ -342,6 +353,8 @@ public class MainActivity extends Activity implements ShakeListener
 			{
 				str+="第"+i+"条:"+list.get(i - 1).title+"\n";
 			}
+			tv_info.setText(str);
+			htmlBean.content = str;
 			mTts.startSpeaking(str, mSynListener);
 		}
 	}
@@ -359,7 +372,6 @@ public class MainActivity extends Activity implements ShakeListener
 			webView.loadUrl(url);
 			mTts.startSpeaking("正在为您打开"+title+"，请稍后", mSynListener);
 		}
-		
 	}
 
 	protected void cmdAddBookmark() {
@@ -565,31 +577,26 @@ public class MainActivity extends Activity implements ShakeListener
 	            super.onBackPressed();
 	    }
 	 	
-	    public static void writeFileSdcard(String fileName,String message)
-	    { 
-	    	try {  
-	    	    File file = new File(Environment.getExternalStorageDirectory(),  
-	    	            "c.txt");  
-	    	        FileOutputStream fos = new FileOutputStream(file, false);  
-	    	 
-	    	           fos.write(message.getBytes("utf-8"));  
-	    	           fos.close();  
-	    	           //Toast.makeText(getApplicationContext(), "写入成功", Toast.LENGTH_SHORT).show();
-	    	} catch (Exception e) {
-	    	    e.printStackTrace();  
-	    	}  
-	    }
+//	    public static void writeFileSdcard(String fileName,String message)
+//	    { 
+//	    	try {  
+//	    	    File file = new File(Environment.getExternalStorageDirectory(),  
+//	    	            "c.txt");  
+//	    	        FileOutputStream fos = new FileOutputStream(file, false);  
+//	    	 
+//	    	           fos.write(message.getBytes("utf-8"));  
+//	    	           fos.close();  
+//	    	           //Toast.makeText(getApplicationContext(), "写入成功", Toast.LENGTH_SHORT).show();
+//	    	} catch (Exception e) {
+//	    	    e.printStackTrace();  
+//	    	}  
+//	    }
 	    
 		@Override
 		public void onReceiveHTML(String url,String html) {
 			// TODO Auto-geerated method stub
-//			tv_info.setText(html);
 			int tag = ParsePageType.getPageType(url);
-			Log.e("url", url);
-			Log.e("tag",tag+"");
-			
 			int start = 0,end = 0;
-//			et_head.setHint(Jsoup.parse(html).title());
 			et_head.setText(url);
 			htmlBean.url = url;
 			htmlBean.html = html;
@@ -700,6 +707,13 @@ public class MainActivity extends Activity implements ShakeListener
 			
 			if(htmlBean.content.length() == 0)
 			{
+//				String content = "";
+//				try {
+//					content = ContentExtractor.getContentByHtml(html);
+//				} catch (Exception e) {
+//					// TODO Auto-generated catch block
+//					content = "网页内容解析失败";
+//				}
 				String content = Jsoup.parse(html).body().text();
 				tv_info.setText(content); 
 				htmlBean.content = content;
@@ -714,8 +728,8 @@ public class MainActivity extends Activity implements ShakeListener
 			et_head.clearFocus();
 //			if(browserState != ParseCommand.Cmd_Mail_Home && browserState != ParseCommand.Cmd_Mail_InBox)
 //				browserState = ParseCommand.Cmd_Original;
-			if(mTts.isSpeaking())
-				mTts.stopSpeaking();
+//			if(mTts.isSpeaking())
+			mTts.stopSpeaking();
 			
 			isPause = false;
 			
@@ -749,15 +763,7 @@ public class MainActivity extends Activity implements ShakeListener
 				exitApp();
 				break;
 			case R.id.btn_menu:
-				MenuPopupWindow popWindow = new MenuPopupWindow(MainActivity.this,MainActivity.this,getWindow());
 				popWindow.showPopupWindow(findViewById(R.id.toolsBar));
-				popWindow.setOnDismissListener(new OnDismissListener() {
-					@Override
-					public void onDismiss() {
-						// TODO Auto-generated method stub
-						btn_menu.setImageResource(R.drawable.menu);
-					}
-				});
 				btn_menu.setImageResource(R.drawable.down);
 				break;
 			case R.id.btn_left:
@@ -820,8 +826,28 @@ public class MainActivity extends Activity implements ShakeListener
 			case R.id.btn_microphone:
 				onShake();
 				break;
+			case R.id.btn_m_homepage:
+				htmlBean.content = "";
+				webView.loadUrl("http://m.baidu.com");
+				break;
+			case R.id.btn_m_history:
+				ToastUtil.toast("history");
+				break;
+			case R.id.btn_m_other:
+				intent = new Intent(MainActivity.this,LogActivity.class);
+				startActivity(intent);
+				break;
+			case R.id.btn_m_refresh:
+				htmlBean.content = "";
+				webView.reload();
+				break;
 			default:
 				break;
+			}
+			
+			if(v.getId() != R.id.btn_menu)
+			{
+				popWindow.dismiss();
 			}
 		}
 		

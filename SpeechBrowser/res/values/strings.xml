@@ -11,5 +11,6 @@
     <drawable name="toolsBarPressed">#bbb</drawable>
 
     <string name="title_activity_book_mark">BookMarkActivity</string>
+    <string name="title_activity_log">LogActivity</string>
 
 </resources>

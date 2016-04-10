@@ -10,17 +10,69 @@
         android:background="#bbb"
         android:layout_height="1dp"
         android:layout_width="match_parent"/>
+    
+    <LinearLayout 
+        android:background="#fff"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent">
+        <TextView 
+	        	android:id="@+id/btn_m_homepage"
+			    android:text="主页"
+			    android:padding="10dp"
+			    android:layout_height="wrap_content"
+			    android:layout_width="0dp"
+			    android:layout_weight="1"
+			    android:gravity="center_horizontal"
+			    android:textSize="18sp"
+			    android:background="@drawable/popup_menu_selector"
+			    android:drawableTop="@drawable/homepage"/>
+         <TextView 
+	        	android:id="@+id/btn_m_history"
+			    android:text="历史"
+			    android:padding="10dp"
+			    android:layout_height="wrap_content"
+			    android:layout_width="0dp"
+			    android:layout_weight="1"
+			    android:gravity="center_horizontal"
+			    android:textSize="18sp"
+			    android:background="@drawable/popup_menu_selector"
+			    android:drawableTop="@drawable/history"/>
+        <TextView 
+	        	android:id="@+id/btn_m_refresh"
+			    android:text="刷新"
+			    android:padding="10dp"
+			    android:layout_height="wrap_content"
+			    android:layout_width="0dp"
+			    android:layout_weight="1"
+			    android:gravity="center_horizontal"
+			    android:textSize="18sp"
+			    android:background="@drawable/popup_menu_selector"
+			    android:drawableTop="@drawable/refresh"/>
+        <TextView 
+	        	android:id="@+id/btn_m_other"
+			    android:text="日志"
+			    android:padding="10dp"
+			    android:layout_height="wrap_content"
+			    android:layout_width="0dp"
+			    android:layout_weight="1"
+			    android:gravity="center_horizontal"
+			    android:textSize="18sp"
+			    android:background="@drawable/popup_menu_selector"
+			    android:drawableTop="@drawable/mode"/>
+        
+    </LinearLayout>
     <LinearLayout 
         android:background="#fff"
         android:id="@+id/btn_m_menu"
-        
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:layout_height="wrap_content"
         android:layout_width="match_parent">
 
 			<TextView 
-	        android:id="@+id/btn_m_bookmark"
+	        	android:id="@+id/btn_m_bookmark"
 			    android:text="书签"
 			    android:padding="10dp"
 			    android:layout_height="wrap_content"

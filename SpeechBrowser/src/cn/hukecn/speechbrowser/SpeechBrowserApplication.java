@@ -2,6 +2,7 @@ package cn.hukecn.speechbrowser;
 
 import android.app.Application;
 import cn.hukecn.speechbrowser.DAO.MyDataBase;
+import cn.hukecn.speechbrowser.location.BaseAppLocation;
 import cn.hukecn.speechbrowser.util.ToastUtil;
 
 public class SpeechBrowserApplication extends Application {
@@ -19,5 +20,8 @@ public class SpeechBrowserApplication extends Application {
 		MyDataBase.init(getApplicationContext());
 		CrashHandler catchHandler = CrashHandler.getInstance();  
         catchHandler.init(getApplicationContext());
+        BaseAppLocation baseAppLocation = BaseAppLocation.getInstance();
+        baseAppLocation.init(getApplicationContext());
+        
 	}
 }

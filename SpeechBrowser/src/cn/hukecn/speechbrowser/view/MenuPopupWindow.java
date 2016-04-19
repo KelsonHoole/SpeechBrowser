@@ -75,7 +75,7 @@ public class MenuPopupWindow extends PopupWindow implements OnClickListener,OnDi
 //	        ColorDrawable dw = new ColorDrawable(0xb0000000);  
 	        //设置SelectPicPopupWindow弹出窗体的背景  
 //	        this.setBackgroundDrawable(dw);  
-	        
+	        setAnimationStyle(R.style.popwin_anim_style);
 	        setBackgroundDrawable(new BitmapDrawable());
 	        setOutsideTouchable(true);
 	        setOnDismissListener(this);

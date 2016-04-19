@@ -16,5 +16,11 @@
     <style name="AppTheme" parent="AppBaseTheme">
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
+    
+    
+    <style name="popwin_anim_style">  
+     <item name="android:windowEnterAnimation">@anim/popup_show</item>  
+     <item name="android:windowExitAnimation">@anim/popup_hide</item>  
+	</style>  
 
 </resources>

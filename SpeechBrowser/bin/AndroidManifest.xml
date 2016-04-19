@@ -78,8 +78,21 @@
             android:windowSoftInputMode="stateHidden" >
         </activity>
         <activity
-            android:name=".LogActivity"
+            android:name=".activity.LogActivity"
             android:label="@string/title_activity_log" >
+        </activity>
+        <activity
+            android:name=".activity.HistoryActivity"
+            android:label="@string/title_activity_history" >
+        </activity>
+        <activity
+            android:name=".WelcomeActivity"
+            android:label="@string/title_activity_welcome" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 

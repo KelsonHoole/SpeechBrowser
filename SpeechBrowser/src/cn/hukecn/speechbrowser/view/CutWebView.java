@@ -14,6 +14,7 @@ import android.webkit.WebViewClient;
 import android.webkit.GeolocationPermissions.Callback;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+import cn.hukecn.speechbrowser.util.ToastUtil;
 
 public class CutWebView extends WebView {
 
@@ -55,6 +56,8 @@ public class CutWebView extends WebView {
         loadUrl("http://m.baidu.com");
 	}
 	
+	
+
 	public void setOnReceiveHTMLListener(ReceiveHTMLListener listener){
 		this.listener = listener;
 	}
@@ -71,6 +74,15 @@ public class CutWebView extends WebView {
 	            }
 	            super.onProgressChanged(view, newProgress);
 	        }
+	        
+//	        @Override
+//	        public void onReceivedTitle(WebView view, String title) {
+//	        // TODO Auto-generated method stub
+//	        	ToastUtil.toast(title);
+//	        	view.loadUrl("javascript:window.HTML.getHtml(document.getElementsByTagName('html')[0].innerHTML);");
+//
+//	        super.onReceivedTitle(view, title);
+//	        }
 	        
 	        @Override
 	        public void onGeolocationPermissionsShowPrompt(String origin, Callback callback) {
@@ -89,8 +101,14 @@ public class CutWebView extends WebView {
 	        	view.loadUrl(url);
 	            return true;
 	        }
-	        	
-
+//	        @Override
+//	        public void onPageStarted(WebView view, String url, Bitmap favicon) {
+//	        // TODO Auto-generated method stub
+//	        	instantUrl = url;
+//	        	CookieManager cookieManager = CookieManager.getInstance();
+//	            cookieStr = cookieManager.getCookie(url);
+//	        super.onPageStarted(view, url, favicon);
+//	        }
 	        @Override
 	        public void onPageFinished(WebView view, String url) {
 	        	instantUrl = url;
@@ -102,14 +120,14 @@ public class CutWebView extends WebView {
 	        
 	    }
 	 
-	 @Override
-	 protected void onScrollChanged(int l, int t, int oldl, int oldt) {
-		 LayoutParams lp = (LayoutParams) progressbar.getLayoutParams();
-		 lp.x = l;
-		 lp.y = t;
-		 progressbar.setLayoutParams(lp);
-		 super.onScrollChanged(l, t, oldl, oldt);
-	 }
+//	 @Override
+//	 protected void onScrollChanged(int l, int t, int oldl, int oldt) {
+//		 LayoutParams lp = (LayoutParams) progressbar.getLayoutParams();
+//		 lp.x = l;
+//		 lp.y = t;
+//		 progressbar.setLayoutParams(lp);
+//		 super.onScrollChanged(l, t, oldl, oldt);
+//	 }
 	
 	 @SuppressLint("AddJavascriptInterface")
 	    public class JSLinster{

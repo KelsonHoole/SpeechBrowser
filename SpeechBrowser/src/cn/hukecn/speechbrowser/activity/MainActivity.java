@@ -1,25 +1,21 @@
 package cn.hukecn.speechbrowser.activity;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import org.jsoup.Jsoup;
-
-import cn.edu.hfut.dmic.contentextractor.ContentExtractor;
-import cn.hukecn.speechbrowser.JsonParser;
-import cn.hukecn.speechbrowser.LogActivity;
 import cn.hukecn.speechbrowser.R;
 import cn.hukecn.speechbrowser.Shake;
 import cn.hukecn.speechbrowser.Shake.ShakeListener;
 import cn.hukecn.speechbrowser.DAO.MyDataBase;
 import cn.hukecn.speechbrowser.bean.BookMarkBean;
+import cn.hukecn.speechbrowser.bean.HistoryBean;
 import cn.hukecn.speechbrowser.bean.HtmlBean;
 import cn.hukecn.speechbrowser.bean.MailBean;
 import cn.hukecn.speechbrowser.bean.MailListBean;
 import cn.hukecn.speechbrowser.bean.NewsBean;
+import cn.hukecn.speechbrowser.location.BaseAppLocation;
 import cn.hukecn.speechbrowser.util.BaiduSearch;
+import cn.hukecn.speechbrowser.util.JsonParser;
 import cn.hukecn.speechbrowser.util.ParseCommand;
 import cn.hukecn.speechbrowser.util.ParseMailContent;
 import cn.hukecn.speechbrowser.util.ParseMailList;
@@ -33,10 +29,6 @@ import cn.hukecn.speechbrowser.view.MenuPopupWindow;
 import cn.hukecn.speechbrowser.view.CutWebView.ReceiveHTMLListener;
 import cn.hukecn.speechbrowser.view.CutWebView.ShouldOverrideUrlListener;
 import com.baidu.location.BDLocation;
-import com.baidu.location.BDLocationListener;
-import com.baidu.location.LocationClient;
-import com.baidu.location.LocationClientOption;
-import com.baidu.location.LocationClientOption.LocationMode;
 import com.iflytek.cloud.InitListener;
 import com.iflytek.cloud.RecognizerResult;
 import com.iflytek.cloud.SpeechConstant;
@@ -46,17 +38,17 @@ import com.iflytek.cloud.SpeechUtility;
 import com.iflytek.cloud.SynthesizerListener;
 import com.iflytek.cloud.ui.RecognizerDialog;
 import com.iflytek.cloud.ui.RecognizerDialogListener;
-
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.app.Service;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Vibrator;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -73,14 +65,14 @@ public class MainActivity extends Activity implements ShakeListener
 			,ReceiveHTMLListener,ShouldOverrideUrlListener
 			,OnClickListener{
 	public final int REQUEST_CODE_BOOKMARK = 1;
-	BDLocation location;
+	public final int REQUEST_CODE_HISTORY = 2;
+//	BDLocation location;
 	MenuPopupWindow popWindow;
 	List<Integer> cmdList = new ArrayList<Integer>();
 	private SoundPool sp;//声明一个SoundPool
 	private int musicStart;//定义一个整型用load（）；来设置suondID
 	private int musicEnd;
 	private int newsNumber = -1;
-//	private BDTts mBDTts = null;
 	private static Vibrator mVibrator;
 	private HtmlBean htmlBean = new HtmlBean();
 	boolean isPause = false;
@@ -107,9 +99,6 @@ public class MainActivity extends Activity implements ShakeListener
 	List<NewsBean> newsList = new ArrayList<NewsBean>();
 	List<MailListBean> mailList = new ArrayList<MailListBean>();
 	CutWebView webView = null;
-	public LocationClient mLocationClient = null;
-//	BDLocation location = null;
-	public BDLocationListener myListener = new MyLocationListener();
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -124,10 +113,6 @@ public class MainActivity extends Activity implements ShakeListener
 		musicEnd = sp.load(this, R.raw.bdspeech_recognition_success,1);
 	
         mVibrator = (Vibrator)getSystemService(Service.VIBRATOR_SERVICE);  
-
-        mLocationClient = new LocationClient(getApplicationContext());     //声明LocationClient类
-        mLocationClient.registerLocationListener(myListener);    //注册监听函数
-        initLocation();
 	}
 	private void initView() {
 		// TODO Auto-generated method stub
@@ -151,6 +136,7 @@ public class MainActivity extends Activity implements ShakeListener
 		webView.setOnReceiveHTMLListener(this);
 		webView.setOnShouldOverrideUrlListener(this);
 
+		et_head.setOnClickListener(this);
 		et_head.setOnEditorActionListener(new OnEditorActionListener() {
 			
 			@Override
@@ -220,10 +206,10 @@ public class MainActivity extends Activity implements ShakeListener
 			if(list.get(list.size() -1).equals("。"))
 				list.remove(list.size()-1);
 			
-			Calendar c = Calendar.getInstance();  
-			int hour = c.get(Calendar.HOUR_OF_DAY);
-			int minute = c.get(Calendar.MINUTE);
-			int secend = c.get(Calendar.SECOND);
+//			Calendar c = Calendar.getInstance();  
+//			int hour = c.get(Calendar.HOUR_OF_DAY);
+//			int minute = c.get(Calendar.MINUTE);
+//			int secend = c.get(Calendar.SECOND);
 			
 			if(current - lastTime > 800)
 			{
@@ -246,6 +232,8 @@ public class MainActivity extends Activity implements ShakeListener
 					
 					break;
 				case ParseCommand.Cmd_Weather:
+					BaseAppLocation baseAppLocation = BaseAppLocation.getInstance();
+					BDLocation location  = baseAppLocation.getLocation();
 					String url = null;
 					if(location != null)
 					{
@@ -259,11 +247,6 @@ public class MainActivity extends Activity implements ShakeListener
 					break;
 				
 				case ParseCommand.Cmd_NewsNum:
-//					if(cmdList.size() == 0)
-//					{
-//						mTts.startSpeaking("指令错误，请输入正确指令",mSynListener);
-//						break;
-//					}
 					int pageType = ParsePageType.getPageType(htmlBean.url);
 					if( pageType== ParsePageType.MailListTag || pageType == ParsePageType.MailContentTag)
 					{
@@ -303,6 +286,8 @@ public class MainActivity extends Activity implements ShakeListener
 					mTts.startSpeaking("指令错误，请输入正确指令",mSynListener);
 					break;
 				case ParseCommand.Cmd_Location:
+					baseAppLocation = BaseAppLocation.getInstance();
+					location  = baseAppLocation.getLocation();
 					if(location != null)
 						mTts.startSpeaking("您当前位于："+location.getAddrStr(), mSynListener);
 					webView.loadUrl("http://map.qq.com/m/index/map");
@@ -489,39 +474,39 @@ public class MainActivity extends Activity implements ShakeListener
 		String url = "http://m.baidu.com/s?word="+str;
 		webView.loadUrl(url);
 	}
-	private void initLocation(){
-        LocationClientOption option = new LocationClientOption();
-        option.setLocationMode(LocationMode.Battery_Saving);//可选，默认高精度，设置定位模式，高精度，低功耗，仅设备
-        option.setCoorType("bd09ll");//可选，默认gcj02，设置返回的定位结果坐标系
-        int span=0;
-        option.setScanSpan(span);//可选，默认0，即仅定位一次，设置发起定位请求的间隔需要大于等于1000ms才是有效的
-        option.setIsNeedAddress(true);//可选，设置是否需要地址信息，默认不需要
-        option.setOpenGps(false);//可选，默认false,设置是否使用gps
-        //option.setLocationNotify(true);//可选，默认false，设置是否当gps有效时按照1S1次频率输出GPS结果
-        option.setIsNeedLocationDescribe(true);//可选，默认false，设置是否需要位置语义化结果，可以在BDLocation.getLocationDescribe里得到，结果类似于“在北京天安门附近”
-        //option.setIsNeedLocationPoiList(true);//可选，默认false，设置是否需要POI结果，可以在BDLocation.getPoiList里得到
-        option.setIgnoreKillProcess(false);//可选，默认true，定位SDK内部是一个SERVICE，并放到了独立进程，设置是否在stop的时候杀死这个进程，默认不杀死  
-        option.SetIgnoreCacheException(false);//可选，默认false，设置是否收集CRASH信息，默认收集
-        option.setEnableSimulateGps(false);//可选，默认false，设置是否需要过滤gps仿真结果，默认需要
-        mLocationClient.setLocOption(option);
-        mLocationClient.start();
-    }
+//	private void initLocation(){
+//        LocationClientOption option = new LocationClientOption();
+//        option.setLocationMode(LocationMode.Battery_Saving);//可选，默认高精度，设置定位模式，高精度，低功耗，仅设备
+//        option.setCoorType("bd09ll");//可选，默认gcj02，设置返回的定位结果坐标系
+//        int span=0;
+//        option.setScanSpan(span);//可选，默认0，即仅定位一次，设置发起定位请求的间隔需要大于等于1000ms才是有效的
+//        option.setIsNeedAddress(true);//可选，设置是否需要地址信息，默认不需要
+//        option.setOpenGps(false);//可选，默认false,设置是否使用gps
+//        //option.setLocationNotify(true);//可选，默认false，设置是否当gps有效时按照1S1次频率输出GPS结果
+//        option.setIsNeedLocationDescribe(true);//可选，默认false，设置是否需要位置语义化结果，可以在BDLocation.getLocationDescribe里得到，结果类似于“在北京天安门附近”
+//        //option.setIsNeedLocationPoiList(true);//可选，默认false，设置是否需要POI结果，可以在BDLocation.getPoiList里得到
+//        option.setIgnoreKillProcess(false);//可选，默认true，定位SDK内部是一个SERVICE，并放到了独立进程，设置是否在stop的时候杀死这个进程，默认不杀死  
+//        option.SetIgnoreCacheException(false);//可选，默认false，设置是否收集CRASH信息，默认收集
+//        option.setEnableSimulateGps(false);//可选，默认false，设置是否需要过滤gps仿真结果，默认需要
+//        mLocationClient.setLocOption(option);
+//        mLocationClient.start();
+//    }
 	
 	
-	public class MyLocationListener implements BDLocationListener {
-		@Override
-		public void onReceiveLocation(BDLocation arg0) {
-			//Toast.makeText(getApplicationContext(), arg0.getCity(), Toast.LENGTH_SHORT).show();
-			//mTts.startSpeaking(arg0.getLocationDescribe(), mSynListener);
-//			MyDataBase db = MyDataBase.getInstance();
-//			LocationBean bean = new LocationBean();
-//			bean.latitude = arg0.getLatitude()+"";
-//			bean.longitude = arg0.getLongitude()+"";
-//			bean.time = arg0.getTime()+"";
-//			long log = db.insert(bean);
-			location = arg0;
-		}
-	}
+//	public class MyLocationListener implements BDLocationListener {
+//		@Override
+//		public void onReceiveLocation(BDLocation arg0) {
+//			//Toast.makeText(getApplicationContext(), arg0.getCity(), Toast.LENGTH_SHORT).show();
+//			//mTts.startSpeaking(arg0.getLocationDescribe(), mSynListener);
+////			MyDataBase db = MyDataBase.getInstance();
+////			LocationBean bean = new LocationBean();
+////			bean.latitude = arg0.getLatitude()+"";
+////			bean.longitude = arg0.getLongitude()+"";
+////			bean.time = arg0.getTime()+"";
+////			long log = db.insert(bean);
+//			location = arg0;
+//		}
+//	}
 	
 	Handler handler = new Handler(){
 		public void handleMessage(android.os.Message msg) {
@@ -530,17 +515,17 @@ public class MainActivity extends Activity implements ShakeListener
 				exitApp();
 				break;
 			case 1:
-				List<String> resList = (List<String>) msg.obj;
-				
+//				List<String> resList = (List<String>) msg.obj;
 				break;
 			}
 		}
 	};
-	
+	@Override
 	protected void onResume() {
 		Shake.registerListener(this, this);
 		super.onResume();
 	}
+	@Override
 	protected void onPause() {
 		Shake.removeListener();
 		super.onPause();
@@ -549,19 +534,17 @@ public class MainActivity extends Activity implements ShakeListener
 	@Override
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
-		if(mTts.isSpeaking())
-			mTts.stopSpeaking();
-		mLocationClient.stop();
-		mLocationClient.unRegisterLocationListener(myListener);
-		super.onDestroy();
+		exitApp();
 	}
 	
-	private void exitApp(){
+	private void exitApp()
+	{
 		if(mTts.isSpeaking())
 			mTts.stopSpeaking();
-		mLocationClient.stop();
-		mLocationClient.unRegisterLocationListener(myListener);
+		mTts.destroy();
 		finish();
+		BaseAppLocation baseAppLocation = BaseAppLocation.getInstance();
+		baseAppLocation.removeLocationListener();
 		System.exit(0);
 		android.os.Process.killProcess(android.os.Process.myPid());
 	}
@@ -570,11 +553,34 @@ public class MainActivity extends Activity implements ShakeListener
 	    public void onBackPressed() {
 	 		if(mTts.isSpeaking())
 				mTts.stopSpeaking();
-//	 		browserState = ParseCommand.Cmd_Original;
 	        if(webView.canGoBack())
 	            webView.goBack();
 	        else
-	            super.onBackPressed();
+	        {
+	        	AlertDialog.Builder builder = new Builder(this);
+	        	builder.setMessage("确定退出吗？");  
+	        	builder.setTitle("您即将退出语音浏览器");
+	        	mTts.startSpeaking("您即将退出语音浏览器，请按确定键退出。", mSynListener);
+	        	builder.setPositiveButton("我确定", new DialogInterface.OnClickListener(){
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						// TODO Auto-generated method stub
+						dialog.dismiss();
+						exitApp();
+					}
+	        	});
+	        	
+	        	builder.setNegativeButton("按错了", new DialogInterface.OnClickListener(){
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						// TODO Auto-generated method stub
+						dialog.dismiss();
+					}
+	        	});
+	        	builder.create().show();
+	        }
 	    }
 	 	
 //	    public static void writeFileSdcard(String fileName,String message)
@@ -596,14 +602,21 @@ public class MainActivity extends Activity implements ShakeListener
 		public void onReceiveHTML(String url,String html) {
 			// TODO Auto-geerated method stub
 			int tag = ParsePageType.getPageType(url);
-			int start = 0,end = 0;
-			et_head.setText(url);
 			htmlBean.url = url;
 			htmlBean.html = html;
-
+			String title = Jsoup.parse(html).title();
+			et_head.setText(title);
 			btn_state.setImageResource(R.drawable.start);
+			if(url != null && url.length() >0 && title != null && title.length() > 0)
+			{
+				MyDataBase myDataBase = MyDataBase.getInstance();
+				HistoryBean bean = new HistoryBean();
+				bean.time = System.currentTimeMillis()+"";
+				bean.url = url;
+				bean.title = title;
+				myDataBase.insertHistory(bean);
+			}
 			btntate = 0;
-			
 			switch (tag) {
 			case ParsePageType.MailLoginTag:
 				processLoginQQMail();
@@ -760,7 +773,13 @@ public class MainActivity extends Activity implements ShakeListener
 				startActivity(intent);
 				break;
 			case R.id.btn_m_exit:
-				exitApp();
+				handler.postDelayed(new Runnable() {
+					@Override
+					public void run() {
+						// TODO Auto-generated method stub
+						exitApp();
+					}
+				}, 100);
 				break;
 			case R.id.btn_menu:
 				popWindow.showPopupWindow(findViewById(R.id.toolsBar));
@@ -831,7 +850,8 @@ public class MainActivity extends Activity implements ShakeListener
 				webView.loadUrl("http://m.baidu.com");
 				break;
 			case R.id.btn_m_history:
-				ToastUtil.toast("history");
+				intent = new Intent(MainActivity.this,HistoryActivity.class);
+				startActivityForResult(intent, REQUEST_CODE_HISTORY);
 				break;
 			case R.id.btn_m_other:
 				intent = new Intent(MainActivity.this,LogActivity.class);
@@ -840,6 +860,9 @@ public class MainActivity extends Activity implements ShakeListener
 			case R.id.btn_m_refresh:
 				htmlBean.content = "";
 				webView.reload();
+				break;
+			case R.id.et_head:
+				et_head.setText(htmlBean.url);
 				break;
 			default:
 				break;
@@ -980,7 +1003,6 @@ public class MainActivity extends Activity implements ShakeListener
 		public void processNewsList()
 		{
 			String html = htmlBean.html;
-//			writeFileSdcard("",html);
 			newsList = ParseTencentNews.getNewsList(html);
 			String titleStr = "";
 			for(int i = 1;i <= 100 && i <= newsList.size();i++)
@@ -989,7 +1011,6 @@ public class MainActivity extends Activity implements ShakeListener
 			}
 			
 			htmlBean.content = titleStr;
-//			mTts.startSpeaking(htmlBean.content, mSynListener);
 			mTts.startSpeaking(htmlBean.content, mSynListener);
 		}
 		
@@ -1001,21 +1022,6 @@ public class MainActivity extends Activity implements ShakeListener
 			title = title.replace("-手机腾讯网", "");
 			htmlBean.content = "标题：" + title+"\n"+content;
 			mTts.startSpeaking(htmlBean.content, mSynListener);
-			
-//			try {
-//				String content = ContentExtractor.getContentByHtml(htmlBean.html);
-//				if(content != null && content.length() > 0)
-//				{
-//					htmlBean.content = content;
-//					mTts.startSpeaking(htmlBean.content, mSynListener);
-//				}else
-//					mTts.startSpeaking("新闻解析异常", mSynListener);
-//				
-//			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				mTts.startSpeaking("新闻解析异常", mSynListener);
-//
-//			}
 		}
 		
 		public void processSearchResult()
@@ -1051,9 +1057,18 @@ public class MainActivity extends Activity implements ShakeListener
 				{
 					String url = data.getStringExtra("url");
 					webView.getSettings().setUserAgentString("Mozilla/5.0 (Linux; U; Android 5.1.1; zh-cn; PLK-UL00 Build/HONORPLK-UL00) AppleWebKit/537.36 (KHTML, like Gecko)Version/4.0 MQQBrowser/5.3 Mobile Safari/537.36");
-//					browserState = ParseCommand.Cmd_Original;
 					webView.loadUrl(url);
 				}
+				break;
+			case REQUEST_CODE_HISTORY:
+				if(resultCode == RESULT_OK)
+				{
+					String url = data.getStringExtra("url");
+					webView.getSettings().setUserAgentString("Mozilla/5.0 (Linux; U; Android 5.1.1; zh-cn; PLK-UL00 Build/HONORPLK-UL00) AppleWebKit/537.36 (KHTML, like Gecko)Version/4.0 MQQBrowser/5.3 Mobile Safari/537.36");
+					webView.loadUrl(url);
+				}
+				break;
+			default:
 				break;
 			}
 		}

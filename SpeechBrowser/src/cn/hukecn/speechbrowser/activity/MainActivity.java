@@ -286,10 +286,6 @@ public class MainActivity extends Activity implements ShakeListener
 					mTts.startSpeaking("指令错误，请输入正确指令",mSynListener);
 					break;
 				case ParseCommand.Cmd_Location:
-					baseAppLocation = BaseAppLocation.getInstance();
-					location  = baseAppLocation.getLocation();
-					if(location != null)
-						mTts.startSpeaking("您当前位于："+location.getAddrStr(), mSynListener);
 					webView.loadUrl("http://map.qq.com/m/index/map");
 					break;
 				case ParseCommand.Cmd_Exit:
@@ -642,7 +638,10 @@ public class MainActivity extends Activity implements ShakeListener
 			case ParsePageType.NewsContentTag:
 				processNewsContent();
 				break;
-	
+			case ParsePageType.TencentMapUrlTag:
+				
+				processGetLocation();
+				break;
 			default:
 				ToastUtil.toast("暂不支持该网页的解析...");
 				break;
@@ -874,6 +873,22 @@ public class MainActivity extends Activity implements ShakeListener
 			}
 		}
 		
+		
+		public void processGetLocation()
+		{
+			BaseAppLocation baseAppLocation = BaseAppLocation.getInstance();
+			BDLocation location  = baseAppLocation.getLocation();
+			if(location != null){
+				String content = "您当前位于："+location.getAddrStr();
+				mTts.startSpeaking(content, mSynListener);
+				htmlBean.content = content;
+			}else
+			{
+				String content = "暂未获取到您的位置，请稍后再试。";
+				mTts.startSpeaking(content, mSynListener);
+				htmlBean.content = content;
+			}
+		}
 		
 		public void processLoginQQMail()
 		{

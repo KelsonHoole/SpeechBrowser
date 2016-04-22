@@ -50,8 +50,24 @@ public class CutWebView extends WebView {
         settings.setLoadsImagesAutomatically(true);
         settings.setAppCacheEnabled(true);
         settings.setDomStorageEnabled(true);
+        settings.setAppCacheEnabled(true);
+        settings.setAppCacheMaxSize(1024*1024*5);
+        String appCachePath = context.getApplicationContext().getCacheDir().getAbsolutePath();
+        settings.setAppCachePath(appCachePath);
+        settings.setAllowFileAccess(true);
         settings.setDatabaseEnabled(true);
         settings.setGeolocationEnabled(true); 
+        settings.setLoadsImagesAutomatically(true);
+        settings.setUseWideViewPort(true);
+        settings.setLoadWithOverviewMode(true);
+        settings.setSaveFormData(true);
+        settings.setSupportMultipleWindows(true);
+        settings.setDefaultTextEncodingName("utf-8");
+        String dir = context.getApplicationContext().getDir("database", Context.MODE_PRIVATE).getPath();
+//      //启用地理定位
+      //设置定位的数据库路径
+        settings.setGeolocationDatabasePath(dir);
+        
         addJavascriptInterface(new JSLinster(),"HTML");
         loadUrl("http://m.baidu.com");
 	}

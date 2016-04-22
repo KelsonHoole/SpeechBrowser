@@ -3,6 +3,8 @@ package cn.hukecn.speechbrowser.util;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.R.string;
+
 public class ParsePageType {
 	//QQÓÊÏäµÇÂ¼Ò³
 	public static final String MailLoginUrl = "ui.ptlogin2.qq.com/cgi-bin/login?style=";
@@ -36,14 +38,20 @@ public class ParsePageType {
 	public static final String BaiduResultUrl = "m.baidu.com/s?word=";
 	public static final int BaiduResultUrlTag = 7;
 	
+	//ÌÚÑ¶µØÍ¼
+	public static final String TencentMapUrl = "map.qq.com/m/index/map";
+	public static final int TencentMapUrlTag = 9;
 	
 	public static final int NoSupportTag = 99;
 	private ParsePageType(){};
 	
 	public static int getPageType(String url){
 		
-		if(url.length() == 0)
+		if(url == null || url.length() == 0)
 			return NoSupportTag;
+		
+		if(url.indexOf(TencentMapUrl) != -1)
+			return TencentMapUrlTag;
 		
 		if(url.indexOf(MailLoginUrl) != -1)
 			return MailLoginTag;

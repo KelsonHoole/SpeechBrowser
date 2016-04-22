@@ -70,7 +70,7 @@ public class ParseWeatherHtml {
 			String city = doc.getElementsByClass("inx_w_city_c").get(0).text();
 			String weather = doc.getElementsByClass("inx_w_r_mare").get(0).text();
 			String temp = doc.getElementsByClass("inx_w_r_num").get(0).text();
-			String air = doc.getElementsByClass("inx_link_tips").get(0).text();
+//			String air = doc.getElementsByClass("inx_link_tips").get(0).text();
 			
 			Elements days7 = doc.getElementsByClass("weather_datemate");
 			Elements lis = days7.get(0).getElementsByTag("li");
@@ -100,7 +100,7 @@ public class ParseWeatherHtml {
 			towDays += list.get(3).date+","+list.get(3).weather+","+list.get(3).temp+'\n';
 
 			
-			return "您当前位于："+city+"市\n"+"今日天气："+weather+"\n当前气温："+temp+"\n"+air+"\n"+towDays;
+			return "您当前位于："+city+"市\n"+"今日天气："+weather+"\n当前气温："+temp+"\n"+towDays;
 		}catch (IndexOutOfBoundsException e)
 		{
 			return "获取天气信息失败，请稍后再试";

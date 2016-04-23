@@ -1,4 +1,5 @@
 <LinearLayout 
+    android:id="@+id/ll_start"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -7,13 +8,48 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1.2"
-        android:src="@drawable/startpicture" />
-
-    <TextView
-        android:layout_weight="1"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:text="dffsafsaojfiosajfiodjsaoifjdsajfdsjaifdjsaiojfdsajfdkjaskljfkslajfdlsa;jfiwejiurwieuifajsjfas" />
-
+        android:layout_weight="0.8"
+        android:scaleType="fitXY"
+        android:src="@drawable/img_welcome" />
+	<LinearLayout 
+	    android:layout_height="0dp"
+	    android:layout_weight="0.2"
+	    android:layout_width="match_parent"
+	    android:orientation="vertical"
+	    >
+    	<View 
+	        android:layout_height="0dp"
+	        android:layout_width="match_parent"
+	        android:layout_weight="1"/>
+	    <LinearLayout 
+	        android:layout_height="wrap_content"
+	        android:layout_width="wrap_content"
+	        android:layout_gravity="center_horizontal"
+	        android:orientation="horizontal">
+		    <ImageView 
+		        android:layout_height="wrap_content"
+		        android:layout_width="wrap_content"
+		        android:src="@drawable/launcher_little"/>
+		    <ImageView 
+		        android:layout_height="wrap_content"
+		        android:layout_width="wrap_content"
+		        android:src="@drawable/speechchangelife"/>
+	        
+	    </LinearLayout>
+	    
+	    <View 
+	        android:layout_height="0dp"
+	        android:layout_width="match_parent"
+	        android:layout_weight="1"/>
+	    <TextView 
+	        android:layout_height="wrap_content"
+	        android:layout_width="match_parent"
+	        android:gravity="center_horizontal"
+	        android:textColor="#999"
+	        android:text="武汉理工大学 胡科\nwww.hukecn.cn"/>
+	    <View 
+	        android:layout_height="0dp"
+	        android:layout_width="match_parent"
+	        android:layout_weight="0.2"/>
+	</LinearLayout>
 </LinearLayout>

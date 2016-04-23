@@ -639,11 +639,10 @@ public class MainActivity extends Activity implements ShakeListener
 				processNewsContent();
 				break;
 			case ParsePageType.TencentMapUrlTag:
-				
 				processGetLocation();
 				break;
 			default:
-				ToastUtil.toast("暂不支持该网页的解析...");
+				htmlBean.content = Jsoup.parse(html).title();
 				break;
 			}
 			
@@ -717,21 +716,21 @@ public class MainActivity extends Activity implements ShakeListener
 //				break;
 //			}
 			
-			if(htmlBean.content.length() == 0)
-			{
-//				String content = "";
-//				try {
-//					content = ContentExtractor.getContentByHtml(html);
-//				} catch (Exception e) {
-//					// TODO Auto-generated catch block
-//					content = "网页内容解析失败";
-//				}
-				String content = Jsoup.parse(html).body().text();
-				tv_info.setText(content); 
-				htmlBean.content = content;
-			}
-			else
-				tv_info.setText(htmlBean.content);
+//			if(htmlBean.content.length() == 0)
+//			{
+////				String content = "";
+////				try {
+////					content = ContentExtractor.getContentByHtml(html);
+////				} catch (Exception e) {
+////					// TODO Auto-generated catch block
+////					content = "网页内容解析失败";
+////				}
+//				String content = Jsoup.parse(html).body().text();
+//				tv_info.setText(content); 
+//				htmlBean.content = content;
+//			}
+//			else
+			tv_info.setText(htmlBean.content);
 		}
 
 		@Override

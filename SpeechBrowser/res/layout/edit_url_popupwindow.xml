@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+    
+    <RelativeLayout
+            android:layout_width="match_parent"
+            android:background = "@drawable/tb_background_top"
+            android:scaleType="fitXY"
+            android:layout_height = "wrap_content">
+            <!-- android:background="#3f51b5" -->
+            
+        <View 
+            android:layout_margin="10dp"
+            android:layout_centerVertical="true"
+            android:layout_height="40dp"
+            android:layout_width="match_parent"
+            android:background="#fff"/>
+
+        <LinearLayout 
+            android:layout_margin="10dp"
+            android:layout_centerVertical="true"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:orientation="horizontal">
+            
+	        <EditText
+	            android:layout_gravity="center_vertical"
+	            android:gravity="center_vertical"
+	            android:id="@+id/et_head"
+	            android:layout_width="0dp"
+	            android:layout_weight="1"
+	            android:layout_height="wrap_content"
+	            android:singleLine="true"
+	            android:ellipsize="end"
+	            android:imeOptions="actionSearch"
+	            android:padding="5dp"
+	            android:textSize="20sp"
+	            android:textColor="#666"
+	            android:hint="请输入URL或者搜索内容"
+	            android:background="@drawable/popup_menu_selector"
+	            android:ems="10" />
+	
+	            <ImageButton 
+	                android:id="@+id/btn_clear"
+	                android:layout_gravity="center_vertical"
+	                android:paddingRight="10dp"
+	                android:paddingLeft="10dp"
+	                android:layout_height="wrap_content"
+	                android:layout_width="wrap_content"
+	                android:background="@drawable/popup_menu_selector"
+	                android:src="@drawable/img_clear"/>
+        </LinearLayout>
+    </RelativeLayout>
+    
+    <ListView
+        android:id="@+id/lv_url" 
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent">
+        
+    </ListView>
+    
+</LinearLayout>

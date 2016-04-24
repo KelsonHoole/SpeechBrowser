@@ -2,7 +2,9 @@ package cn.hukecn.speechbrowser.activity;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.jsoup.Jsoup;
+
 import cn.hukecn.speechbrowser.R;
 import cn.hukecn.speechbrowser.Shake;
 import cn.hukecn.speechbrowser.Shake.ShakeListener;
@@ -15,6 +17,7 @@ import cn.hukecn.speechbrowser.bean.MailListBean;
 import cn.hukecn.speechbrowser.bean.NewsBean;
 import cn.hukecn.speechbrowser.location.BaseAppLocation;
 import cn.hukecn.speechbrowser.util.BaiduSearch;
+import cn.hukecn.speechbrowser.util.GestureUtil;
 import cn.hukecn.speechbrowser.util.JsonParser;
 import cn.hukecn.speechbrowser.util.ParseCommand;
 import cn.hukecn.speechbrowser.util.ParseMailContent;
@@ -28,6 +31,7 @@ import cn.hukecn.speechbrowser.view.CutWebView;
 import cn.hukecn.speechbrowser.view.MenuPopupWindow;
 import cn.hukecn.speechbrowser.view.CutWebView.ReceiveHTMLListener;
 import cn.hukecn.speechbrowser.view.CutWebView.ShouldOverrideUrlListener;
+
 import com.baidu.location.BDLocation;
 import com.iflytek.cloud.InitListener;
 import com.iflytek.cloud.RecognizerResult;
@@ -38,6 +42,7 @@ import com.iflytek.cloud.SpeechUtility;
 import com.iflytek.cloud.SynthesizerListener;
 import com.iflytek.cloud.ui.RecognizerDialog;
 import com.iflytek.cloud.ui.RecognizerDialogListener;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -49,13 +54,17 @@ import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Vibrator;
+import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.PopupWindow.OnDismissListener;
 import android.widget.ProgressBar;
 import android.widget.TextView;

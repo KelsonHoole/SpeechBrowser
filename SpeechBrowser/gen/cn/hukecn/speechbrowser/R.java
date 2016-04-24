@@ -9,8 +9,11 @@ package cn.hukecn.speechbrowser;
 
 public final class R {
     public static final class anim {
-        public static final int popup_hide=0x7f040000;
-        public static final int popup_show=0x7f040001;
+        public static final int activity_enter=0x7f040000;
+        public static final int fade_in=0x7f040001;
+        public static final int fade_out=0x7f040002;
+        public static final int popup_hide=0x7f040003;
+        public static final int popup_show=0x7f040004;
     }
     public static final class attr {
     }
@@ -32,7 +35,7 @@ public final class R {
         public static final int microphone=0x7f02000e;
         public static final int mode=0x7f02000f;
         public static final int pause=0x7f020010;
-        public static final int popupMenuCommon=0x7f02001e;
+        public static final int popupMenuCommon=0x7f02001f;
         public static final int popup_menu_selector=0x7f020011;
         public static final int refresh=0x7f020012;
         public static final int right=0x7f020013;
@@ -44,9 +47,10 @@ public final class R {
         public static final int start=0x7f020019;
         public static final int startimg=0x7f02001a;
         public static final int stop=0x7f02001b;
-        public static final int toolsBarCommon=0x7f02001d;
-        public static final int toolsBarPressed=0x7f02001f;
-        public static final int toolsbar_selector=0x7f02001c;
+        public static final int theme_background=0x7f02001c;
+        public static final int toolsBarCommon=0x7f02001e;
+        public static final int toolsBarPressed=0x7f020020;
+        public static final int toolsbar_selector=0x7f02001d;
     }
     public static final class id {
         public static final int btn_add=0x7f090008;
@@ -141,6 +145,7 @@ public final class R {
  API 14 theme customizations can go here. 
          */
         public static final int AppBaseTheme=0x7f070000;
+        public static final int AppSplash=0x7f070003;
         /**  Application theme. 
  All customizations that are NOT specific to a particular API-level can go here. 
          */

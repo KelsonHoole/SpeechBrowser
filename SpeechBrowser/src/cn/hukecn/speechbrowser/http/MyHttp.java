@@ -1,7 +1,9 @@
 package cn.hukecn.speechbrowser.http;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Message;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -77,4 +79,5 @@ public class MyHttp {
             }
         }
     };
+    
 }

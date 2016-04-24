@@ -19,6 +19,7 @@ import cn.hukecn.speechbrowser.util.ToastUtil;
 public class CutWebView extends WebView {
 
 	ReceiveHTMLListener listener = null;
+	ReceiveTitleListener titleListener = null;
 	String cookieStr = "";
 	Context context = null;
 	String instantUrl = "";
@@ -62,6 +63,7 @@ public class CutWebView extends WebView {
         settings.setLoadWithOverviewMode(true);
         settings.setSaveFormData(true);
         settings.setSupportMultipleWindows(true);
+        settings.setCacheMode(WebSettings.LOAD_DEFAULT);
         settings.setDefaultTextEncodingName("utf-8");
         String dir = context.getApplicationContext().getDir("database", Context.MODE_PRIVATE).getPath();
 //      //启用地理定位
@@ -74,6 +76,9 @@ public class CutWebView extends WebView {
 	
 	
 
+	public void setOnReceiveTitleListener(ReceiveTitleListener listener){
+		this.titleListener = listener;
+	}
 	public void setOnReceiveHTMLListener(ReceiveHTMLListener listener){
 		this.listener = listener;
 	}
@@ -91,14 +96,13 @@ public class CutWebView extends WebView {
 	            super.onProgressChanged(view, newProgress);
 	        }
 	        
-//	        @Override
-//	        public void onReceivedTitle(WebView view, String title) {
-//	        // TODO Auto-generated method stub
-//	        	ToastUtil.toast(title);
-//	        	view.loadUrl("javascript:window.HTML.getHtml(document.getElementsByTagName('html')[0].innerHTML);");
-//
-//	        super.onReceivedTitle(view, title);
-//	        }
+	        @Override
+	        public void onReceivedTitle(WebView view, String title) {
+	        // TODO Auto-generated method stub
+	        	if(titleListener != null)
+	        		titleListener.onReceiveTitle(title);
+//	        	super.onReceivedTitle(view, title);
+	        }
 	        
 	        @Override
 	        public void onGeolocationPermissionsShowPrompt(String origin, Callback callback) {
@@ -114,8 +118,8 @@ public class CutWebView extends WebView {
 	        public boolean shouldOverrideUrlLoading(WebView view, String url) {
 	            if(mShouldOverrideUrlListener != null)
 	            	mShouldOverrideUrlListener.onShouldOverrideUrl(url);
-	        	view.loadUrl(url);
-	            return true;
+//	        	view.loadUrl(url);
+	            return false;
 	        }
 //	        @Override
 //	        public void onPageStarted(WebView view, String url, Bitmap favicon) {
@@ -159,6 +163,10 @@ public class CutWebView extends WebView {
 	 
 	 public interface ReceiveHTMLListener{
 		 public void onReceiveHTML(String url,String html);
+	 }
+	 
+	 public interface ReceiveTitleListener{
+		 public void onReceiveTitle(String title);
 	 }
 	 
 	 public String getCookie(){

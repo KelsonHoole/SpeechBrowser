@@ -2,6 +2,7 @@ package cn.hukecn.speechbrowser.view;
 
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -72,8 +73,8 @@ public class MenuPopupWindow extends PopupWindow implements OnClickListener,OnDi
 	        //设置SelectPicPopupWindow弹出窗体动画效果  
 //	        this.setAnimationStyle(android.R.style.AnimBottom);  
 	        //实例化一个ColorDrawable颜色为半透明  
-//	        ColorDrawable dw = new ColorDrawable(0xb0000000);  
-	        //设置SelectPicPopupWindow弹出窗体的背景  
+//	        ColorDrawable dw = new ColorDrawable(0x55000000);  
+//	        设置SelectPicPopupWindow弹出窗体的背景  
 //	        this.setBackgroundDrawable(dw);  
 	        setAnimationStyle(R.style.popwin_anim_style);
 	        setBackgroundDrawable(new BitmapDrawable());

@@ -7,10 +7,12 @@
     tools:context="${relativePackage}.${activityClass}" >
 
     <RelativeLayout
+        android:id="@+id/rl_head"
             android:layout_width="match_parent"
-            android:background="#3f51b5"
-            
-            android:layout_height="wrap_content">
+            android:background = "@drawable/tb_background_top"
+            android:scaleType="fitXY"
+            android:layout_height = "wrap_content">
+            <!-- android:background="#3f51b5" -->
             
         <View 
             android:layout_margin="10dp"
@@ -26,21 +28,20 @@
             android:layout_width="match_parent"
             android:orientation="horizontal">
             
-	        <EditText
+	        <TextView
 	            android:layout_gravity="center_vertical"
 	            android:gravity="center_vertical"
-	            android:id="@+id/et_head"
+	            android:id="@+id/tv_head"
 	            android:layout_width="0dp"
 	            android:layout_weight="1"
 	            android:layout_height="wrap_content"
 	            android:singleLine="true"
 	            android:ellipsize="end"
-	            android:imeOptions="actionSearch"
 	            android:padding="5dp"
 	            android:textSize="20sp"
-	            android:textColor="#000"
+	            android:textColor="#666"
 	            android:background="@drawable/popup_menu_selector"
-	            android:hint="欢迎使用多功能语音浏览器"
+	            android:text="欢迎使用多功能语音浏览器"
 	            android:ems="10" />
 	
 	            <ImageButton 

@@ -20,9 +20,9 @@ public class WelcomeActivity extends Activity {
 	Handler handler = new Handler();
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		setTheme(R.style.AppSplash);
+//		setTheme(R.style.AppSplash);
 		super.onCreate(savedInstanceState);
-//		setContentView(R.layout.activity_welcome);
+		setContentView(R.layout.activity_welcome);
 		
 //		LinearLayout ll_start = (LinearLayout) findViewById(R.id.ll_start);
 //		AlphaAnimation aa = new AlphaAnimation(0.2f,1.0f);

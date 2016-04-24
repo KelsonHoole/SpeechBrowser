@@ -41,7 +41,6 @@ public class BookMarkActivity extends Activity {
 		adapter = new BookMarkAdapter(this);
 		lv_bookmark = (ListView) findViewById(R.id.listview);
 		lv_bookmark.setAdapter(adapter);
-		
 		MyDataBase db = MyDataBase.getInstance();
 		List<BookMarkBean> list = db.queryBookMark();
 		if(list != null && list.size() > 0)
@@ -67,7 +66,6 @@ public class BookMarkActivity extends Activity {
 				}
 			}
 		});
-		
 		
 		lv_bookmark.setOnItemClickListener(new OnItemClickListener() {
 

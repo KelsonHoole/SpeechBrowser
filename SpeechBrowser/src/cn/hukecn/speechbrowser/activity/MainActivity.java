@@ -9,6 +9,7 @@ import cn.hukecn.speechbrowser.R;
 import cn.hukecn.speechbrowser.Shake;
 import cn.hukecn.speechbrowser.Shake.ShakeListener;
 import cn.hukecn.speechbrowser.DAO.MyDataBase;
+import cn.hukecn.speechbrowser.adapter.ViewPageAdapter;
 import cn.hukecn.speechbrowser.bean.BookMarkBean;
 import cn.hukecn.speechbrowser.bean.HistoryBean;
 import cn.hukecn.speechbrowser.bean.HtmlBean;
@@ -54,15 +55,19 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.SoundPool;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Vibrator;
+import android.support.v4.view.PagerTabStrip;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -113,15 +118,19 @@ public class MainActivity extends Activity implements ShakeListener
 	List<MailListBean> mailList = new ArrayList<MailListBean>();
 	CutWebView webView = null;
 	RelativeLayout rl_head = null;
+	ViewPager mViewPager = null;
+	ViewPageAdapter pageAdapter = null;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-	
+		
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
+	         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+//	         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);   
+	    }
 		initView();
 		initSpeechUtil();
-		
-		String x = "huke";
 		
 		sp= new SoundPool(10, AudioManager.STREAM_SYSTEM, 5);
 		musicStart = sp.load(this, R.raw.shake, 1);
@@ -131,9 +140,21 @@ public class MainActivity extends Activity implements ShakeListener
 	}
 	private void initView() {
 		// TODO Auto-generated method stub
+		mViewPager = (ViewPager) findViewById(R.id.viewpager);
+		View view1 = View.inflate(this, R.layout.page_layout_webview, null);
+		View view2 = View.inflate(this, R.layout.page_layout_textview, null);
+
+		List<View> viewList = new ArrayList<View>();
+		viewList.add(view1);
+		viewList.add(view2);
+		String[] titles = {"ÍøÒ³","ÄÚÈÝ"};
+		pageAdapter = new ViewPageAdapter(viewList, titles);
+		mViewPager.setAdapter(pageAdapter);
+		mViewPager.setCurrentItem(0);
+		
 		title = (TextView) findViewById(R.id.title);
-		tv_info = (TextView) findViewById(R.id.info);		 
-		webView = (CutWebView) findViewById(R.id.webview);
+		tv_info = (TextView) view2.findViewById(R.id.info);
+		webView = (CutWebView) view1.findViewById(R.id.webview);
 		tv_head = (TextView) findViewById(R.id.tv_head);
 		btn_left = (ImageButton) findViewById(R.id.btn_left);
 		btn_right = (ImageButton) findViewById(R.id.btn_right);
@@ -591,7 +612,7 @@ public class MainActivity extends Activity implements ShakeListener
 				processGetLocation();
 				break;
 			default:
-				htmlBean.content = Jsoup.parse(html).title();
+				htmlBean.content = Jsoup.parse(html).text();
 				break;
 			}
 			

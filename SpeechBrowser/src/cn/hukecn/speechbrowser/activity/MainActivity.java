@@ -121,6 +121,8 @@ public class MainActivity extends Activity implements ShakeListener
 		initView();
 		initSpeechUtil();
 		
+		String x = "huke";
+		
 		sp= new SoundPool(10, AudioManager.STREAM_SYSTEM, 5);
 		musicStart = sp.load(this, R.raw.shake, 1);
 		musicEnd = sp.load(this, R.raw.bdspeech_recognition_success,1);

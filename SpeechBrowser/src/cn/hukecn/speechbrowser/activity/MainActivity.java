@@ -9,7 +9,6 @@ import cn.hukecn.speechbrowser.R;
 import cn.hukecn.speechbrowser.Shake;
 import cn.hukecn.speechbrowser.Shake.ShakeListener;
 import cn.hukecn.speechbrowser.DAO.MyDataBase;
-import cn.hukecn.speechbrowser.adapter.ViewPageAdapter;
 import cn.hukecn.speechbrowser.bean.BookMarkBean;
 import cn.hukecn.speechbrowser.bean.HistoryBean;
 import cn.hukecn.speechbrowser.bean.HtmlBean;
@@ -28,6 +27,7 @@ import cn.hukecn.speechbrowser.util.ParseTencentNews;
 import cn.hukecn.speechbrowser.util.ParseWeatherHtml;
 import cn.hukecn.speechbrowser.util.ToastUtil;
 import cn.hukecn.speechbrowser.util.Trans2PinYin;
+import cn.hukecn.speechbrowser.util.ViewPageAdapter;
 import cn.hukecn.speechbrowser.view.CutWebView;
 import cn.hukecn.speechbrowser.view.CutWebView.ReceiveTitleListener;
 import cn.hukecn.speechbrowser.view.EditUrlPopupWindow;
@@ -70,6 +70,8 @@ import android.view.View.OnTouchListener;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -141,13 +143,15 @@ public class MainActivity extends Activity implements ShakeListener
 	private void initView() {
 		// TODO Auto-generated method stub
 		mViewPager = (ViewPager) findViewById(R.id.viewpager);
+		View view0 = View.inflate(this, R.layout.page_layout_webview, null);
 		View view1 = View.inflate(this, R.layout.page_layout_webview, null);
 		View view2 = View.inflate(this, R.layout.page_layout_textview, null);
 
 		List<View> viewList = new ArrayList<View>();
+		viewList.add(view0);
 		viewList.add(view1);
 		viewList.add(view2);
-		String[] titles = {"ÍøÒ³","ÄÚÈÝ"};
+		String[] titles = {"Ê×Ò³","ÍøÒ³","ÄÚÈÝ"};
 		pageAdapter = new ViewPageAdapter(viewList, titles);
 		mViewPager.setAdapter(pageAdapter);
 		mViewPager.setCurrentItem(0);
@@ -182,6 +186,21 @@ public class MainActivity extends Activity implements ShakeListener
 				btn_menu.setImageResource(R.drawable.menu);
 			}
 		});
+		
+		CutWebView webView0 = (CutWebView) view0.findViewById(R.id.webview);
+		webView0.setWebViewClient(new WebViewClient(){
+			@Override
+			public boolean shouldOverrideUrlLoading(WebView view, String url) {
+				// TODO Auto-generated method stub
+				webView.loadUrl(url);
+				mViewPager.setCurrentItem(1);
+				return true;
+			}
+		});
+		
+		webView.loadUrl("http://m.baidu.com");
+        webView0.loadUrl("file:///android_asset/welcomepage/index.html");
+
 	}
 	private void initSpeechUtil(){
 		SpeechUtility.createUtility(getApplicationContext(), SpeechConstant.APPID +"=568fba83");   

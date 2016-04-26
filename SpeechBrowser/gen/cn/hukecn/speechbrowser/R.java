@@ -36,7 +36,7 @@ public final class R {
         public static final int microphone=0x7f02000f;
         public static final int mode=0x7f020010;
         public static final int pause=0x7f020011;
-        public static final int popupMenuCommon=0x7f020021;
+        public static final int popupMenuCommon=0x7f020020;
         public static final int popup_menu_selector=0x7f020012;
         public static final int refresh=0x7f020013;
         public static final int right=0x7f020014;
@@ -49,10 +49,9 @@ public final class R {
         public static final int startimg=0x7f02001b;
         public static final int stop=0x7f02001c;
         public static final int tb_background_top=0x7f02001d;
-        public static final int theme_background=0x7f02001e;
-        public static final int toolsBarCommon=0x7f020020;
-        public static final int toolsBarPressed=0x7f020022;
-        public static final int toolsbar_selector=0x7f02001f;
+        public static final int toolsBarCommon=0x7f02001f;
+        public static final int toolsBarPressed=0x7f020021;
+        public static final int toolsbar_selector=0x7f02001e;
     }
     public static final class id {
         public static final int btn_add=0x7f090008;

@@ -71,7 +71,6 @@ public class CutWebView extends WebView {
         settings.setGeolocationDatabasePath(dir);
         
         addJavascriptInterface(new JSLinster(),"HTML");
-        loadUrl("http://m.baidu.com");
 	}
 	
 	

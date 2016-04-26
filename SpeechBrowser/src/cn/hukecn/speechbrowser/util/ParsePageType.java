@@ -3,8 +3,6 @@ package cn.hukecn.speechbrowser.util;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import android.R.string;
-
 public class ParsePageType {
 	//QQÓÊÏäµÇÂ¼Ò³
 	public static final String MailLoginUrl = "ui.ptlogin2.qq.com/cgi-bin/login?style=";

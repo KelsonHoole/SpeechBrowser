@@ -21,9 +21,9 @@ public class ParsePageType {
 	public static final int MailContentTag = 3;
 	
 	//腾讯国内新闻列表 aid = infocenter  aid = template
-//	public static final String NewsListUrl = "info.3g.qq.com/g/s?icfa=infocenter&aid=template&tid=news_guoneiss&i_f=703";
-	public static final String NewsListUrl1 = "aid=infocenter";
-	public static final String NewsListUrl2 = "aid=template"; 
+	public static final String NewsListUrl = "info.3g.qq.com/g/channel_home.htm?";
+//	public static final String NewsListUrl1 = "aid=infocenter";
+//	public static final String NewsListUrl2 = "aid=template"; 
 	public static final int NewsListTag = 4;
 	//腾讯国内新闻内容
 //	public static final String NewsContentUrl = "info.3g.qq.com/g/s?icfa=news_guoneiss&aid=news_ss&id=news_";
@@ -63,7 +63,7 @@ public class ParsePageType {
 		if(url.indexOf(MailContentUrl) != -1)
 			return MailContentTag;
 		
-		if(url.indexOf(NewsListUrl1) != -1 || url.indexOf(NewsListUrl2) != -1)
+		if(url.indexOf(NewsListUrl) != -1)
 			return NewsListTag;
 		
 		String regex = "&id=\\w*_\\d*&";

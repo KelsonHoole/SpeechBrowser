@@ -19,6 +19,7 @@ import cn.hukecn.speechbrowser.location.BaseAppLocation;
 import cn.hukecn.speechbrowser.util.BaiduSearch;
 import cn.hukecn.speechbrowser.util.GestureUtil;
 import cn.hukecn.speechbrowser.util.JsonParser;
+import cn.hukecn.speechbrowser.util.ParseAandP;
 import cn.hukecn.speechbrowser.util.ParseCommand;
 import cn.hukecn.speechbrowser.util.ParseMailContent;
 import cn.hukecn.speechbrowser.util.ParseMailList;
@@ -61,6 +62,7 @@ import android.os.Handler;
 import android.os.Vibrator;
 import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -155,6 +157,29 @@ public class MainActivity extends Activity implements ShakeListener
 		pageAdapter = new ViewPageAdapter(viewList, titles);
 		mViewPager.setAdapter(pageAdapter);
 		mViewPager.setCurrentItem(0);
+		mViewPager.addOnPageChangeListener(new OnPageChangeListener() {
+			
+			@Override
+			public void onPageSelected(int arg0) {
+				// TODO Auto-generated method stub
+				if(arg0 == 2)
+				{
+					webView.loadUrl("javascript:window.HTML.getHtml(document.getElementsByTagName('html')[0].innerHTML);");
+				}
+			}
+			
+			@Override
+			public void onPageScrolled(int arg0, float arg1, int arg2) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void onPageScrollStateChanged(int arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 		
 		title = (TextView) findViewById(R.id.title);
 		tv_info = (TextView) view2.findViewById(R.id.info);
@@ -593,7 +618,7 @@ public class MainActivity extends Activity implements ShakeListener
 //			tv_head.setText(title);
 			btn_state.setImageResource(R.drawable.start);
 			if(url != null && url.length() >0 && title != null && title.length() > 0)
-			{
+			{//加入历史记录
 				MyDataBase myDataBase = MyDataBase.getInstance();
 				HistoryBean bean = new HistoryBean();
 				bean.time = System.currentTimeMillis()+"";
@@ -634,6 +659,21 @@ public class MainActivity extends Activity implements ShakeListener
 				htmlBean.content = Jsoup.parse(html).text();
 				break;
 			}
+//			List<String> aList = new ArrayList<String>();
+//			List<String> pList = new ArrayList<String>();
+//			ParseAandP.parse(htmlBean.html, aList, pList);
+//			
+//			htmlBean.content = "=================A================\n";
+//			for(String str:aList)
+//			{
+//				htmlBean.content += "A"+str+'A';
+//			}
+//			
+//			htmlBean.content += "\n=================P================\n";
+//			for(String str:pList)
+//			{
+//				htmlBean.content += "P"+str+"\n";
+//			}
 			
 			tv_info.setText(htmlBean.content);
 		}

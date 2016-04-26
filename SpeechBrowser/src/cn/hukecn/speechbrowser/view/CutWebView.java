@@ -2,7 +2,6 @@ package cn.hukecn.speechbrowser.view;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
@@ -13,8 +12,6 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.GeolocationPermissions.Callback;
 import android.widget.ProgressBar;
-import android.widget.Toast;
-import cn.hukecn.speechbrowser.util.ToastUtil;
 
 public class CutWebView extends WebView {
 
@@ -131,7 +128,7 @@ public class CutWebView extends WebView {
 	        @Override
 	        public void onPageFinished(WebView view, String url) {
 	        	instantUrl = url;
-	        	view.loadUrl("javascript:window.HTML.getHtml(document.getElementsByTagName('html')[0].innerHTML);");
+//	        	view.loadUrl("javascript:window.HTML.getHtml(document.getElementsByTagName('html')[0].innerHTML);");
 	        	CookieManager cookieManager = CookieManager.getInstance();
 	            cookieStr = cookieManager.getCookie(url);
 	        	super.onPageFinished(view, url);

@@ -1,10 +1,13 @@
 package cn.hukecn.speechbrowser.view;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
+import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
@@ -13,7 +16,7 @@ import android.webkit.WebViewClient;
 import android.webkit.GeolocationPermissions.Callback;
 import android.widget.ProgressBar;
 
-public class CutWebView extends WebView {
+public class CutWebView extends WebView{
 
 	ReceiveHTMLListener listener = null;
 	ReceiveTitleListener titleListener = null;
@@ -29,6 +32,7 @@ public class CutWebView extends WebView {
 		};
 	};
 	private ProgressBar progressbar;
+	@TargetApi(23)
 	@SuppressLint("SetJavaScriptEnabled")
 	public CutWebView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -114,36 +118,19 @@ public class CutWebView extends WebView {
 	        public boolean shouldOverrideUrlLoading(WebView view, String url) {
 	            if(mShouldOverrideUrlListener != null)
 	            	mShouldOverrideUrlListener.onShouldOverrideUrl(url);
-//	        	view.loadUrl(url);
 	            return false;
 	        }
-//	        @Override
-//	        public void onPageStarted(WebView view, String url, Bitmap favicon) {
-//	        // TODO Auto-generated method stub
-//	        	instantUrl = url;
-//	        	CookieManager cookieManager = CookieManager.getInstance();
-//	            cookieStr = cookieManager.getCookie(url);
-//	        super.onPageStarted(view, url, favicon);
-//	        }
 	        @Override
 	        public void onPageFinished(WebView view, String url) {
 	        	instantUrl = url;
-//	        	view.loadUrl("javascript:window.HTML.getHtml(document.getElementsByTagName('html')[0].innerHTML);");
+	        	view.loadUrl("javascript:window.HTML.getHtml(document.getElementsByTagName('html')[0].innerHTML);");
 	        	CookieManager cookieManager = CookieManager.getInstance();
 	            cookieStr = cookieManager.getCookie(url);
 	        	super.onPageFinished(view, url);
 	        }
 	        
 	    }
-	 
-//	 @Override
-//	 protected void onScrollChanged(int l, int t, int oldl, int oldt) {
-//		 LayoutParams lp = (LayoutParams) progressbar.getLayoutParams();
-//		 lp.x = l;
-//		 lp.y = t;
-//		 progressbar.setLayoutParams(lp);
-//		 super.onScrollChanged(l, t, oldl, oldt);
-//	 }
+
 	
 	 @SuppressLint("AddJavascriptInterface")
 	    public class JSLinster{

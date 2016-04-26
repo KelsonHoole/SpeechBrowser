@@ -783,7 +783,8 @@ public class MainActivity extends Activity implements ShakeListener
 				break;
 			case R.id.btn_m_homepage:
 				htmlBean.content = "";
-				webView.loadUrl("http://m.baidu.com");
+				mViewPager.setCurrentItem(0);
+//				webView.loadUrl("http://m.baidu.com");
 				break;
 			case R.id.btn_m_history:
 				intent = new Intent(MainActivity.this,HistoryActivity.class);

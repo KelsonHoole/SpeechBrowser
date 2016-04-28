@@ -12,126 +12,43 @@
 	</head>
 
 	<body>
-<script src="js/jquery.min.js" type="text/javascript"></script>
-<script>
 
-var playbox = (function(){
-	//author:eric_wu
-	var _playbox = function(){
-		var that = this;
-		that.box = null;
-		that.player = null;
-		that.src = null;
-		that.on = false;
-		//
-		that.autoPlayFix = {
-			on: true,
-			//evtName: ("ontouchstart" in window)?"touchend":"click"
-			evtName: ("ontouchstart" in window)?"touchstart":"mouseover"
-			
-		}
 
-	}
-	_playbox.prototype = {
-		init: function(box_ele){
-			this.box = "string" === typeof(box_ele)?document.getElementById(box_ele):box_ele;
-			this.player = this.box.querySelectorAll("audio")[0];
-			this.src = this.player.src;
-			this.init = function(){return this;}
-			this.autoPlayEvt(true);
-			return this;
-		},
-		play: function(){
-			if(this.autoPlayFix.on){
-				this.autoPlayFix.on = false;
-				this.autoPlayEvt(false);
-			}
-			this.on = !this.on;
-			if(true == this.on){
-				this.player.src = this.src;
-				this.player.play();
-			}else{
-				this.player.pause();
-				this.player.src = null;
-			}
-			if("function" == typeof(this.play_fn)){
-				this.play_fn.call(this);
-			}
-		},
-		handleEvent: function(evt){
-			this.play();
-		},
-		autoPlayEvt: function(important){
-			if(important || this.autoPlayFix.on){
-				document.body.addEventListener(this.autoPlayFix.evtName, this, false);
-			}else{
-				document.body.removeEventListener(this.autoPlayFix.evtName, this, false);
-			}
-		}
-	}
-	//
-	return new _playbox();
-})();
 
-playbox.play_fn = function(){
-	this.box.className = this.on?"btn_music on":"btn_music";
-}
-</script>
-
-<script type="text/javascript">
-$(document).ready(function(){
-	playbox.init("playbox");
-	/*
-	setTimeout(function() {
-		// IE
-		if(document.all) {
-			document.getElementById("playbox").click();
-		}
-		// 其它浏览器
-		else {
-			var e = document.createEvent("MouseEvents");
-			e.initEvent("click", true, true);
-			document.getElementById("playbox").dispatchEvent(e);
-		}
-	}, 2000);
-	*/
-});
-
-</script>
 <div class="mainbg" style="background:#7ABDE9;">
     <img src="images/1.jpg" /><img src="images/9.jpg" /><img src="images/8.jpg" /><img src="images/7.jpg" /></div>
 	<ul class="mainmenu">
 
-		<li>
-				<a href="http://m.baidu.com/" >
+			<li>
+				<a onclick="window.call.sendto()">
 					<p><img src="images/1.png" /><span>百度搜索</span></p>
 				</a>
 			</li><li>
-				<a href="http://info.3g.qq.com/g/s?icfa=infocenter&aid=template&tid=news_guoneiss&i_f=703" >
+				<a onclick="window.call.sendto(2)">
 					<p><img src="images/4.png" /><span>腾讯新闻</span></p>
 				</a>
 			</li><li>
-				<a href="https://ui.ptlogin2.qq.com/cgi-bin/login?style=9&appid=522005705&daid=4&s_url=https%3A%2F%2Fw.mail.qq.com%2Fcgi-bin%2Flogin%3Fvt%3Dpassport%26vm%3Dwsk%26delegate_url%3D%26f%3Dxhtml%26target%3D&hln_css=http%3A%2F%2Fmail.qq.com%2Fzh_CN%2Fhtmledition%2Fimages%2Flogo%2Fqqmail%2Fqqmail_logo_default_200h.png&low_login=1&hln_autologin=%E8%AE%B0%E4%BD%8F%E7%99%BB%E5%BD%95%E7%8A%B6%E6%80%81&pt_no_onekey=1" >
+				<a onclick="window.call.sendto(3)">
 					<p><img src="images/13.png" /><span>QQ邮箱</span></p>
 				</a>
 			</li><li>
-				<a href="http://weather1.sina.cn/?vt=4" >
+				<a onclick="window.call.sendto(4)">
 					<p><img src="images/20.png" /><span>天气预报</span></p>
 				</a>
 			</li><li>
-				<a href="http://map.qq.com/m/index/map" >
+				<a onclick="window.call.sendto(5)">
 					<p><img src="images/5.png" /><span>我的位置</span></p>
 				</a>
 			</li><li>
-				<a href="http://m.hao123.com" >
+				<a onclick="window.call.sendto(6)">
 					<p><img src="images/14.png" /><span>hao123</span></p>
 				</a>
 			</li><li>
-				<a href="http://info.3g.qq.com" >
+				<a onclick="window.call.sendto(7)">
 					<p><img src="images/20.png" /><span>书签管理</span></p>
 				</a>
 			</li><li>
-				<a href="http://m.sina.cn" >
+				<a onclick="window.call.sendto(8)">
 					<p><img src="images/18.png" /><span>浏览器设置</span></p>
 				</a>
 			</li>	
@@ -140,37 +57,7 @@ $(document).ready(function(){
 	</ul>
   <div class="copyright" style = "color:white">
 武汉理工大学  胡科 <br> www.hukecn.cn All rights reserved.</div>
-<script>
-function displayit(n){
-	for(i=0;i<4;i++){
-		if(i==n){
-			var id='menu_list'+n;
-			if(document.getElementById(id).style.display=='none'){
-				document.getElementById(id).style.display='';
-				document.getElementById("plug-wrap").style.display='';
-			}else{
-				document.getElementById(id).style.display='none';
-				document.getElementById("plug-wrap").style.display='none';
-			}
-		}else{
-			if($('#menu_list'+i)){
-				$('#menu_list'+i).css('display','none');
-			}
-		}
-	}
-}
-function closeall(){
-	var count = document.getElementById("top_menu").getElementsByTagName("ul").length;
-	for(i=0;i<count;i++){
-		document.getElementById("top_menu").getElementsByTagName("ul").item(i).style.display='none';
-	}
-	document.getElementById("plug-wrap").style.display='none';
-}
-
-document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
-	WeixinJSBridge.call('hideToolbar');
-});
-</script> <style type="text/css">
+ <style type="text/css">
 body { }
 a, button, input { -webkit-tap-highlight-color:rgba(255, 0, 0, 0); }
 ul, li { list-style:none; margin:0; padding:0 }
@@ -213,76 +100,7 @@ ul, li { list-style:none; margin:0; padding:0 }
 #cate19 .pagination {bottom: 60px;}
 </style>
 
-
-
-<div id="plug-wrap" onclick="closeall()" style="display: none;"></div> 
 <!-- share -->
 
-	<script type="text/javascript">
-			window.shareData = {  
-					"moduleName":"Index",
-					"moduleID": "0",
-					"imgUrl": "images/2.jpg", 
-					"timeLineLink": "/",
-					"sendFriendLink": "/",
-					"weiboLink": "/",
-					"tTitle": "科蚁网手机模板",
-					"tContent": "蚁团队致力于将科蚁网建立成为国内最专业的HTML5建站交流、学习、分享社区，打造HTML5建站生态圈，与HTML5建站爱好者共同成长进步。"
-				};
-		</script>
-		
-<script>
-		window.shareData.sendFriendLink=window.shareData.sendFriendLink.replace('http://127.0.0.1','http://127.0.0.1');
-		document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
-        WeixinJSBridge.on('menu:share:appmessage', function (argv) {
-         shareHandle('friend');
-            WeixinJSBridge.invoke('sendAppMessage', { 
-                "img_url": window.shareData.imgUrl,
-                "img_width": "640",
-                "img_height": "640",
-                "link": window.shareData.sendFriendLink,
-                "desc": window.shareData.tContent,
-                "title": window.shareData.tTitle
-            }, function (res) {
-                _report('send_msg', res.err_msg);
-            })
-        });
-
-        WeixinJSBridge.on('menu:share:timeline', function (argv) {
-         shareHandle('frineds');
-            WeixinJSBridge.invoke('shareTimeline', {
-                "img_url": window.shareData.imgUrl,
-                "img_width": "640",
-                "img_height": "640",
-                "link": window.shareData.sendFriendLink,
-                "desc": window.shareData.tContent,
-                "title": window.shareData.tTitle
-            }, function (res) {
-                _report('timeline', res.err_msg);
-            });
-        });
-
-        WeixinJSBridge.on('menu:share:weibo', function (argv) {
-         shareHandle('weibo');
-            WeixinJSBridge.invoke('shareWeibo', {
-                "content": window.shareData.tContent,
-                "url": window.shareData.sendFriendLink,
-            }, function (res) {
-                _report('weibo', res.err_msg);
-            });
-        });
-        }, false)
-        
-        function shareHandle(to) {
-	var submitData = {
-		module: window.shareData.moduleName,
-		moduleid: window.shareData.moduleID,
-		token:'xopcnh1413966457',
-		wecha_id:'',
-		url: window.shareData.sendFriendLink,
-		to:to
-	};
-	$.post('/',submitData,function (data) {},'json')
-}
-        </script>	</body>
+</body>
 </html>

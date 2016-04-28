@@ -1,5 +1,6 @@
 package cn.hukecn.speechbrowser.view;
 
+import cn.hukecn.speechbrowser.util.ToastUtil;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -7,6 +8,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
@@ -20,15 +22,25 @@ public class CutWebView extends WebView{
 
 	ReceiveHTMLListener listener = null;
 	ReceiveTitleListener titleListener = null;
+	ReceiveMessageListener messageListener = null;
 	String cookieStr = "";
 	Context context = null;
 	String instantUrl = "";
 	ShouldOverrideUrlListener mShouldOverrideUrlListener = null;
+	
 	Handler handler = new Handler(){
 		public void handleMessage(Message msg) 
 		{
-			if(listener != null)
-				listener.onReceiveHTML(instantUrl,(String)msg.obj);
+			switch (msg.what) {
+			case 0:
+				if(listener != null)
+					listener.onReceiveHTML(instantUrl,(String)msg.obj);
+				break;
+			case 1:
+				if(messageListener != null)
+					messageListener.onReceiveMessage(msg.arg1);
+				break;
+			}
 		};
 	};
 	private ProgressBar progressbar;
@@ -71,7 +83,8 @@ public class CutWebView extends WebView{
       //设置定位的数据库路径
         settings.setGeolocationDatabasePath(dir);
         
-        addJavascriptInterface(new JSLinster(),"HTML");
+//        addJavascriptInterface(new JSLinster(),"HTML");
+        addJavascriptInterface(this, "call");
 	}
 	
 	
@@ -81,6 +94,9 @@ public class CutWebView extends WebView{
 	}
 	public void setOnReceiveHTMLListener(ReceiveHTMLListener listener){
 		this.listener = listener;
+	}
+	public void setOnReceiveMessageListener(ReceiveMessageListener listener){
+		this.messageListener = listener;
 	}
 
 	 public class WebChromeClient extends android.webkit.WebChromeClient {
@@ -123,14 +139,13 @@ public class CutWebView extends WebView{
 	        @Override
 	        public void onPageFinished(WebView view, String url) {
 	        	instantUrl = url;
-	        	view.loadUrl("javascript:window.HTML.getHtml(document.getElementsByTagName('html')[0].innerHTML);");
+//	        	view.loadUrl("javascript:window.HTML.getHtml(document.getElementsByTagName('html')[0].innerHTML);");
 	        	CookieManager cookieManager = CookieManager.getInstance();
 	            cookieStr = cookieManager.getCookie(url);
 	        	super.onPageFinished(view, url);
 	        }
 	        
 	    }
-
 	
 	 @SuppressLint("AddJavascriptInterface")
 	    public class JSLinster{
@@ -140,9 +155,19 @@ public class CutWebView extends WebView{
 	        	html = "<html>"+html+"</html>";
 				Message msg = handler.obtainMessage();
 				msg.obj = html;
+				msg.what = 0;
 				handler.sendMessage(msg);
 	        }
 	    }
+//	 public class SendToAndroid{
+	 @SuppressLint("AddJavascriptInterface")
+		 public void sendto(){
+			 Message msg = handler.obtainMessage();
+			 msg.what = 1;
+			 msg.arg1 = 0;
+			 handler.sendMessage(msg);
+//		 }
+	 }
 	 
 	 public interface ReceiveHTMLListener{
 		 public void onReceiveHTML(String url,String html);
@@ -150,6 +175,10 @@ public class CutWebView extends WebView{
 	 
 	 public interface ReceiveTitleListener{
 		 public void onReceiveTitle(String title);
+	 }
+	 
+	 public interface ReceiveMessageListener{
+		 public void onReceiveMessage(int tag);
 	 }
 	 
 	 public String getCookie(){
@@ -164,4 +193,5 @@ public class CutWebView extends WebView{
 	 public interface ShouldOverrideUrlListener{
 		 public void onShouldOverrideUrl(String url);
 	 }
+	 
 }

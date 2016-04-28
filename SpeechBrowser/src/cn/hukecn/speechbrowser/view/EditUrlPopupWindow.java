@@ -30,8 +30,8 @@ public class EditUrlPopupWindow extends PopupWindow implements OnClickListener,a
 	ImageButton btn_clear = null;
 	ListView lv_url = null;
 	EditUrlPopupDismissListener listener = null;
-//	public final static int TYPE_URL = 0;
-//	public final static int TYPE_SEARCH = 1;
+	public final static int TYPE_URL = 0;
+	public final static int TYPE_CNT = 1;
 	public EditUrlPopupWindow(Context context,EditUrlPopupDismissListener listener) {
 		// TODO Auto-generated constructor stub
 		this.context = context;
@@ -62,13 +62,13 @@ public class EditUrlPopupWindow extends PopupWindow implements OnClickListener,a
 							input = "http://"+input;
 						}
 						if(listener != null)
-							listener.onDismiss(input);
+							listener.onDismiss(TYPE_URL,input);
 						dismiss();
 					}else
 					{
-						String url = "http://m.baidu.com/s?word="+input;
+//						String url = "http://m.baidu.com/s?word="+input;
 						if(listener != null)
-							listener.onDismiss(url);
+							listener.onDismiss(TYPE_CNT,input);
 						dismiss();
 					}
 					return true;
@@ -117,7 +117,7 @@ public class EditUrlPopupWindow extends PopupWindow implements OnClickListener,a
 	}
 	
 	public interface EditUrlPopupDismissListener{
-		void onDismiss(String content);
+		void onDismiss(int type,String content);
 	}
 
 	@Override

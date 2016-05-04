@@ -24,10 +24,10 @@ public class WelcomeActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_welcome);
 		
-//		LinearLayout ll_start = (LinearLayout) findViewById(R.id.ll_start);
-//		AlphaAnimation aa = new AlphaAnimation(0.2f,1.0f);
-//		aa.setDuration(1200);
-//		ll_start.startAnimation(aa);
+		LinearLayout ll_start = (LinearLayout) findViewById(R.id.ll_start);
+		AlphaAnimation aa = new AlphaAnimation(0.2f,1.0f);
+		aa.setDuration(500);
+		ll_start.startAnimation(aa);
 		handler.postDelayed(new Runnable() {
 			
 			@Override
@@ -35,7 +35,7 @@ public class WelcomeActivity extends Activity {
 				// TODO Auto-generated method stub
 				initApp();
 			}
-		},1000);
+		},300);
 		
 		
 		handler.postDelayed(new Runnable() {
@@ -46,7 +46,7 @@ public class WelcomeActivity extends Activity {
 				startActivity(intent);
 				finish();
 			}
-		}, 2000);
+		}, 600);
 		
 		
 		

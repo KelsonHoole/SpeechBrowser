@@ -13,22 +13,24 @@
             android:layout_width="match_parent"
             android:background = "@drawable/tb_background_top"
             android:scaleType="fitXY"
-            android:layout_height = "wrap_content">
+            android:layout_height = "45dp">
             <!-- android:background="#3f51b5" -->
             
         <View 
-            android:layout_margin="10dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
             android:layout_centerVertical="true"
-            android:layout_height="40dp"
+            android:layout_height="30dp"
             android:layout_width="match_parent"
             android:background="#fff"/>
 
         <LinearLayout 
-            android:layout_margin="10dp"
             android:layout_centerVertical="true"
-            android:layout_height="wrap_content"
+            android:layout_height="30dp"
             android:layout_width="match_parent"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp">
             
 	        <TextView
 	            android:layout_gravity="center_vertical"
@@ -36,23 +38,23 @@
 	            android:id="@+id/tv_head"
 	            android:layout_width="0dp"
 	            android:layout_weight="1"
-	            android:layout_height="wrap_content"
+	            android:layout_height="30dp"
 	            android:singleLine="true"
 	            android:ellipsize="end"
-	            android:padding="5dp"
-	            android:textSize="20sp"
+	            android:textSize="17sp"
 	            android:textColor="#666"
-	            android:background="@drawable/popup_menu_selector"
+	            android:background="#fff"
 	            android:text="欢迎使用多功能语音浏览器"
 	            android:ems="10" />
+<!-- 	            android:background="@drawable/popup_menu_selector" -->
 	
 	            <ImageButton 
+	                android:paddingLeft="10dp"
+	                android:paddingRight="10dp"
 	                android:id="@+id/btn_microphone"
 	                android:layout_gravity="center_vertical"
-	                android:paddingRight="10dp"
-	                android:paddingLeft="10dp"
-	                android:layout_height="wrap_content"
-	                android:layout_width="wrap_content"
+	                android:layout_height="30dp"
+	                android:layout_width="30dp"
 	                android:background="@drawable/popup_menu_selector"
 	                android:src="@drawable/microphone"/>
         </LinearLayout>

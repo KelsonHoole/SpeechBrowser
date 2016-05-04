@@ -29,6 +29,8 @@ import cn.hukecn.speechbrowser.util.Trans2PinYin;
 import cn.hukecn.speechbrowser.util.ViewPageAdapter;
 import cn.hukecn.speechbrowser.view.CutWebView;
 import cn.hukecn.speechbrowser.view.CutWebView.CutWebCallback;
+import cn.hukecn.speechbrowser.view.CutWebView.ReceiveHtmlListener;
+import cn.hukecn.speechbrowser.view.CutWebView.ReceiveMessageListener;
 import cn.hukecn.speechbrowser.view.EditUrlPopupWindow;
 import cn.hukecn.speechbrowser.view.EditUrlPopupWindow.EditUrlPopupDismissListener;
 import cn.hukecn.speechbrowser.view.MenuPopupWindow;
@@ -71,7 +73,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class MainActivity extends Activity implements ShakeListener
-			,OnClickListener,CutWebCallback{
+			,OnClickListener,CutWebCallback,ReceiveHtmlListener,ReceiveMessageListener{
 	public final int REQUEST_CODE_BOOKMARK = 1;
 	public final int REQUEST_CODE_HISTORY = 2;
 //	BDLocation location;
@@ -143,9 +145,7 @@ public class MainActivity extends Activity implements ShakeListener
 					}
 				}
        	}
-		webViewMain.loadUrl("http://m.baidu.com");
-
-        
+//		webViewMain.loadUrl("http://m.baidu.com");
 	}
 	private void initView() {
 		// TODO Auto-generated method stub
@@ -222,6 +222,8 @@ public class MainActivity extends Activity implements ShakeListener
 //		webViewMain.loadUrl("http://m.baidu.com");
 		webViewMain.setCutWebViewCallback(this);
 		webViewHome.setCutWebViewCallback(this);
+		webViewMain.setReceiveHtmlListener(this);
+		webViewHome.setReceiveMessageListener(this);
         webViewHome.loadUrl("file:///android_asset/welcomepage/index.html");
 
 	}
@@ -456,9 +458,11 @@ public class MainActivity extends Activity implements ShakeListener
 		case ParseCommand.Cmd_Err:
 		case ParseCommand.Cmd_Other:
 		default:
-			ToastUtil.toast("指令错误，请输入正确指令");
+//			ToastUtil.toast("指令错误，请输入正确指令");
 			String url1 = "http://m.baidu.com/s?word="+str;
 			webViewMain.loadUrl(url1);
+//			mViewPager.setCurrentItem(1);
+
 //			mTts.startSpeaking("指令错误，请输入正确指令",mSynListener);
 			break;
 		}
@@ -466,6 +470,8 @@ public class MainActivity extends Activity implements ShakeListener
 	private void cmdLocation() {
 		// TODO Auto-generated method stub
 		webViewMain.loadUrl("http://map.qq.com/m/index/map");
+//		mViewPager.setCurrentItem(1);
+
 	}
 	private void cmdWeather() {
 		BaseAppLocation baseAppLocation = BaseAppLocation.getInstance();
@@ -480,6 +486,8 @@ public class MainActivity extends Activity implements ShakeListener
 			url = "http://weather1.sina.cn/?vt=4";
 			
 		webViewMain.loadUrl(url);
+//		mViewPager.setCurrentItem(1);
+
 	}
 	
 	private void cmdQueryBookmark() {
@@ -546,6 +554,8 @@ public class MainActivity extends Activity implements ShakeListener
 	{
 		webViewMain.getSettings().setUserAgentString("Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.101 Safari/537.36");
 		webViewMain.loadUrl("https://ui.ptlogin2.qq.com/cgi-bin/login?style=9&appid=522005705&daid=4&s_url=https%3A%2F%2Fw.mail.qq.com%2Fcgi-bin%2Flogin%3Fvt%3Dpassport%26vm%3Dwsk%26delegate_url%3D%26f%3Dxhtml%26target%3D&hln_css=http%3A%2F%2Fmail.qq.com%2Fzh_CN%2Fhtmledition%2Fimages%2Flogo%2Fqqmail%2Fqqmail_logo_default_200h.png&low_login=1&hln_autologin=%E8%AE%B0%E4%BD%8F%E7%99%BB%E5%BD%95%E7%8A%B6%E6%80%81&pt_no_onekey=1");
+//		mViewPager.setCurrentItem(1);
+
 	}
 	
 	protected void readMailContent(int praseNewsIndex) {
@@ -636,6 +646,7 @@ public class MainActivity extends Activity implements ShakeListener
 	
 	private void cmdReadNews(){
 		webViewMain.loadUrl(ParseTencentNews.HOMEURL);
+//		mViewPager.setCurrentItem(1);
 	}
 	
 	private void cmdSearch(String str) {
@@ -647,6 +658,8 @@ public class MainActivity extends Activity implements ShakeListener
 //		str = str.replace("搜索", "");
 		String url = "http://m.baidu.com/s?word="+str;
 		webViewMain.loadUrl(url);
+//		mViewPager.setCurrentItem(1);
+
 	}
 	
 	Handler handler = new Handler(){
@@ -774,9 +787,9 @@ public class MainActivity extends Activity implements ShakeListener
 //			case ParsePageType.MailHomePageTag:
 //				processQQMailHome();
 //				break;
-//			case ParsePageType.MailListTag:
-//				processMailList();
-//				break;
+			case ParsePageType.MailListTag:
+				processMailList();
+				break;
 			case ParsePageType.MailContentTag:
 				processMailContent();
 				break;
@@ -823,13 +836,19 @@ public class MainActivity extends Activity implements ShakeListener
 		@Override
 		public void onShouldOverrideUrl(String url) {
 			// TODO Auto-generated method stub
-			mTts.stopSpeaking();
-			
-			isPause = false;
-			
+			if(mTts.isSpeaking())
+			{
+				mTts.stopSpeaking();
+				isPause = false;
+				btntate = 0;
+			}
 			htmlBean.content = "";
 			tv_info.setText("正在为您努力加载...");
+			tv_head.setText(url);
+			htmlBean.url = url;
 			speechProgressBar.setVisibility(View.GONE);
+//			mViewPager.setCurrentItem(1);
+
 		}
 
 		@Override
@@ -946,10 +965,11 @@ public class MainActivity extends Activity implements ShakeListener
 					@Override
 					public void onDismiss(int type,String content) {
 						// TODO Auto-generated method stub
-						mViewPager.setCurrentItem(1);
+//						mViewPager.setCurrentItem(1);
 						switch (type) {
 						case EditUrlPopupWindow.TYPE_URL:
 							webViewMain.loadUrl(content);
+//							mViewPager.setCurrentItem(1);
 							break;
 						case EditUrlPopupWindow.TYPE_CNT:
 							List<String> list = new ArrayList<String>();
@@ -1088,7 +1108,7 @@ public class MainActivity extends Activity implements ShakeListener
 					int i = 1;
 					for(i = 1;i <= list.size();i++)
 					{
-						speakStr += "第"+i+"条，来自"+list.get(i-1).mailFrom+"，主题："+list.get(i-1).mailTitle+"。\n";
+						speakStr += "第"+i+"条，来自"+list.get(i-1).mailFrom+"，主题："+list.get(i-1).mailTitle+"\n";
 					}
 				}
 				else
@@ -1232,26 +1252,26 @@ public class MainActivity extends Activity implements ShakeListener
 			switch (tag) {
 			case 1:
 				webViewMain.loadUrl("http://m.baidu.com");
-				mViewPager.setCurrentItem(1);
+//				mViewPager.setCurrentItem(1);
 				break;
 			case 2:
-				mViewPager.setCurrentItem(1);
+//				mViewPager.setCurrentItem(1);
 				cmdReadNews();
 				break;
 			case 3:
-				mViewPager.setCurrentItem(1);
+//				mViewPager.setCurrentItem(1);
 				cmdMail();
 				break;
 			case 4:
-				mViewPager.setCurrentItem(1);
+//				mViewPager.setCurrentItem(1);
 				cmdWeather();
 				break;
 			case 5:
-				mViewPager.setCurrentItem(1);
+//				mViewPager.setCurrentItem(1);
 				cmdLocation();
 				break;
 			case 6:
-				mViewPager.setCurrentItem(1);
+//				mViewPager.setCurrentItem(1);
 				webViewMain.loadUrl("http://m.hao123.com");
 				break;
 			case 7:
@@ -1286,5 +1306,11 @@ public class MainActivity extends Activity implements ShakeListener
 			default:
 				break;
 			}
+		}
+		@Override
+		public void onLoadUrl(String url) {
+			// TODO Auto-generated method stub
+			if(url != null && url.indexOf("javascript:window") == -1)
+				mViewPager.setCurrentItem(1);
 		}
 }

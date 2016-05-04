@@ -84,6 +84,7 @@ public class EditUrlPopupWindow extends PopupWindow implements OnClickListener,a
 		setBackgroundDrawable(new BitmapDrawable());
         setOutsideTouchable(true);
         setOnDismissListener(this);
+        et_url.setTextIsSelectable(true);
 	}
 	
 	public void show(View view,String url)

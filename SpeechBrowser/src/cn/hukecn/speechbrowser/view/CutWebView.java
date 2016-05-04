@@ -1,6 +1,7 @@
 package cn.hukecn.speechbrowser.view;
 
 import cn.hukecn.speechbrowser.util.ToastUtil;
+import android.R.integer;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -83,8 +84,8 @@ public class CutWebView extends WebView{
       //设置定位的数据库路径
         settings.setGeolocationDatabasePath(dir);
         
-//        addJavascriptInterface(new JSLinster(),"HTML");
-        addJavascriptInterface(this, "call");
+        addJavascriptInterface(new JSLinster(),"HTML");
+//        addJavascriptInterface(this, "call");
 	}
 	
 	
@@ -144,7 +145,6 @@ public class CutWebView extends WebView{
 	            cookieStr = cookieManager.getCookie(url);
 	        	super.onPageFinished(view, url);
 	        }
-	        
 	    }
 	
 	 @SuppressLint("AddJavascriptInterface")
@@ -158,16 +158,16 @@ public class CutWebView extends WebView{
 				msg.what = 0;
 				handler.sendMessage(msg);
 	        }
+	        @JavascriptInterface
+	        public void onClick(int i)
+	        {
+				Message msg = handler.obtainMessage();
+				msg.arg1 = i;
+				msg.what = 1;
+				handler.sendMessage(msg);
+	        }
+	        
 	    }
-//	 public class SendToAndroid{
-	 @SuppressLint("AddJavascriptInterface")
-		 public void sendto(){
-			 Message msg = handler.obtainMessage();
-			 msg.what = 1;
-			 msg.arg1 = 0;
-			 handler.sendMessage(msg);
-//		 }
-	 }
 	 
 	 public interface ReceiveHTMLListener{
 		 public void onReceiveHTML(String url,String html);

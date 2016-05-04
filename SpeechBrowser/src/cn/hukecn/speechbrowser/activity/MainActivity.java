@@ -133,7 +133,6 @@ public class MainActivity extends Activity implements ShakeListener
 		
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
 	         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-//	         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);   
 	    }
 		initSpeechUtil();
 		initView();
@@ -174,7 +173,9 @@ public class MainActivity extends Activity implements ShakeListener
 						isPause = true;
 						btn_state.setImageResource(R.drawable.start);
 						btntate = 0;
-						mTts.pauseSpeaking();;
+						mTts.stopSpeaking();
+						speechProgressBar.setProgress(0);
+						speechProgressBar.setVisibility(View.GONE);
 					}
 				}
 			}
@@ -399,18 +400,7 @@ public class MainActivity extends Activity implements ShakeListener
 			
 			break;
 		case ParseCommand.Cmd_Weather:
-			BaseAppLocation baseAppLocation = BaseAppLocation.getInstance();
-			BDLocation location  = baseAppLocation.getLocation();
-			String url = null;
-			if(location != null)
-			{
-				String cityname = location.getCity().replace("市", "");
-				cityname = Trans2PinYin.trans2PinYin(cityname);
-				url = "http://weather1.sina.cn/?code="+cityname+"&vt=4";
-			}else
-				url = "http://weather1.sina.cn/?vt=4";
-				
-			webView.loadUrl(url);
+			cmdWeather();
 			break;
 		
 		case ParseCommand.Cmd_NewsNum:
@@ -458,7 +448,7 @@ public class MainActivity extends Activity implements ShakeListener
 			mTts.startSpeaking("指令错误，请输入正确指令",mSynListener);
 			break;
 		case ParseCommand.Cmd_Location:
-			webView.loadUrl("http://map.qq.com/m/index/map");
+			cmdLocation();
 			break;
 		case ParseCommand.Cmd_Exit:
 			mTts.startSpeaking("正在关闭机器人。。。", mSynListener);
@@ -483,6 +473,25 @@ public class MainActivity extends Activity implements ShakeListener
 			break;
 		}
 	}
+	private void cmdLocation() {
+		// TODO Auto-generated method stub
+		webView.loadUrl("http://map.qq.com/m/index/map");
+	}
+	private void cmdWeather() {
+		BaseAppLocation baseAppLocation = BaseAppLocation.getInstance();
+		BDLocation location  = baseAppLocation.getLocation();
+		String url = null;
+		if(location != null)
+		{
+			String cityname = location.getCity().replace("市", "");
+			cityname = Trans2PinYin.trans2PinYin(cityname);
+			url = "http://weather1.sina.cn/?code="+cityname+"&vt=4";
+		}else
+			url = "http://weather1.sina.cn/?vt=4";
+			
+		webView.loadUrl(url);
+	}
+	
 	private void cmdQueryBookmark() {
 		// TODO Auto-generated method stub
 		MyDataBase db = MyDataBase.getInstance();
@@ -840,18 +849,15 @@ public class MainActivity extends Activity implements ShakeListener
 			switch (v.getId()) 
 			{
 			case R.id.btn_m_bookmark:
-				Intent intent = new Intent(MainActivity.this,BookMarkActivity.class);
-				intent.putExtra("url", htmlBean.url);
-				intent.putExtra("title", Jsoup.parse(htmlBean.html).title());
-				startActivityForResult(intent, REQUEST_CODE_BOOKMARK);
+				processBookmark();
 				break;
 			case R.id.btn_m_email:
+				Intent intent = new Intent();
 				intent = new Intent(MainActivity.this,MailManagerActivity.class);
 				startActivity(intent);
 				break;
 			case R.id.btn_m_setting:
-				intent = new Intent(MainActivity.this,SettingActivity.class);
-				startActivity(intent);
+				processSetting();
 				break;
 			case R.id.btn_m_exit:
 				handler.postDelayed(new Runnable() {
@@ -1148,7 +1154,6 @@ public class MainActivity extends Activity implements ShakeListener
 			}
 			
 			htmlBean.content = titleStr;
-			
 //			mTts.startSpeaking(htmlBean.content, mSynListener);
 		}
 		
@@ -1186,6 +1191,19 @@ public class MainActivity extends Activity implements ShakeListener
 //			mTts.startSpeaking(htmlBean.content,mSynListener);
 		}
 		
+		public void processBookmark(){
+			Intent intent = new Intent(MainActivity.this,BookMarkActivity.class);
+			intent.putExtra("url", htmlBean.url);
+			intent.putExtra("title", Jsoup.parse(htmlBean.html).title());
+			startActivityForResult(intent, REQUEST_CODE_BOOKMARK);
+		}
+		
+		public void processSetting(){
+			Intent intent = new Intent();
+			intent = new Intent(MainActivity.this,SettingActivity.class);
+			startActivity(intent);
+		}
+		
 		@Override
 		protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 			// TODO Auto-generated method stub
@@ -1219,6 +1237,39 @@ public class MainActivity extends Activity implements ShakeListener
 		@Override
 		public void onReceiveMessage(int tag) {
 			// TODO Auto-generated method stub
-			ToastUtil.toast(""+tag);
+			switch (tag) {
+			case 1:
+				webView.loadUrl("http://m.baidu.com");
+				mViewPager.setCurrentItem(1);
+				break;
+			case 2:
+				mViewPager.setCurrentItem(1);
+				cmdReadNews();
+				break;
+			case 3:
+				mViewPager.setCurrentItem(1);
+				cmdMail();
+				break;
+			case 4:
+				mViewPager.setCurrentItem(1);
+				cmdWeather();
+				break;
+			case 5:
+				mViewPager.setCurrentItem(1);
+				cmdLocation();
+				break;
+			case 6:
+				mViewPager.setCurrentItem(1);
+				webView.loadUrl("http://m.hao123.com");
+				break;
+			case 7:
+				processBookmark();
+				break;
+			case 8:
+				processSetting();
+				break;
+			default:
+				break;
+			}
 		}
 }

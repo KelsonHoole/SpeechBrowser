@@ -181,6 +181,11 @@ public class MainActivity extends Activity implements ShakeListener
 						speechProgressBar.setProgress(0);
 						speechProgressBar.setVisibility(View.GONE);
 					}
+					
+					String url = webViewMain.getUrl();
+					if(url == null)
+						webViewMain.loadUrl("https://m.baidu.com");
+					
 				}
 			}
 			
@@ -219,11 +224,11 @@ public class MainActivity extends Activity implements ShakeListener
 		});
 		
 		CutWebView webViewHome = (CutWebView) view0.findViewById(R.id.webview);
-//		webViewMain.loadUrl("http://m.baidu.com");
 		webViewMain.setCutWebViewCallback(this);
 		webViewHome.setCutWebViewCallback(this);
 		webViewMain.setReceiveHtmlListener(this);
 		webViewHome.setReceiveMessageListener(this);
+		
         webViewHome.loadUrl("file:///android_asset/welcomepage/index.html");
 
 	}
@@ -844,7 +849,6 @@ public class MainActivity extends Activity implements ShakeListener
 			}
 			htmlBean.content = "";
 			tv_info.setText("正在为您努力加载...");
-			tv_head.setText(url);
 			htmlBean.url = url;
 			speechProgressBar.setVisibility(View.GONE);
 //			mViewPager.setCurrentItem(1);

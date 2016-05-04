@@ -52,6 +52,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.SoundPool;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -125,6 +126,26 @@ public class MainActivity extends Activity implements ShakeListener
 		musicEnd = sp.load(this, R.raw.bdspeech_recognition_success,1);
 	
         mVibrator = (Vibrator)getSystemService(Service.VIBRATOR_SERVICE);  
+        Intent intent = getIntent();
+        if(intent != null)
+        {
+        	String action = intent.getAction();
+        	if(action != null)
+	        	if (action.equals("android.intent.action.VIEW")) 
+	        	{
+					Uri uri = intent.getData();
+					String url = uri.toString();
+					if(url != null && url.length() > 0)
+					{
+						webViewMain.loadUrl(url);
+						mViewPager.setCurrentItem(1);
+						return;
+					}
+				}
+       	}
+		webViewMain.loadUrl("http://m.baidu.com");
+
+        
 	}
 	private void initView() {
 		// TODO Auto-generated method stub
@@ -198,7 +219,7 @@ public class MainActivity extends Activity implements ShakeListener
 		});
 		
 		CutWebView webViewHome = (CutWebView) view0.findViewById(R.id.webview);
-		webViewMain.loadUrl("http://m.baidu.com");
+//		webViewMain.loadUrl("http://m.baidu.com");
 		webViewMain.setCutWebViewCallback(this);
 		webViewHome.setCutWebViewCallback(this);
         webViewHome.loadUrl("file:///android_asset/welcomepage/index.html");

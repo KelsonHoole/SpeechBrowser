@@ -1,16 +1,11 @@
 package cn.hukecn.speechbrowser.view;
 
-import cn.hukecn.speechbrowser.util.ToastUtil;
-import android.R.integer;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
@@ -21,14 +16,10 @@ import android.widget.ProgressBar;
 
 public class CutWebView extends WebView{
 
-	ReceiveHTMLListener listener = null;
-	ReceiveTitleListener titleListener = null;
-	ReceiveMessageListener messageListener = null;
 	String cookieStr = "";
 	Context context = null;
 	String instantUrl = "";
-	ShouldOverrideUrlListener mShouldOverrideUrlListener = null;
-	
+	CutWebCallback listener = null;
 	Handler handler = new Handler(){
 		public void handleMessage(Message msg) 
 		{
@@ -38,8 +29,8 @@ public class CutWebView extends WebView{
 					listener.onReceiveHTML(instantUrl,(String)msg.obj);
 				break;
 			case 1:
-				if(messageListener != null)
-					messageListener.onReceiveMessage(msg.arg1);
+				if(listener != null)
+					listener.onReceiveMessage(msg.arg1);
 				break;
 			}
 		};
@@ -88,16 +79,8 @@ public class CutWebView extends WebView{
 //        addJavascriptInterface(this, "call");
 	}
 	
-	
-
-	public void setOnReceiveTitleListener(ReceiveTitleListener listener){
-		this.titleListener = listener;
-	}
-	public void setOnReceiveHTMLListener(ReceiveHTMLListener listener){
+	public void setCutWebViewCallback(CutWebCallback listener){
 		this.listener = listener;
-	}
-	public void setOnReceiveMessageListener(ReceiveMessageListener listener){
-		this.messageListener = listener;
 	}
 
 	 public class WebChromeClient extends android.webkit.WebChromeClient {
@@ -116,8 +99,8 @@ public class CutWebView extends WebView{
 	        @Override
 	        public void onReceivedTitle(WebView view, String title) {
 	        // TODO Auto-generated method stub
-	        	if(titleListener != null)
-	        		titleListener.onReceiveTitle(title);
+	        	if(listener != null)
+	        		listener.onReceiveTitle(title);
 //	        	super.onReceivedTitle(view, title);
 	        }
 	        
@@ -133,8 +116,13 @@ public class CutWebView extends WebView{
 	 public class WebViewCLient extends WebViewClient{
 	        @Override
 	        public boolean shouldOverrideUrlLoading(WebView view, String url) {
-	            if(mShouldOverrideUrlListener != null)
-	            	mShouldOverrideUrlListener.onShouldOverrideUrl(url);
+	            if(listener != null)
+	            	listener.onShouldOverrideUrl(url);
+//	   		 if(url.indexOf("ui.ptlogin2.qq.com") == -1 && url.indexOf("w.mail.qq.com") == -1)
+//					getSettings().setUserAgentString("Mozilla/5.0 (Linux; U; Android 5.1.1; zh-cn; PLK-UL00 Build/HONORPLK-UL00) AppleWebKit/537.36 (KHTML, like Gecko)Version/4.0 MQQBrowser/5.3 Mobile Safari/537.36");
+//				else
+//			        getSettings().setUserAgentString("Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.101 Safari/537.36");
+
 	            return false;
 	        }
 	        @Override
@@ -143,6 +131,9 @@ public class CutWebView extends WebView{
 //	        	view.loadUrl("javascript:window.HTML.getHtml(document.getElementsByTagName('html')[0].innerHTML);");
 	        	CookieManager cookieManager = CookieManager.getInstance();
 	            cookieStr = cookieManager.getCookie(url);
+	            if (listener != null) {
+					listener.onPageFinished(url);
+				}
 	        	super.onPageFinished(view, url);
 	        }
 	    }
@@ -169,29 +160,42 @@ public class CutWebView extends WebView{
 	        
 	    }
 	 
-	 public interface ReceiveHTMLListener{
+	 public interface CutWebCallback{
 		 public void onReceiveHTML(String url,String html);
-	 }
-	 
-	 public interface ReceiveTitleListener{
 		 public void onReceiveTitle(String title);
+		 public void onReceiveMessage(int tag);
+		 public void onShouldOverrideUrl(String url);
+		 public void onPageFinished(String url);
 	 }
 	 
-	 public interface ReceiveMessageListener{
-		 public void onReceiveMessage(int tag);
-	 }
+//	 public interface ReceiveHTMLListener{
+//		 public void onReceiveHTML(String url,String html);
+//	 }
+//	 
+//	 public interface ReceiveTitleListener{
+//		 public void onReceiveTitle(String title);
+//	 }
+//	 
+//	 public interface ReceiveMessageListener{
+//		 public void onReceiveMessage(int tag);
+//	 }
+	 @Override
+	public void loadUrl(String url) {
+		// TODO Auto-generated method stub
+//   		 if(url.indexOf("ui.ptlogin2.qq.com") == -1 && url.indexOf("w.mail.qq.com") == -1)
+//				getSettings().setUserAgentString("Mozilla/5.0 (Linux; U; Android 5.1.1; zh-cn; PLK-UL00 Build/HONORPLK-UL00) AppleWebKit/537.36 (KHTML, like Gecko)Version/4.0 MQQBrowser/5.3 Mobile Safari/537.36");
+//			else
+//		        getSettings().setUserAgentString("Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.101 Safari/537.36");
+
+		super.loadUrl(url);
+	}
 	 
 	 public String getCookie(){
 		 return cookieStr;
 	 }
 	 
-	 public void setOnShouldOverrideUrlListener(ShouldOverrideUrlListener listener)
-	 {
-		 this.mShouldOverrideUrlListener = listener;
-	 }
-	 
-	 public interface ShouldOverrideUrlListener{
-		 public void onShouldOverrideUrl(String url);
-	 }
+//	 public interface ShouldOverrideUrlListener{
+//		 public void onShouldOverrideUrl(String url);
+//	 }
 	 
 }

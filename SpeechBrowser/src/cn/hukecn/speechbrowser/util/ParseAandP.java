@@ -18,7 +18,16 @@ public class ParseAandP {
 		
 		for(Element elementA:as)
 		{
-			a.add(elementA.text());
+			String aitem = elementA.text();
+			if(aitem != null && aitem.length() > 0)
+			{			
+				String link = elementA.attr("href");
+				if(link != null && link.length() > 0)
+				{
+					aitem.replace("  ", "");
+					a.add(aitem);
+				}
+			}
 		}
 		
 		for(Element elementP:ps)

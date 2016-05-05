@@ -40,6 +40,15 @@ public class ParsePageType {
 	public static final String TencentMapUrl = "map.qq.com/m/index/map";
 	public static final int TencentMapUrlTag = 9;
 	
+	//凤凰新闻列表
+	public static final String FengNewsUrl = "inews.ifeng.com";
+	public static final int FengNewsTag = 10;
+
+	//凤凰新闻内容
+	public static final String FengNewsContentUrl1 = "inews.ifeng.com";
+	public static final String FengNewsContentUrl2 = "news.shtml";
+	public static final int FengNewsContentTag = 11;
+	
 	public static final int NoSupportTag = 99;
 	private ParsePageType(){};
 	
@@ -81,6 +90,12 @@ public class ParsePageType {
 		
 		if(url.indexOf("m.baidu.com") != -1 && url.indexOf("/s?word=") != -1)
 			return BaiduResultUrlTag;
+		
+		if(url.contains(FengNewsUrl) && !url.contains(FengNewsContentUrl2))
+			return FengNewsTag;
+		
+		if(url.contains(FengNewsContentUrl1) && url.contains(FengNewsContentUrl2))
+			return FengNewsContentTag;
 		
 		return NoSupportTag;
 	}

@@ -4,7 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
+import cn.edu.hfut.dmic.contentextractor.ContentExtractor;
+import cn.edu.hfut.dmic.contentextractor.News;
+import cn.edu.hfut.dmic.webcollector.util.JsoupUtils;
 import cn.hukecn.speechbrowser.R;
 import cn.hukecn.speechbrowser.Shake;
 import cn.hukecn.speechbrowser.Shake.ShakeListener;
@@ -18,7 +22,9 @@ import cn.hukecn.speechbrowser.bean.NewsBean;
 import cn.hukecn.speechbrowser.location.BaseAppLocation;
 import cn.hukecn.speechbrowser.util.BaiduSearch;
 import cn.hukecn.speechbrowser.util.JsonParser;
+import cn.hukecn.speechbrowser.util.ParseAandP;
 import cn.hukecn.speechbrowser.util.ParseCommand;
+import cn.hukecn.speechbrowser.util.ParseFengNews;
 import cn.hukecn.speechbrowser.util.ParseMailContent;
 import cn.hukecn.speechbrowser.util.ParseMailList;
 import cn.hukecn.speechbrowser.util.ParsePageType;
@@ -415,7 +421,7 @@ public class MainActivity extends Activity implements ShakeListener
 				break;
 			}
 			
-			if(pageType == ParsePageType.NewsListTag || pageType == ParsePageType.NewsContentTag)
+			if(pageType == ParsePageType.NewsListTag || pageType == ParsePageType.NewsContentTag || pageType == ParsePageType.FengNewsContentTag || pageType == ParsePageType.FengNewsTag)
 			{
 				//进入读新闻详情
 				if(newsList != null && newsList.size() > 0)
@@ -813,31 +819,69 @@ public class MainActivity extends Activity implements ShakeListener
 			case ParsePageType.TencentMapUrlTag:
 				processGetLocation();
 				break;
+			case ParsePageType.FengNewsTag:
+				processFengNewsList();
+				break;
+			case ParsePageType.FengNewsContentTag:
+				processFengNewsContent();
+				break;
 			default:
-				htmlBean.content = Jsoup.parse(html).text();
+//				if(url.contains("news") || url.contains("News"))
+//				{
+//					try {
+//						News news = ContentExtractor.getNewsByHtml(html);
+//						
+//						htmlBean.content = news.getTitle()+'\n';
+//						htmlBean.content += news.getContent();
+//					} catch (Exception e) {
+//						// TODO Auto-generated catch block
+//						ToastUtil.toast("新闻解析失败");
+//					}
+//					
+//				}else {
+//					List<String> aList = new ArrayList<String>();
+//					List<String> pList = new ArrayList<String>();
+//					ParseAandP.parse(htmlBean.html, aList, pList);
+//					
+//					htmlBean.content = "=================A================\n";
+//					for(String str:aList)
+//					{
+//						htmlBean.content += str+' ';
+//					}
+//					
+//					htmlBean.content += "\n=================P================\n";
+//					for(String str:pList)
+//					{
+//						htmlBean.content += str+"\n";
+//					}
+//				}
+				try {
+					String content = ContentExtractor.getContentByHtml(html);
+					htmlBean.content = content;
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					ToastUtil.toast("解析失败");
+				}
 				break;
 			}
-//			List<String> aList = new ArrayList<String>();
-//			List<String> pList = new ArrayList<String>();
-//			ParseAandP.parse(htmlBean.html, aList, pList);
-//			
-//			htmlBean.content = "=================A================\n";
-//			for(String str:aList)
-//			{
-//				htmlBean.content += "A"+str+'A';
-//			}
-//			
-//			htmlBean.content += "\n=================P================\n";
-//			for(String str:pList)
-//			{
-//				htmlBean.content += "P"+str+"\n";
-//			}
 			
 			tv_info.setText(htmlBean.content);
 //			if(htmlBean.content.length()>0)
 //				mTts.startSpeaking(htmlBean.content, mSynListener);
 		}
 
+
+		private void processFengNewsContent() {
+	// TODO Auto-generated method stub
+			News news = ParseFengNews.ParseFengNewsContent(htmlBean.html);
+			if(news == null)
+			{
+				htmlBean.content = "新闻详情读取失败...";
+			}else {
+				htmlBean.content = "标题："+news.getTitle()+"\n";
+				htmlBean.content += news.getContent();
+			}
+		}
 		@Override
 		public void onShouldOverrideUrl(String url) {
 			// TODO Auto-generated method stub
@@ -997,7 +1041,29 @@ public class MainActivity extends Activity implements ShakeListener
 		}
 		
 		
-		
+		private void processFengNewsList() {
+			// TODO Auto-generated method stub
+			List<News> newsList = ParseFengNews.parseFengNewsList(htmlBean.html);
+			if(newsList != null && newsList.size() > 0)
+			{
+				htmlBean.content = "";
+				List<NewsBean> temp = new ArrayList<NewsBean>();
+				for(int i = 1;i <= newsList.size();i++)
+				{
+					News news = newsList.get(i-1);
+					htmlBean.content += "第"+i+"条："+news.getTitle()+"\n";
+//					htmlBean.content += news.getUrl()+"\n\n";
+					NewsBean bean = new NewsBean();
+					bean.newsTitle = news.getTitle();
+					bean.newsUrl = news.getUrl();
+					temp.add(bean);
+				}
+				this.newsList = temp;
+			}else
+			{
+				htmlBean.content = "新闻列表读取失败";
+			}
+		}
 		
 		public void processGetLocation()
 		{
@@ -1276,7 +1342,7 @@ public class MainActivity extends Activity implements ShakeListener
 				break;
 			case 6:
 //				mViewPager.setCurrentItem(1);
-				webViewMain.loadUrl("http://m.hao123.com");
+				webViewMain.loadUrl("http://inews.ifeng.com/index.shtml");
 				break;
 			case 7:
 				processBookmark();

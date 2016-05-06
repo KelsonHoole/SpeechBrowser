@@ -99,6 +99,9 @@ public class CutWebView extends WebView{
 	        public void onProgressChanged(WebView view, int newProgress) {
 	            if (newProgress == 100) {
 	                progressbar.setVisibility(GONE);
+	                if (listener != null) {
+						listener.onPageFinished(getUrl());
+					}
 	            } else {
 	                if (progressbar.getVisibility() == GONE)
 	                    progressbar.setVisibility(VISIBLE);
@@ -127,6 +130,7 @@ public class CutWebView extends WebView{
 	 public class WebViewCLient extends WebViewClient{
 	        @Override
 	        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+	        	
 	            if(listener != null)
 	            	listener.onShouldOverrideUrl(url);
 //	   		 if(url.indexOf("ui.ptlogin2.qq.com") == -1 && url.indexOf("w.mail.qq.com") == -1)
@@ -142,9 +146,9 @@ public class CutWebView extends WebView{
 //	        	view.loadUrl("javascript:window.HTML.getHtml(document.getElementsByTagName('html')[0].innerHTML);");
 	        	CookieManager cookieManager = CookieManager.getInstance();
 	            cookieStr = cookieManager.getCookie(url);
-	            if (listener != null) {
-					listener.onPageFinished(url);
-				}
+//	            if (listener != null) {
+//					listener.onPageFinished(url);
+//				}
 	        	super.onPageFinished(view, url);
 	        }
 	    }

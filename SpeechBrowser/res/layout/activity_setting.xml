@@ -7,15 +7,88 @@
     tools:context="${relativePackage}.${activityClass}" >
 
     
-    <EditText 
-        android:singleLine="true"
-        android:layout_height="wrap_content"
+       <LinearLayout
         android:layout_width="match_parent"
-        android:id="@+id/et_input"/>
-    <TextView
-        android:id="@+id/tv_info"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_world" />
+        android:orientation="horizontal"
+        android:background="#3f51b5"
+        android:padding="12dp"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/title"
+            android:textColor="#fff"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="23sp"
+            android:text="浏览器设置"/>
+
+    	</LinearLayout>
+    	
+       <ScrollView 
+           android:layout_height="match_parent"
+           android:layout_width="match_parent">
+           <LinearLayout 
+               android:orientation="vertical"
+               android:layout_height="wrap_content"
+               android:layout_width="match_parent">
+               <LinearLayout
+                   android:layout_height="wrap_content"
+                   android:layout_width="match_parent"
+                   android:orientation="horizontal"
+                   android:layout_marginLeft="20dp"
+                   android:layout_marginRight="20dp">
+
+                   <TextView
+                       android:layout_gravity="center_vertical"
+                       android:gravity="center_vertical"
+                       android:layout_width="0dp"
+                       android:layout_height="wrap_content"
+                       android:layout_weight="1"
+                       android:padding="10dp"
+                       android:textSize="17sp"
+                       android:text="无障碍全自动模式" />
+
+                   <ToggleButton
+                       android:id="@+id/btn_blind"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"/>
+                  
+               </LinearLayout>
+               
+               <View 
+                   android:layout_height="1dp"
+                   android:layout_width="match_parent"
+                   android:layout_marginTop="5dp"
+                   android:layout_marginBottom="5dp"
+                   android:layout_marginLeft="15dp"
+                   android:layout_marginRight="15dp"
+                   android:background="#aaa"/>
+               <LinearLayout
+                   android:layout_height="wrap_content"
+                   android:layout_width="match_parent"
+                   android:orientation="horizontal"
+                   android:layout_marginLeft="20dp"
+                   android:layout_marginRight="20dp">
+
+                   <TextView
+                       android:layout_gravity="center_vertical"
+                       android:gravity="center_vertical"
+                       android:layout_width="0dp"
+                       android:layout_height="wrap_content"
+                       android:layout_weight="1"
+                       android:padding="10dp"
+                       android:textSize="17sp"
+                       android:text="网页右滑自动阅读" />
+
+                   <ToggleButton
+                       android:id="@+id/btn_autoread"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"/>
+                  
+               </LinearLayout>
+               
+               
+           </LinearLayout>
+       </ScrollView>
 
 </LinearLayout>

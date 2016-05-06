@@ -13,6 +13,7 @@ import cn.hukecn.speechbrowser.R;
 import cn.hukecn.speechbrowser.Shake;
 import cn.hukecn.speechbrowser.Shake.ShakeListener;
 import cn.hukecn.speechbrowser.DAO.MyDataBase;
+import cn.hukecn.speechbrowser.DAO.MySharedPreferences;
 import cn.hukecn.speechbrowser.bean.BookMarkBean;
 import cn.hukecn.speechbrowser.bean.HistoryBean;
 import cn.hukecn.speechbrowser.bean.HtmlBean;
@@ -58,6 +59,7 @@ import android.app.AlertDialog.Builder;
 import android.app.Service;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.net.Uri;
@@ -82,6 +84,7 @@ public class MainActivity extends Activity implements ShakeListener
 			,OnClickListener,CutWebCallback,ReceiveHtmlListener,ReceiveMessageListener{
 	public final int REQUEST_CODE_BOOKMARK = 1;
 	public final int REQUEST_CODE_HISTORY = 2;
+	public final int REQUEST_CODE_SETTING = 3;
 //	BDLocation location;
 	MenuPopupWindow popWindow;
 	List<Integer> cmdList = new ArrayList<Integer>();
@@ -118,6 +121,8 @@ public class MainActivity extends Activity implements ShakeListener
 	RelativeLayout rl_head = null;
 	ViewPager mViewPager = null;
 	ViewPageAdapter pageAdapter = null;
+	private boolean blind = false;
+	private boolean autoread = false;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -126,6 +131,11 @@ public class MainActivity extends Activity implements ShakeListener
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
 	         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 	    }
+		
+		final SharedPreferences sharedpref = MySharedPreferences.getInstance(getApplicationContext());
+	    autoread = sharedpref.getBoolean("autoread", false);
+	    blind = sharedpref.getBoolean("blind", false);
+	    
 		initSpeechUtil();
 		initView();
 		
@@ -490,9 +500,14 @@ public class MainActivity extends Activity implements ShakeListener
 		String url = null;
 		if(location != null)
 		{
+			try{
+				
 			String cityname = location.getCity().replace("市", "");
 			cityname = Trans2PinYin.trans2PinYin(cityname);
 			url = "http://weather1.sina.cn/?code="+cityname+"&vt=4";
+			}catch(NullPointerException e){
+				url = "http://weather1.sina.cn/?vt=4";
+			}
 		}else
 			url = "http://weather1.sina.cn/?vt=4";
 			
@@ -855,6 +870,12 @@ public class MainActivity extends Activity implements ShakeListener
 //						htmlBean.content += str+"\n";
 //					}
 //				}
+				if(url != null && url.contains("m.baidu.com") && url.length() < 21)
+				{
+					htmlBean.content = "当前网页暂不支持解析";
+					break;
+				}
+
 				try {
 					String content = ContentExtractor.getContentByHtml(html);
 					htmlBean.content = content;
@@ -866,6 +887,8 @@ public class MainActivity extends Activity implements ShakeListener
 			}
 			
 			tv_info.setText(htmlBean.content);
+			if(autoread || blind)
+				mTts.startSpeaking(htmlBean.content, mSynListener);
 //			if(htmlBean.content.length()>0)
 //				mTts.startSpeaking(htmlBean.content, mSynListener);
 		}
@@ -1061,7 +1084,9 @@ public class MainActivity extends Activity implements ShakeListener
 				this.newsList = temp;
 			}else
 			{
-				htmlBean.content = "新闻列表读取失败";
+//				htmlBean.content = "新闻列表读取失败";
+
+				htmlBean.content = "";
 			}
 		}
 		
@@ -1069,13 +1094,13 @@ public class MainActivity extends Activity implements ShakeListener
 		{
 			BaseAppLocation baseAppLocation = BaseAppLocation.getInstance();
 			BDLocation location  = baseAppLocation.getLocation();
-			if(location != null){
+			if(location != null && location.getAddrStr() != null && location.getAddrStr().length() > 0){
 				String content = "您当前位于："+location.getAddrStr();
 //				mTts.startSpeaking(content, mSynListener);
 				htmlBean.content = content;
 			}else
 			{
-				String content = "暂未获取到您的位置，请稍后再试。";
+				String content = "暂未获取到您的位置，请检查是否已授予位置权限.";
 //				mTts.startSpeaking(content, mSynListener);
 				htmlBean.content = content;
 			}
@@ -1283,7 +1308,7 @@ public class MainActivity extends Activity implements ShakeListener
 		public void processSetting(){
 			Intent intent = new Intent();
 			intent = new Intent(MainActivity.this,SettingActivity.class);
-			startActivity(intent);
+			startActivityForResult(intent,REQUEST_CODE_SETTING);
 		}
 		
 		@Override
@@ -1307,6 +1332,13 @@ public class MainActivity extends Activity implements ShakeListener
 					webViewMain.loadUrl(url);
 				}
 				break;
+			case REQUEST_CODE_SETTING:
+			{
+				final SharedPreferences sharedpref = MySharedPreferences.getInstance(getApplicationContext());
+			    autoread = sharedpref.getBoolean("autoread", false);
+			    blind = sharedpref.getBoolean("blind", false);
+				break;
+			}
 			default:
 				break;
 			}
@@ -1319,6 +1351,7 @@ public class MainActivity extends Activity implements ShakeListener
 		@Override
 		public void onReceiveMessage(int tag) {
 			// TODO Auto-generated method stub
+			webViewMain.getSettings().setUserAgentString("Mozilla/5.0 (Linux; U; Android 5.1.1; zh-cn; PLK-UL00 Build/HONORPLK-UL00) AppleWebKit/537.36 (KHTML, like Gecko)Version/4.0 MQQBrowser/5.3 Mobile Safari/537.36");
 			switch (tag) {
 			case 1:
 				webViewMain.loadUrl("http://m.baidu.com");
@@ -1353,10 +1386,14 @@ public class MainActivity extends Activity implements ShakeListener
 			default:
 				break;
 			}
+
 		}
+		
 		@Override
 		public void onPageFinished(String url) {
 			// TODO Auto-generated method stub
+			if (url != null && url.length() > 0) {
+			
 			htmlBean.url = url;
 			int tag = ParsePageType.getPageType(url);
 			
@@ -1369,12 +1406,18 @@ public class MainActivity extends Activity implements ShakeListener
 				break;
 			case ParsePageType.MailListTag:
 				processMailList();
-				break;
-//			case ParsePageType.MailContentTag:
-//				processMailContent();
-//				break;
 			default:
+				if(blind && !url.contains("android_asset"))
+				{
+					if(mViewPager.getCurrentItem() == 2)
+						webViewMain.loadUrl("javascript:window.HTML.getHtml(document.getElementsByTagName('html')[0].innerHTML);");
+					else {
+						mViewPager.setCurrentItem(2);
+					}
+				}
 				break;
+			}
+			
 			}
 		}
 		@Override

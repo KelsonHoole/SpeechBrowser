@@ -1,17 +1,17 @@
 package cn.hukecn.speechbrowser;
 
 import android.app.Application;
-import cn.hukecn.speechbrowser.DAO.MyDataBase;
-import cn.hukecn.speechbrowser.location.BaseAppLocation;
-import cn.hukecn.speechbrowser.util.ToastUtil;
+import android.content.Context;
 
 public class SpeechBrowserApplication extends Application {
 	
+	private static Context applicationContext = null;
 	@Override
 	public void onCreate() {
 		// TODO Auto-generated method stub
 //		initApp();
 		super.onCreate();
+		applicationContext = getApplicationContext();
 	}
 
 //	private void initApp() {
@@ -24,4 +24,9 @@ public class SpeechBrowserApplication extends Application {
 //        baseAppLocation.init(getApplicationContext());
 //        
 //	}
+	
+	public static Context getAppContext() {
+		// TODO Auto-generated method stub
+		return applicationContext;
+	}
 }

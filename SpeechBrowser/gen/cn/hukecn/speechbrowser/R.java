@@ -16,6 +16,104 @@ public final class R {
         public static final int popup_show=0x7f040004;
     }
     public static final class attr {
+        /** <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
+or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
+         */
+        public static final int numberProgressBarStyle=0x7f01000a;
+        /** <p>Must be an integer value, such as "<code>100</code>".
+<p>This may also be a reference to a resource (in the form
+"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
+theme attribute (in the form
+"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
+containing a value of this type.
+         */
+        public static final int progress_current=0x7f010000;
+        /** <p>Must be an integer value, such as "<code>100</code>".
+<p>This may also be a reference to a resource (in the form
+"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
+theme attribute (in the form
+"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
+containing a value of this type.
+         */
+        public static final int progress_max=0x7f010001;
+        /** <p>Must be a dimension value, which is a floating point number appended with a unit such as "<code>14.5sp</code>".
+Available units are: px (pixels), dp (density-independent pixels), sp (scaled pixels based on preferred font size),
+in (inches), mm (millimeters).
+<p>This may also be a reference to a resource (in the form
+"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
+theme attribute (in the form
+"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
+containing a value of this type.
+         */
+        public static final int progress_reached_bar_height=0x7f010004;
+        /** <p>Must be a color value, in the form of "<code>#<i>rgb</i></code>", "<code>#<i>argb</i></code>",
+"<code>#<i>rrggbb</i></code>", or "<code>#<i>aarrggbb</i></code>".
+<p>This may also be a reference to a resource (in the form
+"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
+theme attribute (in the form
+"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
+containing a value of this type.
+         */
+        public static final int progress_reached_color=0x7f010003;
+        /** <p>Must be a color value, in the form of "<code>#<i>rgb</i></code>", "<code>#<i>argb</i></code>",
+"<code>#<i>rrggbb</i></code>", or "<code>#<i>aarrggbb</i></code>".
+<p>This may also be a reference to a resource (in the form
+"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
+theme attribute (in the form
+"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
+containing a value of this type.
+         */
+        public static final int progress_text_color=0x7f010007;
+        /** <p>Must be a dimension value, which is a floating point number appended with a unit such as "<code>14.5sp</code>".
+Available units are: px (pixels), dp (density-independent pixels), sp (scaled pixels based on preferred font size),
+in (inches), mm (millimeters).
+<p>This may also be a reference to a resource (in the form
+"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
+theme attribute (in the form
+"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
+containing a value of this type.
+         */
+        public static final int progress_text_offset=0x7f010008;
+        /** <p>Must be a dimension value, which is a floating point number appended with a unit such as "<code>14.5sp</code>".
+Available units are: px (pixels), dp (density-independent pixels), sp (scaled pixels based on preferred font size),
+in (inches), mm (millimeters).
+<p>This may also be a reference to a resource (in the form
+"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
+theme attribute (in the form
+"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
+containing a value of this type.
+         */
+        public static final int progress_text_size=0x7f010006;
+        /** <p>Must be one of the following constant values.</p>
+<table>
+<colgroup align="left" />
+<colgroup align="left" />
+<colgroup align="left" />
+<tr><th>Constant</th><th>Value</th><th>Description</th></tr>
+<tr><td><code>visible</code></td><td>0</td><td></td></tr>
+<tr><td><code>invisible</code></td><td>1</td><td></td></tr>
+</table>
+         */
+        public static final int progress_text_visibility=0x7f010009;
+        /** <p>Must be a dimension value, which is a floating point number appended with a unit such as "<code>14.5sp</code>".
+Available units are: px (pixels), dp (density-independent pixels), sp (scaled pixels based on preferred font size),
+in (inches), mm (millimeters).
+<p>This may also be a reference to a resource (in the form
+"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
+theme attribute (in the form
+"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
+containing a value of this type.
+         */
+        public static final int progress_unreached_bar_height=0x7f010005;
+        /** <p>Must be a color value, in the form of "<code>#<i>rgb</i></code>", "<code>#<i>argb</i></code>",
+"<code>#<i>rrggbb</i></code>", or "<code>#<i>aarrggbb</i></code>".
+<p>This may also be a reference to a resource (in the form
+"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
+theme attribute (in the form
+"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
+containing a value of this type.
+         */
+        public static final int progress_unreached_color=0x7f010002;
     }
     public static final class drawable {
         public static final int bookmark=0x7f020000;
@@ -55,52 +153,54 @@ public final class R {
         public static final int toolsbar_selector=0x7f02001f;
     }
     public static final class id {
-        public static final int btn_add=0x7f090008;
-        public static final int btn_autoread=0x7f090015;
-        public static final int btn_blind=0x7f090014;
-        public static final int btn_clear=0x7f09001b;
-        public static final int btn_clearHistory=0x7f090003;
-        public static final int btn_insert=0x7f090002;
-        public static final int btn_left=0x7f090010;
-        public static final int btn_m_bookmark=0x7f090022;
-        public static final int btn_m_email=0x7f090023;
-        public static final int btn_m_exit=0x7f090025;
-        public static final int btn_m_history=0x7f09001e;
-        public static final int btn_m_homepage=0x7f09001d;
-        public static final int btn_m_menu=0x7f090021;
-        public static final int btn_m_other=0x7f090020;
-        public static final int btn_m_refresh=0x7f09001f;
-        public static final int btn_m_setting=0x7f090024;
-        public static final int btn_menu=0x7f090012;
-        public static final int btn_microphone=0x7f09000b;
-        public static final int btn_right=0x7f090011;
-        public static final int btn_state=0x7f090013;
-        public static final int edt_id=0x7f090006;
-        public static final int edt_pw=0x7f090007;
-        public static final int et_head=0x7f09001a;
-        public static final int info=0x7f090027;
-        public static final int item1=0x7f090029;
-        public static final int item2=0x7f09002a;
-        public static final int item3=0x7f09002b;
-        public static final int item4=0x7f09002c;
-        public static final int item5=0x7f09002d;
-        public static final int listview=0x7f090001;
-        public static final int ll_start=0x7f090017;
-        public static final int lv_url=0x7f09001c;
-        public static final int rl_head=0x7f090009;
-        public static final int scroll=0x7f090004;
-        public static final int scrollview=0x7f090026;
-        public static final int speechProgressBar=0x7f09000e;
-        public static final int tabstrip=0x7f09000d;
-        public static final int title=0x7f090000;
-        public static final int toolsBar=0x7f09000f;
-        public static final int tv_head=0x7f09000a;
-        public static final int tv_info=0x7f090005;
-        public static final int tv_title=0x7f090018;
-        public static final int tv_url=0x7f090019;
-        public static final int viewpager=0x7f09000c;
-        public static final int webView=0x7f090016;
-        public static final int webview=0x7f090028;
+        public static final int btn_add=0x7f090009;
+        public static final int btn_autoread=0x7f090017;
+        public static final int btn_blind=0x7f090016;
+        public static final int btn_clear=0x7f09001d;
+        public static final int btn_clearHistory=0x7f090004;
+        public static final int btn_insert=0x7f090003;
+        public static final int btn_left=0x7f090011;
+        public static final int btn_m_bookmark=0x7f090023;
+        public static final int btn_m_email=0x7f090024;
+        public static final int btn_m_exit=0x7f090026;
+        public static final int btn_m_history=0x7f09001f;
+        public static final int btn_m_homepage=0x7f09001e;
+        public static final int btn_m_menu=0x7f090022;
+        public static final int btn_m_other=0x7f090021;
+        public static final int btn_m_refresh=0x7f090020;
+        public static final int btn_m_setting=0x7f090025;
+        public static final int btn_menu=0x7f090013;
+        public static final int btn_microphone=0x7f09000c;
+        public static final int btn_right=0x7f090012;
+        public static final int btn_shake=0x7f090015;
+        public static final int btn_state=0x7f090014;
+        public static final int edt_id=0x7f090007;
+        public static final int edt_pw=0x7f090008;
+        public static final int et_head=0x7f09001c;
+        public static final int info=0x7f090028;
+        public static final int invisible=0x7f090000;
+        public static final int item1=0x7f09002b;
+        public static final int item2=0x7f09002c;
+        public static final int item3=0x7f09002d;
+        public static final int item4=0x7f09002e;
+        public static final int item5=0x7f09002f;
+        public static final int listview=0x7f090002;
+        public static final int ll_start=0x7f090018;
+        public static final int rl_head=0x7f09000a;
+        public static final int scroll=0x7f090005;
+        public static final int scrollview=0x7f090027;
+        public static final int speechProgressBar=0x7f09000f;
+        public static final int tabstrip=0x7f09000e;
+        public static final int toolsBar=0x7f090010;
+        public static final int tv_head=0x7f09000b;
+        public static final int tv_info=0x7f090006;
+        public static final int tv_title=0x7f090019;
+        public static final int tv_titlebar=0x7f09001b;
+        public static final int tv_url=0x7f09001a;
+        public static final int viewpager=0x7f09000d;
+        public static final int visible=0x7f090001;
+        public static final int webview=0x7f09002a;
+        public static final int webviewprogressbar=0x7f090029;
     }
     public static final class layout {
         public static final int activity_book_mark=0x7f030000;
@@ -112,10 +212,11 @@ public final class R {
         public static final int activity_webview=0x7f030006;
         public static final int activity_welcome=0x7f030007;
         public static final int book_mark_item=0x7f030008;
-        public static final int edit_url_popupwindow=0x7f030009;
-        public static final int menu_popup_window=0x7f03000a;
-        public static final int page_layout_textview=0x7f03000b;
-        public static final int page_layout_webview=0x7f03000c;
+        public static final int common_titlebar=0x7f030009;
+        public static final int edit_url_popupwindow=0x7f03000a;
+        public static final int menu_popup_window=0x7f03000b;
+        public static final int page_layout_textview=0x7f03000c;
+        public static final int page_layout_webview=0x7f03000d;
     }
     public static final class menu {
         public static final int menus=0x7f080000;
@@ -161,6 +262,226 @@ public final class R {
         /**  Application theme. 
          */
         public static final int AppTheme=0x7f070001;
+        public static final int NumberProgressBar_Beauty_Red=0x7f070006;
+        public static final int NumberProgressBar_Default=0x7f070004;
+        public static final int NumberProgressBar_Funny_Orange=0x7f07000a;
+        public static final int NumberProgressBar_Grace_Yellow=0x7f070009;
+        public static final int NumberProgressBar_Passing_Green=0x7f070005;
+        public static final int NumberProgressBar_Relax_Blue=0x7f070008;
+        public static final int NumberProgressBar_Twinkle_Night=0x7f07000b;
+        public static final int NumberProgressBar_Warning_Red=0x7f070007;
         public static final int popwin_anim_style=0x7f070002;
     }
+    public static final class styleable {
+        /** Attributes that can be used with a NumberProgressBar.
+           <p>Includes the following attributes:</p>
+           <table>
+           <colgroup align="left" />
+           <colgroup align="left" />
+           <tr><th>Attribute</th><th>Description</th></tr>
+           <tr><td><code>{@link #NumberProgressBar_progress_current cn.hukecn.speechbrowser:progress_current}</code></td><td></td></tr>
+           <tr><td><code>{@link #NumberProgressBar_progress_max cn.hukecn.speechbrowser:progress_max}</code></td><td></td></tr>
+           <tr><td><code>{@link #NumberProgressBar_progress_reached_bar_height cn.hukecn.speechbrowser:progress_reached_bar_height}</code></td><td></td></tr>
+           <tr><td><code>{@link #NumberProgressBar_progress_reached_color cn.hukecn.speechbrowser:progress_reached_color}</code></td><td></td></tr>
+           <tr><td><code>{@link #NumberProgressBar_progress_text_color cn.hukecn.speechbrowser:progress_text_color}</code></td><td></td></tr>
+           <tr><td><code>{@link #NumberProgressBar_progress_text_offset cn.hukecn.speechbrowser:progress_text_offset}</code></td><td></td></tr>
+           <tr><td><code>{@link #NumberProgressBar_progress_text_size cn.hukecn.speechbrowser:progress_text_size}</code></td><td></td></tr>
+           <tr><td><code>{@link #NumberProgressBar_progress_text_visibility cn.hukecn.speechbrowser:progress_text_visibility}</code></td><td></td></tr>
+           <tr><td><code>{@link #NumberProgressBar_progress_unreached_bar_height cn.hukecn.speechbrowser:progress_unreached_bar_height}</code></td><td></td></tr>
+           <tr><td><code>{@link #NumberProgressBar_progress_unreached_color cn.hukecn.speechbrowser:progress_unreached_color}</code></td><td></td></tr>
+           </table>
+           @see #NumberProgressBar_progress_current
+           @see #NumberProgressBar_progress_max
+           @see #NumberProgressBar_progress_reached_bar_height
+           @see #NumberProgressBar_progress_reached_color
+           @see #NumberProgressBar_progress_text_color
+           @see #NumberProgressBar_progress_text_offset
+           @see #NumberProgressBar_progress_text_size
+           @see #NumberProgressBar_progress_text_visibility
+           @see #NumberProgressBar_progress_unreached_bar_height
+           @see #NumberProgressBar_progress_unreached_color
+         */
+        public static final int[] NumberProgressBar = {
+            0x7f010000, 0x7f010001, 0x7f010002, 0x7f010003,
+            0x7f010004, 0x7f010005, 0x7f010006, 0x7f010007,
+            0x7f010008, 0x7f010009
+        };
+        /**
+          <p>This symbol is the offset where the {@link cn.hukecn.speechbrowser.R.attr#progress_current}
+          attribute's value can be found in the {@link #NumberProgressBar} array.
+
+
+          <p>Must be an integer value, such as "<code>100</code>".
+<p>This may also be a reference to a resource (in the form
+"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
+theme attribute (in the form
+"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
+containing a value of this type.
+          @attr name cn.hukecn.speechbrowser:progress_current
+        */
+        public static final int NumberProgressBar_progress_current = 0;
+        /**
+          <p>This symbol is the offset where the {@link cn.hukecn.speechbrowser.R.attr#progress_max}
+          attribute's value can be found in the {@link #NumberProgressBar} array.
+
+
+          <p>Must be an integer value, such as "<code>100</code>".
+<p>This may also be a reference to a resource (in the form
+"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
+theme attribute (in the form
+"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
+containing a value of this type.
+          @attr name cn.hukecn.speechbrowser:progress_max
+        */
+        public static final int NumberProgressBar_progress_max = 1;
+        /**
+          <p>This symbol is the offset where the {@link cn.hukecn.speechbrowser.R.attr#progress_reached_bar_height}
+          attribute's value can be found in the {@link #NumberProgressBar} array.
+
+
+          <p>Must be a dimension value, which is a floating point number appended with a unit such as "<code>14.5sp</code>".
+Available units are: px (pixels), dp (density-independent pixels), sp (scaled pixels based on preferred font size),
+in (inches), mm (millimeters).
+<p>This may also be a reference to a resource (in the form
+"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
+theme attribute (in the form
+"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
+containing a value of this type.
+          @attr name cn.hukecn.speechbrowser:progress_reached_bar_height
+        */
+        public static final int NumberProgressBar_progress_reached_bar_height = 4;
+        /**
+          <p>This symbol is the offset where the {@link cn.hukecn.speechbrowser.R.attr#progress_reached_color}
+          attribute's value can be found in the {@link #NumberProgressBar} array.
+
+
+          <p>Must be a color value, in the form of "<code>#<i>rgb</i></code>", "<code>#<i>argb</i></code>",
+"<code>#<i>rrggbb</i></code>", or "<code>#<i>aarrggbb</i></code>".
+<p>This may also be a reference to a resource (in the form
+"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
+theme attribute (in the form
+"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
+containing a value of this type.
+          @attr name cn.hukecn.speechbrowser:progress_reached_color
+        */
+        public static final int NumberProgressBar_progress_reached_color = 3;
+        /**
+          <p>This symbol is the offset where the {@link cn.hukecn.speechbrowser.R.attr#progress_text_color}
+          attribute's value can be found in the {@link #NumberProgressBar} array.
+
+
+          <p>Must be a color value, in the form of "<code>#<i>rgb</i></code>", "<code>#<i>argb</i></code>",
+"<code>#<i>rrggbb</i></code>", or "<code>#<i>aarrggbb</i></code>".
+<p>This may also be a reference to a resource (in the form
+"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
+theme attribute (in the form
+"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
+containing a value of this type.
+          @attr name cn.hukecn.speechbrowser:progress_text_color
+        */
+        public static final int NumberProgressBar_progress_text_color = 7;
+        /**
+          <p>This symbol is the offset where the {@link cn.hukecn.speechbrowser.R.attr#progress_text_offset}
+          attribute's value can be found in the {@link #NumberProgressBar} array.
+
+
+          <p>Must be a dimension value, which is a floating point number appended with a unit such as "<code>14.5sp</code>".
+Available units are: px (pixels), dp (density-independent pixels), sp (scaled pixels based on preferred font size),
+in (inches), mm (millimeters).
+<p>This may also be a reference to a resource (in the form
+"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
+theme attribute (in the form
+"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
+containing a value of this type.
+          @attr name cn.hukecn.speechbrowser:progress_text_offset
+        */
+        public static final int NumberProgressBar_progress_text_offset = 8;
+        /**
+          <p>This symbol is the offset where the {@link cn.hukecn.speechbrowser.R.attr#progress_text_size}
+          attribute's value can be found in the {@link #NumberProgressBar} array.
+
+
+          <p>Must be a dimension value, which is a floating point number appended with a unit such as "<code>14.5sp</code>".
+Available units are: px (pixels), dp (density-independent pixels), sp (scaled pixels based on preferred font size),
+in (inches), mm (millimeters).
+<p>This may also be a reference to a resource (in the form
+"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
+theme attribute (in the form
+"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
+containing a value of this type.
+          @attr name cn.hukecn.speechbrowser:progress_text_size
+        */
+        public static final int NumberProgressBar_progress_text_size = 6;
+        /**
+          <p>This symbol is the offset where the {@link cn.hukecn.speechbrowser.R.attr#progress_text_visibility}
+          attribute's value can be found in the {@link #NumberProgressBar} array.
+
+
+          <p>Must be one of the following constant values.</p>
+<table>
+<colgroup align="left" />
+<colgroup align="left" />
+<colgroup align="left" />
+<tr><th>Constant</th><th>Value</th><th>Description</th></tr>
+<tr><td><code>visible</code></td><td>0</td><td></td></tr>
+<tr><td><code>invisible</code></td><td>1</td><td></td></tr>
+</table>
+          @attr name cn.hukecn.speechbrowser:progress_text_visibility
+        */
+        public static final int NumberProgressBar_progress_text_visibility = 9;
+        /**
+          <p>This symbol is the offset where the {@link cn.hukecn.speechbrowser.R.attr#progress_unreached_bar_height}
+          attribute's value can be found in the {@link #NumberProgressBar} array.
+
+
+          <p>Must be a dimension value, which is a floating point number appended with a unit such as "<code>14.5sp</code>".
+Available units are: px (pixels), dp (density-independent pixels), sp (scaled pixels based on preferred font size),
+in (inches), mm (millimeters).
+<p>This may also be a reference to a resource (in the form
+"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
+theme attribute (in the form
+"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
+containing a value of this type.
+          @attr name cn.hukecn.speechbrowser:progress_unreached_bar_height
+        */
+        public static final int NumberProgressBar_progress_unreached_bar_height = 5;
+        /**
+          <p>This symbol is the offset where the {@link cn.hukecn.speechbrowser.R.attr#progress_unreached_color}
+          attribute's value can be found in the {@link #NumberProgressBar} array.
+
+
+          <p>Must be a color value, in the form of "<code>#<i>rgb</i></code>", "<code>#<i>argb</i></code>",
+"<code>#<i>rrggbb</i></code>", or "<code>#<i>aarrggbb</i></code>".
+<p>This may also be a reference to a resource (in the form
+"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
+theme attribute (in the form
+"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
+containing a value of this type.
+          @attr name cn.hukecn.speechbrowser:progress_unreached_color
+        */
+        public static final int NumberProgressBar_progress_unreached_color = 2;
+        /** Attributes that can be used with a Themes.
+           <p>Includes the following attributes:</p>
+           <table>
+           <colgroup align="left" />
+           <colgroup align="left" />
+           <tr><th>Attribute</th><th>Description</th></tr>
+           <tr><td><code>{@link #Themes_numberProgressBarStyle cn.hukecn.speechbrowser:numberProgressBarStyle}</code></td><td></td></tr>
+           </table>
+           @see #Themes_numberProgressBarStyle
+         */
+        public static final int[] Themes = {
+            0x7f01000a
+        };
+        /**
+          <p>This symbol is the offset where the {@link cn.hukecn.speechbrowser.R.attr#numberProgressBarStyle}
+          attribute's value can be found in the {@link #Themes} array.
+
+
+          <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
+or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
+          @attr name cn.hukecn.speechbrowser:numberProgressBarStyle
+        */
+        public static final int Themes_numberProgressBarStyle = 0;
+    };
 }

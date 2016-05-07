@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import cn.hukecn.speechbrowser.R;
 import cn.hukecn.speechbrowser.DAO.MyDataBase;
 import cn.hukecn.speechbrowser.bean.MailBean;
@@ -22,7 +23,8 @@ public class MailManagerActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_mail_manager);
-		
+        ((TextView)findViewById(R.id.tv_titlebar)).setText("” œ‰π‹¿Ì");
+
 		et_password = (EditText) findViewById(R.id.edt_pw);
 		et_username = (EditText) findViewById(R.id.edt_id);
 		btn_add = (Button) findViewById(R.id.btn_add);

@@ -29,6 +29,7 @@
 <!--             android:layout_margin="10dp" -->
             
 	        <EditText
+	            android:focusable="true"
 	            android:layout_gravity="center_vertical"
 	            android:gravity="center_vertical"
 	            android:id="@+id/et_head"
@@ -60,11 +61,11 @@
         </LinearLayout>
     </RelativeLayout>
     
-    <ListView
+    <!-- <ListView
         android:id="@+id/lv_url" 
         android:layout_height="wrap_content"
         android:layout_width="match_parent">
         
-    </ListView>
+    </ListView> -->
     
 </LinearLayout>

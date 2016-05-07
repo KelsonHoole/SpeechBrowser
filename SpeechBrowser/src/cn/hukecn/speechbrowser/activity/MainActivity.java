@@ -4,11 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 
-import cn.edu.hfut.dmic.contentextractor.ContentExtractor;
-import cn.edu.hfut.dmic.contentextractor.News;
-import cn.edu.hfut.dmic.webcollector.util.JsoupUtils;
 import cn.hukecn.speechbrowser.R;
 import cn.hukecn.speechbrowser.Shake;
 import cn.hukecn.speechbrowser.Shake.ShakeListener;
@@ -20,10 +16,11 @@ import cn.hukecn.speechbrowser.bean.HtmlBean;
 import cn.hukecn.speechbrowser.bean.MailBean;
 import cn.hukecn.speechbrowser.bean.MailListBean;
 import cn.hukecn.speechbrowser.bean.NewsBean;
+import cn.hukecn.speechbrowser.contentextractor.ContentExtractor;
+import cn.hukecn.speechbrowser.contentextractor.News;
 import cn.hukecn.speechbrowser.location.BaseAppLocation;
 import cn.hukecn.speechbrowser.util.BaiduSearch;
 import cn.hukecn.speechbrowser.util.JsonParser;
-import cn.hukecn.speechbrowser.util.ParseAandP;
 import cn.hukecn.speechbrowser.util.ParseCommand;
 import cn.hukecn.speechbrowser.util.ParseFengNews;
 import cn.hukecn.speechbrowser.util.ParseMailContent;
@@ -34,10 +31,11 @@ import cn.hukecn.speechbrowser.util.ParseWeatherHtml;
 import cn.hukecn.speechbrowser.util.ToastUtil;
 import cn.hukecn.speechbrowser.util.Trans2PinYin;
 import cn.hukecn.speechbrowser.util.ViewPageAdapter;
-import cn.hukecn.speechbrowser.view.CutWebView;
-import cn.hukecn.speechbrowser.view.CutWebView.CutWebCallback;
-import cn.hukecn.speechbrowser.view.CutWebView.ReceiveHtmlListener;
-import cn.hukecn.speechbrowser.view.CutWebView.ReceiveMessageListener;
+import cn.hukecn.speechbrowser.view.NumberProgressBar;
+import cn.hukecn.speechbrowser.view.SuperWebView;
+import cn.hukecn.speechbrowser.view.SuperWebView.CutWebCallback;
+import cn.hukecn.speechbrowser.view.SuperWebView.ReceiveHtmlListener;
+import cn.hukecn.speechbrowser.view.SuperWebView.ReceiveMessageListener;
 import cn.hukecn.speechbrowser.view.EditUrlPopupWindow;
 import cn.hukecn.speechbrowser.view.EditUrlPopupWindow.EditUrlPopupDismissListener;
 import cn.hukecn.speechbrowser.view.MenuPopupWindow;
@@ -72,8 +70,6 @@ import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.ImageButton;
 import android.widget.PopupWindow.OnDismissListener;
 import android.widget.ProgressBar;
@@ -81,7 +77,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class MainActivity extends Activity implements ShakeListener
-			,OnClickListener,CutWebCallback,ReceiveHtmlListener,ReceiveMessageListener{
+			,OnClickListener,CutWebCallback
+			,ReceiveHtmlListener,ReceiveMessageListener{
 	public final int REQUEST_CODE_BOOKMARK = 1;
 	public final int REQUEST_CODE_HISTORY = 2;
 	public final int REQUEST_CODE_SETTING = 3;
@@ -91,9 +88,11 @@ public class MainActivity extends Activity implements ShakeListener
 	private SoundPool sp;//声明一个SoundPool
 	private int musicStart;//定义一个整型用load（）；来设置suondID
 	private int musicEnd;
-	private int newsNumber = -1;
+	private int currentIndex = -1;
 	private static Vibrator mVibrator;
 	private HtmlBean htmlBean = new HtmlBean();
+	private NumberProgressBar webviewProgressBar = null;
+	private NumberProgressBar speechProgressBar = null;
 	boolean isPause = false;
 	int btntate = 0;//0——开始，1——暂停，2——停止
 	TextView tv_head = null;
@@ -105,24 +104,26 @@ public class MainActivity extends Activity implements ShakeListener
 //	int browserState = ParseCommand.Cmd_Original;
 	long lastTime = 0l;
 	long lastShakeTime = 0l;
+//	int mailListCount = 0;
 	String mailCookie = "";
 	String msid = "";
-	ProgressBar speechProgressBar = null;
 	// 语音听写对象
 	//private SpeechRecognizer mIat;
 	// 语音听写UI
 	private RecognizerDialog mIatDialog;
-	TextView title = null;
+//	TextView title = null;
 	TextView tv_info = null;
 	SpeechSynthesizer mTts;
 	List<NewsBean> newsList = new ArrayList<NewsBean>();
 	List<MailListBean> mailList = new ArrayList<MailListBean>();
-	CutWebView webViewMain = null;
+	List<BookMarkBean> bookmarkList = new ArrayList<BookMarkBean>();
+	SuperWebView webViewMain = null;
 	RelativeLayout rl_head = null;
 	ViewPager mViewPager = null;
 	ViewPageAdapter pageAdapter = null;
 	private boolean blind = false;
 	private boolean autoread = false;
+	private boolean shake = true;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -135,6 +136,7 @@ public class MainActivity extends Activity implements ShakeListener
 		final SharedPreferences sharedpref = MySharedPreferences.getInstance(getApplicationContext());
 	    autoread = sharedpref.getBoolean("autoread", false);
 	    blind = sharedpref.getBoolean("blind", false);
+	    shake = sharedpref.getBoolean("shake", true);
 	    
 		initSpeechUtil();
 		initView();
@@ -169,7 +171,7 @@ public class MainActivity extends Activity implements ShakeListener
 		View view0 = View.inflate(this, R.layout.page_layout_webview, null);
 		View view1 = View.inflate(this, R.layout.page_layout_webview, null);
 		View view2 = View.inflate(this, R.layout.page_layout_textview, null);
-
+		
 		List<View> viewList = new ArrayList<View>();
 		viewList.add(view0);
 		viewList.add(view1);
@@ -190,7 +192,7 @@ public class MainActivity extends Activity implements ShakeListener
 				{
 					if(mTts.isSpeaking())
 					{
-						isPause = true;
+						isPause = false;
 						btn_state.setImageResource(R.drawable.start);
 						btntate = 0;
 						mTts.stopSpeaking();
@@ -212,17 +214,18 @@ public class MainActivity extends Activity implements ShakeListener
 			public void onPageScrollStateChanged(int arg0) {}
 		});
 		
-		title = (TextView) findViewById(R.id.title);
+//		title = (TextView) findViewById(R.id.title);
 		tv_info = (TextView) view2.findViewById(R.id.info);
-		webViewMain = (CutWebView) view1.findViewById(R.id.webview);
+		webViewMain = (SuperWebView) view1.findViewById(R.id.webview);
 		tv_head = (TextView) findViewById(R.id.tv_head);
 		btn_left = (ImageButton) findViewById(R.id.btn_left);
 		btn_right = (ImageButton) findViewById(R.id.btn_right);
 		btn_state = (ImageButton) findViewById(R.id.btn_state);
 		btn_menu = (ImageButton) findViewById(R.id.btn_menu);
 		btn_microphone = (ImageButton) findViewById(R.id.btn_microphone);
-		speechProgressBar = (ProgressBar) findViewById(R.id.speechProgressBar);
+		speechProgressBar = (NumberProgressBar) findViewById(R.id.speechProgressBar);
 		rl_head = (RelativeLayout) findViewById(R.id.rl_head);
+		webviewProgressBar = (NumberProgressBar) view1.findViewById(R.id.webviewprogressbar);
 		
 		btn_left.setOnClickListener(this);
 		btn_right.setOnClickListener(this);
@@ -239,9 +242,9 @@ public class MainActivity extends Activity implements ShakeListener
 			}
 		});
 		
-		CutWebView webViewHome = (CutWebView) view0.findViewById(R.id.webview);
+		SuperWebView webViewHome = (SuperWebView) view0.findViewById(R.id.webview);
 		webViewMain.setCutWebViewCallback(this);
-		webViewHome.setCutWebViewCallback(this);
+//		webViewHome.setCutWebViewCallback(this);
 		webViewMain.setReceiveHtmlListener(this);
 		webViewHome.setReceiveMessageListener(this);
 		
@@ -268,7 +271,9 @@ public class MainActivity extends Activity implements ShakeListener
 	
 	private RecognizerDialogListener mRecognizerDialogListener = new RecognizerDialogListener() {
 		public void onResult(RecognizerResult results, boolean isLast) {
-			
+			isPause = false;
+			btn_state.setImageResource(R.drawable.start);
+			btntate = 0;
 			List<String> list= JsonParser.parseIatResult(results.getResultString());
 
 			long current = System.currentTimeMillis();
@@ -409,14 +414,25 @@ public class MainActivity extends Activity implements ShakeListener
 			cmdSearch(str);
 			break;
 		case ParseCommand.Cmd_News:
+			mailList = null;
+			currentIndex = -1;
 			cmdReadNews();
-			
 			break;
 		case ParseCommand.Cmd_Weather:
 			cmdWeather();
 			break;
 		
 		case ParseCommand.Cmd_NewsNum:
+			int index = ParseCommand.praseNewsIndex(list);
+			currentIndex = index;
+			if(cmdList.size() >0 && cmdList.get(cmdList.size() -1) == ParseCommand.Cmd_Query_Bookmark)
+			{
+				//进入书签处理
+				if(bookmarkList != null && bookmarkList.size() > 0)
+					openUrlFromBookmark(index);
+				break;
+			}
+			
 			int pageType = ParsePageType.getPageType(htmlBean.url);
 			if( pageType== ParsePageType.MailListTag || pageType == ParsePageType.MailContentTag)
 			{
@@ -424,7 +440,7 @@ public class MainActivity extends Activity implements ShakeListener
 				if(mailList != null && mailList.size()>0)
 				{
 					cmdType = ParseCommand.Cmd_Mail_MailContent;
-					readMailContent(ParseCommand.praseNewsIndex(list));
+					readMailContent(index);
 				}else
 					ToastUtil.toast("获取邮件详情失败，请稍后再试");
 //					mTts.startSpeaking("获取邮件详情失败，请稍后再试",mSynListener);
@@ -436,29 +452,32 @@ public class MainActivity extends Activity implements ShakeListener
 				//进入读新闻详情
 				if(newsList != null && newsList.size() > 0)
 				{	
-					readNewsContent(ParseCommand.praseNewsIndex(list));
+					readNewsContent(index);
 				}else
 				{
 					ToastUtil.toast("获取新闻详情失败，请稍后再试");
 //					mTts.startSpeaking("获取新闻详情失败，请稍后再试",mSynListener);
 				}
-				
 				break;
 			}
-			
-			if(cmdList.size() >0 && cmdList.get(cmdList.size() -1) == ParseCommand.Cmd_Query_Bookmark)
-			{
-				//进入书签处理
-//				if(mailList != null && mailList.size()>0)
-//				{
-//					browserState = ParseCommand.Cmd_Original;
-					openUrlFromBookmark(ParseCommand.praseNewsIndex(list));
-//				}else
-//					mTts.startSpeaking("打开网页失败，请稍后再试",mSynListener);
-				break;
-			}
-			
 			mTts.startSpeaking("指令错误，请输入正确指令",mSynListener);
+			break;
+		case ParseCommand.Cmd_Next:
+			//读下一条新闻
+			if(newsList != null)
+				if(currentIndex > 0 && newsList.size() >= ++currentIndex)
+				{//读新闻
+					readNewsContent(currentIndex);
+					break;
+				}
+			//读下一条邮件
+			if(mailList != null)
+				if(currentIndex > 0 && mailList.size() >= ++currentIndex)
+				{
+					readMailContent(currentIndex);
+					break;
+				}
+			mTts.startSpeaking("指令错误", mSynListener);
 			break;
 		case ParseCommand.Cmd_Location:
 			cmdLocation();
@@ -468,6 +487,8 @@ public class MainActivity extends Activity implements ShakeListener
 			handler.sendEmptyMessageDelayed(0, 3000);
 			break;
 		case ParseCommand.Cmd_Mail:
+			newsList = null;
+			currentIndex = -1;
 			cmdMail();
 			break;
 		case ParseCommand.Cmd_Query_Bookmark:
@@ -519,24 +540,25 @@ public class MainActivity extends Activity implements ShakeListener
 	private void cmdQueryBookmark() {
 		// TODO Auto-generated method stub
 		MyDataBase db = MyDataBase.getInstance();
-		List<BookMarkBean> list = db.queryBookMark();
-		if(list.size() == 0)
+		bookmarkList = db.queryBookMark();
+		if(bookmarkList.size() == 0)
 		{
 			ToastUtil.toast("您尚未添加书签...");
 
-//			mTts.startSpeaking("您尚未添加书签...", mSynListener);
+			mTts.startSpeaking("您尚未添加书签...", mSynListener);
 		}
 		else
 		{
-			int count = list.size();
+			int count = bookmarkList.size();
 			String str = "您的书签共有" + count+"条：\n";
 			for(int i = 1;i <= count;i++)
 			{
-				str+="第"+i+"条:"+list.get(i - 1).title+"\n";
+				str+="第"+i+"条:"+bookmarkList.get(i - 1).title+"\n";
 			}
 			tv_info.setText(str);
 			htmlBean.content = str;
-//			mTts.startSpeaking(str, mSynListener);
+			
+			mTts.startSpeaking(str, mSynListener);
 		}
 	}
 	
@@ -558,7 +580,7 @@ public class MainActivity extends Activity implements ShakeListener
 		}
 	}
 
-	protected void cmdAddBookmark() {
+	protected void cmdAddBookmark(){
 		// TODO Auto-generated method stub
 		MyDataBase db = MyDataBase.getInstance();
 		BookMarkBean bean = new BookMarkBean();
@@ -597,7 +619,6 @@ public class MainActivity extends Activity implements ShakeListener
 
 	private void readNewsContent(final int praseNewsIndex) {
 		// TODO Auto-generated method stub
-		newsNumber = praseNewsIndex;
 		if(praseNewsIndex > newsList.size())
 		{
 //			mTts.startSpeaking("该条数不存在，请重新输入指令", mSynListener);
@@ -671,7 +692,9 @@ public class MainActivity extends Activity implements ShakeListener
 
 	
 	private void cmdReadNews(){
-		webViewMain.loadUrl(ParseTencentNews.HOMEURL);
+		webViewMain.loadUrl("http://inews.ifeng.com/index.shtml");
+
+//		webViewMain.loadUrl(ParseTencentNews.HOMEURL);
 //		mViewPager.setCurrentItem(1);
 	}
 	
@@ -702,12 +725,14 @@ public class MainActivity extends Activity implements ShakeListener
 	};
 	@Override
 	protected void onResume() {
-		Shake.registerListener(this, this);
+		if(shake)
+			Shake.registerListener(this, this);
 		super.onResume();
 	}
 	@Override
 	protected void onPause() {
-		Shake.removeListener();
+		if(shake)
+			Shake.removeListener();
 		super.onPause();
 	}
 	
@@ -770,7 +795,6 @@ public class MainActivity extends Activity implements ShakeListener
 	        	builder.create().show();
 	        }
 	    }
-	 	
 //	    public static void writeFileSdcard(String fileName,String message)
 //	    { 
 //	    	try {  
@@ -792,10 +816,17 @@ public class MainActivity extends Activity implements ShakeListener
 //			tv_info.setText("");
 			int tag = ParsePageType.getPageType(url);
 			htmlBean.url = url;
+			if(html != null && html.length() > 0)
+			{
+				
+			}else
+				return;
 			htmlBean.html = html;
 			String title = Jsoup.parse(html).title();
 //			tv_head.setText(title);
 			btn_state.setImageResource(R.drawable.start);
+			isPause = false;
+			btntate = 0;
 			if(url != null && url.length() >0 && title != null && title.length() > 0)
 			{//加入历史记录
 				MyDataBase myDataBase = MyDataBase.getInstance();
@@ -841,35 +872,6 @@ public class MainActivity extends Activity implements ShakeListener
 				processFengNewsContent();
 				break;
 			default:
-//				if(url.contains("news") || url.contains("News"))
-//				{
-//					try {
-//						News news = ContentExtractor.getNewsByHtml(html);
-//						
-//						htmlBean.content = news.getTitle()+'\n';
-//						htmlBean.content += news.getContent();
-//					} catch (Exception e) {
-//						// TODO Auto-generated catch block
-//						ToastUtil.toast("新闻解析失败");
-//					}
-//					
-//				}else {
-//					List<String> aList = new ArrayList<String>();
-//					List<String> pList = new ArrayList<String>();
-//					ParseAandP.parse(htmlBean.html, aList, pList);
-//					
-//					htmlBean.content = "=================A================\n";
-//					for(String str:aList)
-//					{
-//						htmlBean.content += str+' ';
-//					}
-//					
-//					htmlBean.content += "\n=================P================\n";
-//					for(String str:pList)
-//					{
-//						htmlBean.content += str+"\n";
-//					}
-//				}
 				if(url != null && url.contains("m.baidu.com") && url.length() < 21)
 				{
 					htmlBean.content = "当前网页暂不支持解析";
@@ -881,27 +883,26 @@ public class MainActivity extends Activity implements ShakeListener
 					htmlBean.content = content;
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
-					ToastUtil.toast("解析失败");
+//					ToastUtil.toast("解析失败");
 				}
 				break;
 			}
-			
 			tv_info.setText(htmlBean.content);
 			if(autoread || blind)
+				if(!htmlBean.content.contains("当前网页暂不支持解析"))
 				mTts.startSpeaking(htmlBean.content, mSynListener);
-//			if(htmlBean.content.length()>0)
-//				mTts.startSpeaking(htmlBean.content, mSynListener);
 		}
 
 
 		private void processFengNewsContent() {
 	// TODO Auto-generated method stub
+			htmlBean.content = "";
 			News news = ParseFengNews.ParseFengNewsContent(htmlBean.html);
 			if(news == null)
 			{
 				htmlBean.content = "新闻详情读取失败...";
 			}else {
-				htmlBean.content = "标题："+news.getTitle()+"\n";
+//				htmlBean.content = "标题："+news.getTitle()+"\n";
 				htmlBean.content += news.getContent();
 			}
 		}
@@ -983,14 +984,18 @@ public class MainActivity extends Activity implements ShakeListener
 						btntate = 1;
 					}else
 					{
-						if(!mTts.isSpeaking())
-							if(htmlBean.content.length() > 0)
-							{
-								mViewPager.setCurrentItem(2);
-								mTts.startSpeaking(htmlBean.content, mSynListener);
-							}
-							else
-								mTts.startSpeaking("暂无可播放内容",mSynListener);
+						switch (mViewPager.getCurrentItem()) {
+						case 0:
+							mTts.startSpeaking("请选择你想访问的网页，然后才能播报内容", mSynListener);
+							break;
+						case 1:
+							mViewPager.setCurrentItem(2);
+
+						case 2:
+							mTts.startSpeaking(htmlBean.content, mSynListener);
+						default:
+							break;
+						}
 					}
 					break;
 				case 1://暂停
@@ -1121,7 +1126,7 @@ public class MainActivity extends Activity implements ShakeListener
 			}else
 			{
 				ToastUtil.toast("请配置您的QQ邮箱账号，以便使用邮件服务...");
-//				mTts.startSpeaking("请配置您的QQ邮箱账号，以便使用邮件服务...", mSynListener);
+				mTts.startSpeaking("请配置您的QQ邮箱账号，以便使用邮件服务...", mSynListener);
 			}
 		}
 		
@@ -1180,7 +1185,6 @@ public class MainActivity extends Activity implements ShakeListener
 			}
 		}
 		
-		
 		public void processMailList()
 		{
 			String html = htmlBean.html;
@@ -1212,8 +1216,12 @@ public class MainActivity extends Activity implements ShakeListener
 						ToastUtil.toast(speakStr);
 				}
 				htmlBean.content = speakStr;
-//				mTts.startSpeaking(htmlBean.content, mSynListener);
+				
+//				if(blind)
+//					mTts.startSpeaking(htmlBean.content, mSynListener);
 			}
+			
+//			Log.e("MAILList", list.size()+"");
 		}
 		
 //		public void processWeather()
@@ -1337,6 +1345,11 @@ public class MainActivity extends Activity implements ShakeListener
 				final SharedPreferences sharedpref = MySharedPreferences.getInstance(getApplicationContext());
 			    autoread = sharedpref.getBoolean("autoread", false);
 			    blind = sharedpref.getBoolean("blind", false);
+			    shake = sharedpref.getBoolean("shake", true);
+//			    if(shake)
+//			    	Shake.registerListener(this, this);
+//			    else
+//			    	Shake.removeListener();
 				break;
 			}
 			default:
@@ -1353,31 +1366,38 @@ public class MainActivity extends Activity implements ShakeListener
 			// TODO Auto-generated method stub
 			webViewMain.getSettings().setUserAgentString("Mozilla/5.0 (Linux; U; Android 5.1.1; zh-cn; PLK-UL00 Build/HONORPLK-UL00) AppleWebKit/537.36 (KHTML, like Gecko)Version/4.0 MQQBrowser/5.3 Mobile Safari/537.36");
 			switch (tag) {
-			case 1:
+			case 6:
 				webViewMain.loadUrl("http://m.baidu.com");
 //				mViewPager.setCurrentItem(1);
 				break;
-			case 2:
+			case 1:
 //				mViewPager.setCurrentItem(1);
-				cmdReadNews();
+				cmdList.add(ParseCommand.Cmd_News);
+				webViewMain.loadUrl("http://inews.ifeng.com/index.shtml");
 				break;
 			case 3:
 //				mViewPager.setCurrentItem(1);
+				cmdList.add(ParseCommand.Cmd_Mail);
 				cmdMail();
 				break;
 			case 4:
 //				mViewPager.setCurrentItem(1);
+				cmdList.add(ParseCommand.Cmd_Weather);
 				cmdWeather();
 				break;
 			case 5:
 //				mViewPager.setCurrentItem(1);
+				cmdList.add(ParseCommand.Cmd_Location);
 				cmdLocation();
 				break;
-			case 6:
+			case 2:
+				cmdList.add(ParseCommand.Cmd_News);
 //				mViewPager.setCurrentItem(1);
-				webViewMain.loadUrl("http://inews.ifeng.com/index.shtml");
+				cmdReadNews();
+//				webViewMain.loadUrl("http://inews.ifeng.com/index.shtml");
 				break;
 			case 7:
+				cmdList.add(ParseCommand.Cmd_Query_Bookmark);
 				processBookmark();
 				break;
 			case 8:
@@ -1390,34 +1410,91 @@ public class MainActivity extends Activity implements ShakeListener
 		}
 		
 		@Override
+		public void onProgressChanged(String url, int progress) {
+			// TODO Auto-generated method stub
+			if(progress == 100)
+			{
+				webviewProgressBar.setVisibility(View.GONE);
+				onPageFinished(url);
+			}else
+			{
+				webviewProgressBar.setVisibility(View.VISIBLE);
+				webviewProgressBar.setProgress(progress);
+			}
+		}
+		
 		public void onPageFinished(String url) {
 			// TODO Auto-generated method stub
-			if (url != null && url.length() > 0) {
-			
-			htmlBean.url = url;
-			int tag = ParsePageType.getPageType(url);
-			
-			switch (tag) {
-			case ParsePageType.MailLoginTag:
-				processLoginQQMail();
-				break;
-			case ParsePageType.MailHomePageTag:
-				processQQMailHome();
-				break;
-			case ParsePageType.MailListTag:
-				processMailList();
-			default:
-				if(blind && !url.contains("android_asset"))
-				{
-					if(mViewPager.getCurrentItem() == 2)
+			if (url != null && url.length() > 0) 
+			{
+				htmlBean.url = url;
+				int tag = ParsePageType.getPageType(url);
+				
+				switch (tag) {
+				case ParsePageType.MailLoginTag:
+					processLoginQQMail();
+					break;
+				case ParsePageType.MailHomePageTag:
+					processQQMailHome();
+					break;
+				case ParsePageType.MailListTag:
+	//				processMailList();
+	//				mailListCount++;
+	//				Log.e("MailListCount", mailListCount+"");
+	//				if(mailListCount == 3&& blind)
+	//					mViewPager.setCurrentItem(2);
+					if(blind)
 						webViewMain.loadUrl("javascript:window.HTML.getHtml(document.getElementsByTagName('html')[0].innerHTML);");
-					else {
-						mViewPager.setCurrentItem(2);
+					break;
+				case ParsePageType.MailContentTag:
+					if(blind)
+	//					webViewMain.loadUrl("javascript:window.HTML.getHtml(document.getElementsByTagName('html')[0].innerHTML);");
+						if(mViewPager.getCurrentItem() == 2)
+							webViewMain.loadUrl("javascript:window.HTML.getHtml(document.getElementsByTagName('html')[0].innerHTML);");
+						else {
+							mViewPager.setCurrentItem(2);
+						}
+					break;
+				case ParsePageType.NewsListTag:
+					if(blind)
+						handler.postDelayed(new Runnable() {
+							@Override
+							public void run() {
+								// TODO Auto-generated method stub
+								webViewMain.loadUrl("javascript:window.HTML.getHtml(document.getElementsByTagName('html')[0].innerHTML);");
+							}
+						}, 1000);
+					break;
+				case ParsePageType.FengNewsTag:
+					if(blind)
+					{
+						if(mTts.isSpeaking())
+							break;
+						else
+						if(mViewPager.getCurrentItem() == 2)
+							webViewMain.loadUrl("javascript:window.HTML.getHtml(document.getElementsByTagName('html')[0].innerHTML);");
+						else {
+							mViewPager.setCurrentItem(2);
+						}
 					}
-				}
-				break;
-			}
-			
+					break;
+				default:
+					if(cmdList.size() >0 && cmdList.get(cmdList.size() -1) == ParseCommand.Cmd_Mail)
+						break;
+					
+					String title = webViewMain.getTitle();
+					if(title != null && title.equals("百度一下"))
+						break;
+					if(blind)
+					{
+						if(mViewPager.getCurrentItem() == 2)
+							webViewMain.loadUrl("javascript:window.HTML.getHtml(document.getElementsByTagName('html')[0].innerHTML);");
+						else {
+							mViewPager.setCurrentItem(2);
+						}
+					}
+					break;
+					}
 			}
 		}
 		@Override
@@ -1425,5 +1502,6 @@ public class MainActivity extends Activity implements ShakeListener
 			// TODO Auto-generated method stub
 			if(url != null && url.indexOf("javascript:window") == -1)
 				mViewPager.setCurrentItem(1);
+			bookmarkList = null;
 		}
 }

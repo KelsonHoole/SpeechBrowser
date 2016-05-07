@@ -1,17 +1,14 @@
 package cn.hukecn.speechbrowser.view;
 
 import cn.hukecn.speechbrowser.R;
-
-import com.iflytek.cloud.InitListener;
-import com.sleepycat.asm.Handle;
-
+import cn.hukecn.speechbrowser.SpeechBrowserApplication;
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Handler;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.View.MeasureSpec;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.view.inputmethod.EditorInfo;
@@ -25,26 +22,26 @@ import android.widget.TextView.OnEditorActionListener;
 
 public class EditUrlPopupWindow extends PopupWindow implements OnClickListener,android.widget.PopupWindow.OnDismissListener{
 
-	Context context = null;
+	Activity activity = null;
 	EditText et_url = null;
 	ImageButton btn_clear = null;
-	ListView lv_url = null;
+//	ListView lv_url = null;
 	EditUrlPopupDismissListener listener = null;
 	public final static int TYPE_URL = 0;
 	public final static int TYPE_CNT = 1;
-	public EditUrlPopupWindow(Context context,EditUrlPopupDismissListener listener) {
+	public EditUrlPopupWindow(Activity activity,EditUrlPopupDismissListener listener) {
 		// TODO Auto-generated constructor stub
-		this.context = context;
+		this.activity = activity;
 		this.listener = listener;
 		initView();
 	}
 	
 	private void initView() {
 		// TODO Auto-generated method stub
-		View content = View.inflate(context, R.layout.edit_url_popupwindow, null);
+		View content = View.inflate(activity, R.layout.edit_url_popupwindow, null);
 		et_url = (EditText) content.findViewById(R.id.et_head);
 		btn_clear = (ImageButton) content.findViewById(R.id.btn_clear);
-		lv_url = (ListView) content.findViewById(R.id.lv_url);
+//		lv_url = (ListView) content.findViewById(R.id.lv_url);
 		
 		btn_clear.setOnClickListener(this);
 		
@@ -84,6 +81,7 @@ public class EditUrlPopupWindow extends PopupWindow implements OnClickListener,a
 		setBackgroundDrawable(new BitmapDrawable());
         setOutsideTouchable(true);
         setOnDismissListener(this);
+        setInputMethodMode(PopupWindow.INPUT_METHOD_NEEDED);
         et_url.setTextIsSelectable(true);
 	}
 	
@@ -94,7 +92,8 @@ public class EditUrlPopupWindow extends PopupWindow implements OnClickListener,a
 		int[] location = new int[2];
       	view.getLocationOnScreen(location);
         showAtLocation(view, Gravity.NO_GRAVITY, 0, location[1]);
-        final InputMethodManager imm = (InputMethodManager)context.getSystemService(context.INPUT_METHOD_SERVICE);  
+//        et_url.requestFocus();
+        final InputMethodManager imm = (InputMethodManager)activity.getSystemService(Context.INPUT_METHOD_SERVICE);  
 		handler.postDelayed(new Runnable() {
 			@Override
 			public void run() {
@@ -124,7 +123,8 @@ public class EditUrlPopupWindow extends PopupWindow implements OnClickListener,a
 	@Override
 	public void onDismiss() {
 		// TODO Auto-generated method stub
-		InputMethodManager imm = (InputMethodManager)context.getSystemService(context.INPUT_METHOD_SERVICE);  
+		
+		InputMethodManager imm = (InputMethodManager)activity.getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);  
 		imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
 	}
 

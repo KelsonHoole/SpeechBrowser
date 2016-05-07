@@ -4,22 +4,8 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:orientation="horizontal"
-        android:background="#3f51b5"
-        android:padding="12dp"
-        android:layout_height="wrap_content">
+    <include layout="@layout/common_titlebar"/>
 
-        <TextView
-            android:id="@+id/title"
-            android:textColor="#fff"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="23sp"
-            android:text="邮箱账户添加"/>
-
-    </LinearLayout>
     <ScrollView
         android:layout_marginLeft="50dp"
         android:layout_marginRight="50dp"

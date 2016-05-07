@@ -38,7 +38,8 @@ public class LogActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_log);
-		
+        ((TextView)findViewById(R.id.tv_titlebar)).setText("系统日志记录");
+
 		tv_info = (TextView) findViewById(R.id.tv_info);
 		scrollView = (ScrollView) findViewById(R.id.scroll);
 		File file = new File(Environment.getExternalStorageDirectory(),  

@@ -12,6 +12,7 @@ import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import cn.hukecn.speechbrowser.R;
@@ -32,7 +33,8 @@ public class HistoryActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_history);
-		
+        ((TextView)findViewById(R.id.tv_titlebar)).setText("ÀúÊ·¼ÇÂ¼");
+
 		adapter = new HistoryAdapter(this);
 		lv_bookmark = (ListView) findViewById(R.id.listview);
 		lv_bookmark.setAdapter(adapter);

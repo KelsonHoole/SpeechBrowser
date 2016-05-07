@@ -75,7 +75,7 @@ public class ParsePageType {
 		if(url.indexOf(NewsListUrl) != -1)
 			return NewsListTag;
 		
-		String regex = "&id=\\w*_\\d*&";
+		String regex = "&id=\\w*_\\d*";
 		Pattern p = Pattern.compile(regex);
 
 		Matcher m = p.matcher(url);

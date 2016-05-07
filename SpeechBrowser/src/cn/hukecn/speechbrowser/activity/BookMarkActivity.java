@@ -16,6 +16,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 import cn.hukecn.speechbrowser.R;
 import cn.hukecn.speechbrowser.DAO.MyDataBase;
@@ -32,7 +33,8 @@ public class BookMarkActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_book_mark);
-		
+        ((TextView)findViewById(R.id.tv_titlebar)).setText(" È«©π‹¿Ì");
+
 		Button btn_insert = (Button) findViewById(R.id.btn_insert);
 		
 		Intent intent =getIntent();

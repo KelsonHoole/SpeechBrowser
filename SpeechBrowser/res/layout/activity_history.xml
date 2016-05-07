@@ -3,22 +3,8 @@
     android:layout_width="match_parent"
     android:orientation="vertical"
      xmlns:android="http://schemas.android.com/apk/res/android">
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:orientation="horizontal"
-        android:background="#3f51b5"
-        android:padding="12dp"
-        android:layout_height="wrap_content">
+    <include layout="@layout/common_titlebar"/>
 
-        <TextView
-            android:id="@+id/title"
-            android:textColor="#fff"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="23sp"
-            android:text="历史记录"/>
-
-    </LinearLayout>
     <ListView 
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp"

@@ -11,6 +11,7 @@ import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.TextView;
 import android.widget.ToggleButton;
 import cn.hukecn.speechbrowser.R;
 import cn.hukecn.speechbrowser.DAO.MySharedPreferences;
@@ -24,27 +25,21 @@ public class SettingActivity extends Activity {
      */
 	ToggleButton btn_autoRead = null;
 	ToggleButton btn_blind = null;
+	ToggleButton btn_shake = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
         
-//        IntentFilter filter = new IntentFilter();
-//        filter.addAction("android.intent.action.MAIN");
-//        filter.addCategory("android.intent.category.HOME"); 
-//        filter.addCategory("android.intent.category.DEFAULT");
-//        ComponentName preActivity = new ComponentName("com.android.ulauncher", "com.android.ulauncher.Launcher"); 
-//        ComponentName[] set = new ComponentName[] {new ComponentName("com.android.launcher", "com.android.launcher2.Launcher"), preActivity}; 
-//        mSettings.mPreferredActivities.addFilter(
-//                new PreferredActivity(filter, IntentFilter.MATCH_CATEGORY_EMPTY, set, preActivity));
-//        scheduleWriteSettingsLocked();
-        
+        ((TextView)findViewById(R.id.tv_titlebar)).setText("‰Ø¿¿∆˜…Ë÷√");
         
         btn_autoRead = (ToggleButton) findViewById(R.id.btn_autoread);
         btn_blind = (ToggleButton) findViewById(R.id.btn_blind);
+        btn_shake = (ToggleButton) findViewById(R.id.btn_shake);
         final SharedPreferences sp = MySharedPreferences.getInstance(getApplicationContext());
         boolean autoread = sp.getBoolean("autoread", false);
         boolean blind = sp.getBoolean("blind", false);
+        boolean shake = sp.getBoolean("shake", true);
         btn_autoRead.setChecked(autoread);
         btn_autoRead.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			
@@ -65,6 +60,24 @@ public class SettingActivity extends Activity {
 				// TODO Auto-generated method stub
 				Editor edit = sp.edit();
 				edit.putBoolean("blind", isChecked);
+				edit.commit();
+				
+				if(isChecked)
+				{
+					btn_shake.setChecked(true);
+					btn_autoRead.setChecked(true);
+				}
+			}
+		});
+        
+        btn_shake.setChecked(shake);
+        btn_shake.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				// TODO Auto-generated method stub
+				Editor edit = sp.edit();
+				edit.putBoolean("shake", isChecked);
 				edit.commit();
 			}
 		});

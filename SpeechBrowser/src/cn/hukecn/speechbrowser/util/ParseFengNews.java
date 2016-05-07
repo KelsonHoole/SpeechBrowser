@@ -8,8 +8,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import cn.edu.hfut.dmic.contentextractor.ContentExtractor;
-import cn.edu.hfut.dmic.contentextractor.News;
+import cn.hukecn.speechbrowser.contentextractor.ContentExtractor;
+import cn.hukecn.speechbrowser.contentextractor.News;
+
 
 public class ParseFengNews {
 
@@ -47,12 +48,15 @@ public class ParseFengNews {
 	}
 	
 	public static News ParseFengNewsContent(String html){
-		try {
-			News news = ContentExtractor.getNewsByHtml(html);
+			News news = null;;
+			try {
+				news = ContentExtractor.getNewsByHtml(html);
+			} catch (Exception e) {
+			}
+//			HtmlExtractor he = new HtmlExtractor(html);
+//			News news = new News();
+//			news.setTitle(he.getTitle());
+//			news.setContent(he.getText());
 			return news;
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			return null;
-		}
 	}
 }

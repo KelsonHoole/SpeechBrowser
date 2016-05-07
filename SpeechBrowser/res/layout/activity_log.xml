@@ -4,7 +4,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="${relativePackage}.${activityClass}" >
-
+       <include layout="@layout/common_titlebar"/>
+    
     <ScrollView 
         android:id="@+id/scroll"
         android:layout_margin="12dp"

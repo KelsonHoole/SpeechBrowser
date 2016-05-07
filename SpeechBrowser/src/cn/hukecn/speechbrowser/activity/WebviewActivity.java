@@ -18,35 +18,36 @@ public class WebviewActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_webview);
-		mWebview = (WebView) findViewById(R.id.webView);
-		
-		Intent intent = getIntent();
-		if(intent != null)
-		{
-			String url = intent.getStringExtra("url");
-			if(url != null)
-			{
-				mWebview.loadUrl(url);
-				mWebview.getSettings().setJavaScriptEnabled(true);
-			    mWebview.setWebViewClient(webViewClient);
-			    mWebview.setWebChromeClient(webChromeClient);
-			}
-		}	
 	}
-	
-	 public WebViewClient webViewClient = new WebViewClient(){
-	        @Override
-	        public boolean shouldOverrideUrlLoading(WebView view, String url) {
-	            view.loadUrl(url);
-	            return true;
-	        }
-	    };
-
-	    public WebChromeClient webChromeClient = new WebChromeClient(){
-	        @Override
-	        public void onProgressChanged(WebView view, int newProgress) {
-	        	((TextView)(findViewById(R.id.title))).setText(view.getTitle());
-	            super.onProgressChanged(view, newProgress);
-	        }
-	    };
+//		mWebview = (WebView) findViewById(R.id.webView);
+//		
+//		Intent intent = getIntent();
+//		if(intent != null)
+//		{
+//			String url = intent.getStringExtra("url");
+//			if(url != null)
+//			{
+//				mWebview.loadUrl(url);
+//				mWebview.getSettings().setJavaScriptEnabled(true);
+//			    mWebview.setWebViewClient(webViewClient);
+//			    mWebview.setWebChromeClient(webChromeClient);
+//			}
+//		}	
+//	}
+//	
+//	 public WebViewClient webViewClient = new WebViewClient(){
+//	        @Override
+//	        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+//	            view.loadUrl(url);
+//	            return true;
+//	        }
+//	    };
+//
+//	    public WebChromeClient webChromeClient = new WebChromeClient(){
+//	        @Override
+//	        public void onProgressChanged(WebView view, int newProgress) {
+//	        	((TextView)(findViewById(R.id.title))).setText(view.getTitle());
+//	            super.onProgressChanged(view, newProgress);
+//	        }
+//	    };
 }

@@ -20,6 +20,7 @@ public class ParseCommand {
 	public static final int Cmd_WeatherComCn = 12;
 	public static final int Cmd_Add_Bookmark = 13;
 	public static final int Cmd_Query_Bookmark = 14;
+	public static final int Cmd_Next = 15;
 	public static final int Cmd_Other = 99;
 	
 	public static int prase(List<String> list)
@@ -62,6 +63,8 @@ public class ParseCommand {
 			return Cmd_Query_Bookmark;
 		if(listStr.indexOf("书签") != -1 && listStr.indexOf("加") != -1)
 			return Cmd_Add_Bookmark;
+		if(listStr.contains("下一条") || listStr.contains("下一个") ||listStr.contains("吓一跳"))
+			return Cmd_Next;
 		return 100;
 	}
 	

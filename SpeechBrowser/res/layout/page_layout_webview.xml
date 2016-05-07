@@ -1,10 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-    
-    <cn.hukecn.speechbrowser.view.CutWebView 
+    <cn.hukecn.speechbrowser.view.NumberProgressBar
+        android:id="@+id/webviewprogressbar"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        custom:progress_unreached_bar_height="3dp"
+        custom:progress_reached_bar_height="4.5dp"
+        custom:progress_text_size="16sp"
+        custom:progress_text_color="#3498DB"
+        custom:progress_text_offset="1dp"
+        custom:progress_text_visibility="visible"
+        style="@style/NumberProgressBar_Default"
+        android:visibility="gone"/>
+    <cn.hukecn.speechbrowser.view.SuperWebView 
         android:id="@+id/webview"
         android:layout_height="match_parent"
         android:layout_width="match_parent"/>

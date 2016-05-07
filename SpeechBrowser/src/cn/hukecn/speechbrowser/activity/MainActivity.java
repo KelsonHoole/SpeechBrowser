@@ -252,7 +252,7 @@ public class MainActivity extends Activity implements ShakeListener
 
 	}
 	private void initSpeechUtil(){
-		SpeechUtility.createUtility(getApplicationContext(), SpeechConstant.APPID +"=568fba83");   
+		SpeechUtility.createUtility(getApplicationContext(), SpeechConstant.APPID +"=57163d34"); //568fba83   
 
 		mIatDialog = new RecognizerDialog(MainActivity.this, mInitListener);
 		mIatDialog.setListener(mRecognizerDialogListener);
@@ -416,7 +416,7 @@ public class MainActivity extends Activity implements ShakeListener
 		case ParseCommand.Cmd_News:
 			mailList = null;
 			currentIndex = -1;
-			cmdReadNews();
+			cmdReadNews(ParseFengNews.HOME_URL);
 			break;
 		case ParseCommand.Cmd_Weather:
 			cmdWeather();
@@ -691,8 +691,8 @@ public class MainActivity extends Activity implements ShakeListener
 	};
 
 	
-	private void cmdReadNews(){
-		webViewMain.loadUrl("http://inews.ifeng.com/index.shtml");
+	private void cmdReadNews(String url){
+		webViewMain.loadUrl(url);
 
 //		webViewMain.loadUrl(ParseTencentNews.HOMEURL);
 //		mViewPager.setCurrentItem(1);
@@ -1373,7 +1373,7 @@ public class MainActivity extends Activity implements ShakeListener
 			case 1:
 //				mViewPager.setCurrentItem(1);
 				cmdList.add(ParseCommand.Cmd_News);
-				webViewMain.loadUrl("http://inews.ifeng.com/index.shtml");
+				webViewMain.loadUrl(ParseFengNews.HOME_URL);
 				break;
 			case 3:
 //				mViewPager.setCurrentItem(1);
@@ -1393,7 +1393,7 @@ public class MainActivity extends Activity implements ShakeListener
 			case 2:
 				cmdList.add(ParseCommand.Cmd_News);
 //				mViewPager.setCurrentItem(1);
-				cmdReadNews();
+				cmdReadNews(ParseTencentNews.HOMEURL);
 //				webViewMain.loadUrl("http://inews.ifeng.com/index.shtml");
 				break;
 			case 7:

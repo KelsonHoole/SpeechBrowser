@@ -14,6 +14,7 @@ import cn.hukecn.speechbrowser.contentextractor.News;
 
 public class ParseFengNews {
 
+	public final static String HOME_URL = "http://inews.ifeng.com/index.shtml";
 	public static List<News> parseFengNewsList(String html){
 		
 		List<News> list = null;

@@ -114,9 +114,9 @@ public class MainActivity extends Activity implements ShakeListener
 //	TextView title = null;
 	TextView tv_info = null;
 	SpeechSynthesizer mTts;
-	List<NewsBean> newsList = new ArrayList<NewsBean>();
-	List<MailListBean> mailList = new ArrayList<MailListBean>();
-	List<BookMarkBean> bookmarkList = new ArrayList<BookMarkBean>();
+	List<NewsBean> newsList = null;
+	List<MailListBean> mailList = null;
+	List<BookMarkBean> bookmarkList = null;
 	SuperWebView webViewMain = null;
 	RelativeLayout rl_head = null;
 	ViewPager mViewPager = null;
@@ -1188,6 +1188,7 @@ public class MainActivity extends Activity implements ShakeListener
 		public void processMailList()
 		{
 			String html = htmlBean.html;
+			currentIndex = -1;
 //			browserState = ParseCommand.Cmd_Original;
 			List<MailListBean> list = ParseMailList.parseMailList(html);
 			if(list.size() == 0)

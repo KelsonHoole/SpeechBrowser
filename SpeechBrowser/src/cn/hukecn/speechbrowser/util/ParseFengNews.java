@@ -8,7 +8,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import cn.hukecn.speechbrowser.contentextractor.ContentExtractor;
+import cn.hukecn.speechbrowser.contentextractor.Extractor;
 import cn.hukecn.speechbrowser.contentextractor.News;
 
 
@@ -51,7 +51,7 @@ public class ParseFengNews {
 	public static News ParseFengNewsContent(String html){
 			News news = null;;
 			try {
-				news = ContentExtractor.getNewsByHtml(html);
+				news = Extractor.getNewsByHtml(html);
 			} catch (Exception e) {
 			}
 //			HtmlExtractor he = new HtmlExtractor(html);

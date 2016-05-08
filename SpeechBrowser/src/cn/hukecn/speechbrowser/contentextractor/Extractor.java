@@ -36,13 +36,13 @@ import org.jsoup.select.NodeVisitor;
  *
  * @author hu
  */
-public class ContentExtractor {
+public class Extractor {
 
 //    public static final Logger LOG = LoggerFactory.getLogger(ContentExtractor.class);
 
     protected Document doc;
 
-    ContentExtractor(Document doc) {
+    Extractor(Document doc) {
         this.doc = doc;
     }
 
@@ -430,7 +430,7 @@ public class ContentExtractor {
 
     /*输入Jsoup的Document，获取正文所在Element*/
     public static Element getContentElementByDoc(Document doc) throws Exception {
-        ContentExtractor ce = new ContentExtractor(doc);
+        Extractor ce = new Extractor(doc);
         return ce.getContentElement();
     }
 
@@ -455,7 +455,7 @@ public class ContentExtractor {
 
     /*输入Jsoup的Document，获取正文文本*/
     public static String getContentByDoc(Document doc) throws Exception {
-        ContentExtractor ce = new ContentExtractor(doc);
+        Extractor ce = new Extractor(doc);
         return ce.getContentElement().text();
     }
 
@@ -480,7 +480,7 @@ public class ContentExtractor {
 
     /*输入Jsoup的Document，获取结构化新闻信息*/
     public static News getNewsByDoc(Document doc) throws Exception {
-        ContentExtractor ce = new ContentExtractor(doc);
+        Extractor ce = new Extractor(doc);
         return ce.getNews();
     }
 

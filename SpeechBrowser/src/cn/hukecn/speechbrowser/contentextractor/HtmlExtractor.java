@@ -1,4 +1,4 @@
-package cn.hukecn.speechbrowser.util;
+package cn.hukecn.speechbrowser.contentextractor;
 
 import java.util.ArrayList;
 import java.util.Arrays;

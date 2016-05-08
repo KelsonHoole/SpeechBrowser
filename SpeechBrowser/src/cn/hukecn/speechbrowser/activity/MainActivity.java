@@ -16,7 +16,7 @@ import cn.hukecn.speechbrowser.bean.HtmlBean;
 import cn.hukecn.speechbrowser.bean.MailBean;
 import cn.hukecn.speechbrowser.bean.MailListBean;
 import cn.hukecn.speechbrowser.bean.NewsBean;
-import cn.hukecn.speechbrowser.contentextractor.ContentExtractor;
+import cn.hukecn.speechbrowser.contentextractor.Extractor;
 import cn.hukecn.speechbrowser.contentextractor.News;
 import cn.hukecn.speechbrowser.location.BaseAppLocation;
 import cn.hukecn.speechbrowser.util.BaiduSearch;
@@ -879,7 +879,7 @@ public class MainActivity extends Activity implements ShakeListener
 				}
 
 				try {
-					String content = ContentExtractor.getContentByHtml(html);
+					String content = Extractor.getContentByHtml(html);
 					htmlBean.content = content;
 				} catch (Exception e) {
 					// TODO Auto-generated catch block

@@ -2,9 +2,7 @@ package cn.hukecn.speechbrowser.activity;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.jsoup.Jsoup;
-
 import cn.hukecn.speechbrowser.R;
 import cn.hukecn.speechbrowser.Shake;
 import cn.hukecn.speechbrowser.Shake.ShakeListener;
@@ -39,7 +37,6 @@ import cn.hukecn.speechbrowser.view.SuperWebView.ReceiveMessageListener;
 import cn.hukecn.speechbrowser.view.EditUrlPopupWindow;
 import cn.hukecn.speechbrowser.view.EditUrlPopupWindow.EditUrlPopupDismissListener;
 import cn.hukecn.speechbrowser.view.MenuPopupWindow;
-
 import com.baidu.location.BDLocation;
 import com.iflytek.cloud.InitListener;
 import com.iflytek.cloud.RecognizerResult;
@@ -50,7 +47,6 @@ import com.iflytek.cloud.SpeechUtility;
 import com.iflytek.cloud.SynthesizerListener;
 import com.iflytek.cloud.ui.RecognizerDialog;
 import com.iflytek.cloud.ui.RecognizerDialogListener;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -72,7 +68,6 @@ import android.view.View.OnClickListener;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.PopupWindow.OnDismissListener;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -101,7 +96,6 @@ public class MainActivity extends Activity implements ShakeListener
 			btn_right = null,
 			btn_state = null;
 	ImageButton btn_microphone = null;
-//	int browserState = ParseCommand.Cmd_Original;
 	long lastTime = 0l;
 	long lastShakeTime = 0l;
 //	int mailListCount = 0;

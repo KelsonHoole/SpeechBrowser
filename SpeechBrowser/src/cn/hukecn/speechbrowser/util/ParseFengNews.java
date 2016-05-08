@@ -8,8 +8,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import cn.hukecn.speechbrowser.contentextractor.Extractor;
-import cn.hukecn.speechbrowser.contentextractor.News;
+import cn.hukecn.speechbrowser.extractor.Extractor;
+import cn.hukecn.speechbrowser.extractor.News;
 
 
 public class ParseFengNews {

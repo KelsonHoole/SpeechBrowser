@@ -1,19 +1,15 @@
-package cn.hukecn.speechbrowser.contentextractor; 
+package cn.hukecn.speechbrowser.extractor; 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
 /**
- * <p>
- * 在线性时间内抽取主题类（新闻、博客等）网页的正文。
- * 采用了<b>基于行块分布函数</b>的方法，为保持通用性没有针对特定网站编写规则。
- * </p>
- * @author Chen Xin(xchen@ir.hit.edu.cn)
- * Created on 2009-1-11
- * Updated on 2010-08-09
+ * TODO 基于行块分布函数的网页正文提取算法
+ * @author Kelson Hoole
+ * @Domin www.hukecn.cn
  */
-public class TextExtract {
+public class ContentExtract {
 	
 	private List<String> lines;
 	private final static int blocksWidth=3;
@@ -25,21 +21,21 @@ public class TextExtract {
 	private StringBuilder text;
 	private ArrayList<Integer> indexDistribution;
 	
-	public TextExtract() {
+	public ContentExtract() {
 		lines = new ArrayList<String>();
 		indexDistribution = new ArrayList<Integer>();
 		text = new StringBuilder();
 		flag = false;
-		/* 当待抽取的网页正文中遇到成块的新闻标题未剔除时，只要增大此阈值即可。*/
-		/* 阈值增大，准确率提升，召回率下降；值变小，噪声会大，但可以保证抽到只有一句话的正文 */
+		/* 当待抽取的网页正文中遇到成块的新闻标题未剔除时，只要增大此阈值即可�??*/
+		/* 阈�?�增大，准确率提升，召回率下降；值变小，噪声会大，但可以保证抽到只有�?句话的正�? */
 		threshold	= -1;   
 	}
 	
 
 	/**
-	 * 抽取网页正文，不判断该网页是否是目录型。即已知传入的肯定是可以抽取正文的主题类网页。
+	 * 抽取网页正文，不判断该网页是否是目录型�?�即已知传入的肯定是可以抽取正文的主题类网页�?
 	 * 
-	 * @param _html 网页HTML字符串
+	 * @param _html 网页HTML字符�?
 	 * 
 	 * @return 网页正文string
 	 */
@@ -48,10 +44,10 @@ public class TextExtract {
 	}
 	
 	/**
-	 * 判断传入HTML，若是主题类网页，则抽取正文；否则输出<b>"unkown"</b>。
+	 * 判断传入HTML，若是主题类网页，则抽取正文；否则输�?<b>"unkown"</b>�?
 	 * 
-	 * @param _html 网页HTML字符串
-	 * @param _flag true进行主题类判断, 省略此参数则默认为false
+	 * @param _html 网页HTML字符�?
+	 * @param _flag true进行主题类判�?, 省略此参数则默认为false
 	 * 
 	 * @return 网页正文string
 	 */
@@ -72,7 +68,7 @@ public class TextExtract {
 		source = source.replaceAll("(?is)<style.*?>.*?</style>", "");   // remove css
 		source = source.replaceAll("&.{2,5};|&#.{2,5};", " ");			// remove special char
 		
-		//剔除连续成片的超链接文本（认为是，广告或噪音）,超链接多藏于span中
+		//剔除连续成片的超链接文本（认为是，广告或噪音�?,超链接多藏于span�?
 		source = source.replaceAll("<[sS][pP][aA][nN].*?>", "");
 		source = source.replaceAll("</[sS][pP][aA][nN]>", "");
 
@@ -85,7 +81,7 @@ public class TextExtract {
 		
 		//source = links.matcher(source).replaceAll("");
 		
-		//防止html中在<>中包括大于号的判断
+		//防止html中在<>中包括大于号的判�?
 		source = source.replaceAll("<[^>'\"]*['\"].*['\"].*?>", "");
 
 		source = source.replaceAll("<.*?>", "");
@@ -100,7 +96,7 @@ public class TextExtract {
 		lines = Arrays.asList(html.split("\n"));
 		indexDistribution.clear();
 		
-		int empty = 0;//空行的数量
+		int empty = 0;//空行的数�?
 		for (int i = 0; i < lines.size() - blocksWidth; i++) {
 			
 			if (lines.get(i).length() == 0)
@@ -128,7 +124,7 @@ public class TextExtract {
 		
 		start = -1; end = -1;
 		boolean boolstart = false, boolend = false;
-		boolean firstMatch = true;//前面的标题块往往比较小，应该减小与它匹配的阈值
+		boolean firstMatch = true;//前面的标题块�?�?比较小，应该减小与它匹配的阈�?
 		text.setLength(0);
 		
 		StringBuilder buffer = new StringBuilder();
@@ -173,7 +169,7 @@ public class TextExtract {
 				}
 				String str = buffer.toString();
 				//System.out.println(str);
-				if (str.contains("Copyright")  || str.contains("版权所有") ) continue; 
+				if (str.contains("Copyright")  || str.contains("版权�?�?") ) continue; 
 				text.append(str);
 				boolstart = boolend = false;
 			}

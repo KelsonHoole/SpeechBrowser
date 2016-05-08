@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package cn.hukecn.speechbrowser.contentextractor;
+package cn.hukecn.speechbrowser.extractor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,9 +32,9 @@ import org.jsoup.select.Elements;
 import org.jsoup.select.NodeVisitor;
 
 /**
- * ContentExtractor could extract content,title,time from news webpage
+ * 网页正文信息提取算法
  *
- * @author hu
+ * @author Kelson Hoole
  */
 public class Extractor {
 
@@ -453,25 +453,25 @@ public class Extractor {
 //        return getContentElementByHtml(html, url);
 //    }
 
-    /*输入Jsoup的Document，获取正文文本*/
+    /*输入Jsoup的Document，获取正文文�?*/
     public static String getContentByDoc(Document doc) throws Exception {
         Extractor ce = new Extractor(doc);
         return ce.getContentElement().text();
     }
 
-    /*输入HTML，获取正文文本*/
+    /*输入HTML，获取正文文�?*/
     public static String getContentByHtml(String html) throws Exception {
         Document doc = Jsoup.parse(html);
         return getContentElementByDoc(doc).text();
     }
 
-    /*输入HTML和URL，获取正文文本*/
+    /*输入HTML和URL，获取正文文�?*/
     public static String getContentByHtml(String html, String url) throws Exception {
         Document doc = Jsoup.parse(html, url);
         return getContentElementByDoc(doc).text();
     }
 
-//    /*输入URL，获取正文文本*/
+//    /*输入URL，获取正文文�?*/
 //    public static String getContentByUrl(String url) throws Exception {
 //        HttpRequest request = new HttpRequest(url);
 //        String html = request.getResponse().getHtmlByCharsetDetect();

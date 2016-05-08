@@ -2,6 +2,11 @@ package cn.hukecn.speechbrowser.util;
 
 import java.util.List;
 
+/**
+ * TODO 用户语音指令解析
+ * @author Kelson Hoole
+ * @Domin www.hukecn.cn
+ */
 public class ParseCommand {
 	public static final int Cmd_Original = -2;
 	public static final int Cmd_Err = -1;

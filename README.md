@@ -3,5 +3,5 @@
 ####@Domin www.hukecn.cn
 <br>
 ##项目截图展示：
-<img src="http://hukecn.cn/images/img1.png" width="90" height="140" />
+<img src="https://github.com/hukecn/SpeechBrowser/blob/master/SpeechBrowser/res/drawable-hdpi/img_welcome.jpg" width="90" height="140" />
 

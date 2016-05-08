@@ -15,7 +15,7 @@ public class ContentExtract {
 	private final static int blocksWidth=3;
 	private int threshold;
 	private String html;
-	private boolean flag;
+//	private boolean flag;
 	private int start;
 	private int end;
 	private StringBuilder text;
@@ -25,7 +25,7 @@ public class ContentExtract {
 		lines = new ArrayList<String>();
 		indexDistribution = new ArrayList<Integer>();
 		text = new StringBuilder();
-		flag = false;
+//		flag = false;
 		/* 当待抽取的网页正文中遇到成块的新闻标题未剔除时，只要增大此阈值即可�??*/
 		/* 阈�?�增大，准确率提升，召回率下降；值变小，噪声会大，但可以保证抽到只有�?句话的正�? */
 		threshold	= -1;   
@@ -52,7 +52,7 @@ public class ContentExtract {
 	 * @return 网页正文string
 	 */
 	public String parse(String _html, boolean _flag) {
-		flag = _flag;
+//		flag = _flag;
 		html = _html;
 		html = preProcess(html);
 //		System.out.println(html);

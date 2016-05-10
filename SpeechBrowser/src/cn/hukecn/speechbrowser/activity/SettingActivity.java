@@ -26,6 +26,7 @@ public class SettingActivity extends Activity {
 	ToggleButton btn_autoRead = null;
 	ToggleButton btn_blind = null;
 	ToggleButton btn_shake = null;
+	ToggleButton btn_saving = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,10 +37,12 @@ public class SettingActivity extends Activity {
         btn_autoRead = (ToggleButton) findViewById(R.id.btn_autoread);
         btn_blind = (ToggleButton) findViewById(R.id.btn_blind);
         btn_shake = (ToggleButton) findViewById(R.id.btn_shake);
+        btn_saving = (ToggleButton) findViewById(R.id.btn_saving);
         final SharedPreferences sp = MySharedPreferences.getInstance(getApplicationContext());
         boolean autoread = sp.getBoolean("autoread", false);
         boolean blind = sp.getBoolean("blind", false);
         boolean shake = sp.getBoolean("shake", true);
+        boolean saving = sp.getBoolean("saving", false);
         btn_autoRead.setChecked(autoread);
         btn_autoRead.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			
@@ -78,6 +81,18 @@ public class SettingActivity extends Activity {
 				// TODO Auto-generated method stub
 				Editor edit = sp.edit();
 				edit.putBoolean("shake", isChecked);
+				edit.commit();
+			}
+		});
+        
+        btn_saving.setChecked(saving);
+        btn_saving.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				// TODO Auto-generated method stub
+				Editor edit = sp.edit();
+				edit.putBoolean("saving", isChecked);
 				edit.commit();
 			}
 		});

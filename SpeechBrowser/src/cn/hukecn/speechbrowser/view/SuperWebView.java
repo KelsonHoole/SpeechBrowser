@@ -77,7 +77,7 @@ public class SuperWebView extends WebView implements DownloadListener{
         settings.setLoadWithOverviewMode(true);
         settings.setSaveFormData(true);
         settings.setSupportMultipleWindows(true);
-        settings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+//        settings.setCacheMode(WebSettings.LOAD_DEFAULT);
         settings.setDefaultTextEncodingName("utf-8");
         String dir = context.getApplicationContext().getDir("database", Context.MODE_PRIVATE).getPath();
         settings.setGeolocationDatabasePath(dir);

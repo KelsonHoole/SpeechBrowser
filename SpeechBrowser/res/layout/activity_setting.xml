@@ -104,8 +104,48 @@
                        android:layout_height="wrap_content"/>
                   
                </LinearLayout>
-               
-               
+                
+               <View 
+                   android:layout_height="1dp"
+                   android:layout_width="match_parent"
+                   android:layout_marginTop="5dp"
+                   android:layout_marginBottom="5dp"
+                   android:layout_marginLeft="15dp"
+                   android:layout_marginRight="15dp"
+                   android:background="#aaa"/>
+               <LinearLayout
+                   android:layout_height="wrap_content"
+                   android:layout_width="match_parent"
+                   android:orientation="horizontal"
+                   android:layout_marginLeft="20dp"
+                   android:layout_marginRight="20dp">
+
+                   <TextView
+                       android:layout_gravity="center_vertical"
+                       android:gravity="center_vertical"
+                       android:layout_width="0dp"
+                       android:layout_height="wrap_content"
+                       android:layout_weight="1"
+                       android:ellipsize="end"
+                       android:padding="10dp"
+                       android:textSize="17sp"
+                       android:text="省流量模式（缓存网页）" />
+
+                   <ToggleButton
+                       android:id="@+id/btn_saving"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"/>
+                  
+               </LinearLayout>
+                
+               <View 
+                   android:layout_height="1dp"
+                   android:layout_width="match_parent"
+                   android:layout_marginTop="5dp"
+                   android:layout_marginBottom="5dp"
+                   android:layout_marginLeft="15dp"
+                   android:layout_marginRight="15dp"
+                   android:background="#aaa"/>
            </LinearLayout>
        </ScrollView>
 

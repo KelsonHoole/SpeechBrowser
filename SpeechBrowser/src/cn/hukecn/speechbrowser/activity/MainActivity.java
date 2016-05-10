@@ -2,7 +2,9 @@ package cn.hukecn.speechbrowser.activity;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.jsoup.Jsoup;
+
 import cn.hukecn.speechbrowser.R;
 import cn.hukecn.speechbrowser.Shake;
 import cn.hukecn.speechbrowser.Shake.ShakeListener;
@@ -37,6 +39,7 @@ import cn.hukecn.speechbrowser.view.SuperWebView.ReceiveMessageListener;
 import cn.hukecn.speechbrowser.view.EditUrlPopupWindow;
 import cn.hukecn.speechbrowser.view.EditUrlPopupWindow.EditUrlPopupDismissListener;
 import cn.hukecn.speechbrowser.view.MenuPopupWindow;
+
 import com.baidu.location.BDLocation;
 import com.iflytek.cloud.InitListener;
 import com.iflytek.cloud.RecognizerResult;
@@ -47,6 +50,7 @@ import com.iflytek.cloud.SpeechUtility;
 import com.iflytek.cloud.SynthesizerListener;
 import com.iflytek.cloud.ui.RecognizerDialog;
 import com.iflytek.cloud.ui.RecognizerDialogListener;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -66,6 +70,7 @@ import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
+import android.webkit.WebSettings;
 import android.widget.ImageButton;
 import android.widget.PopupWindow.OnDismissListener;
 import android.widget.RelativeLayout;
@@ -118,6 +123,7 @@ public class MainActivity extends Activity implements ShakeListener
 	private boolean blind = false;
 	private boolean autoread = false;
 	private boolean shake = true;
+	private boolean saving = false;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -131,6 +137,7 @@ public class MainActivity extends Activity implements ShakeListener
 	    autoread = sharedpref.getBoolean("autoread", false);
 	    blind = sharedpref.getBoolean("blind", false);
 	    shake = sharedpref.getBoolean("shake", true);
+	    saving = sharedpref.getBoolean("saving", false);
 	    
 		initSpeechUtil();
 		initView();
@@ -243,7 +250,10 @@ public class MainActivity extends Activity implements ShakeListener
 		webViewHome.setReceiveMessageListener(this);
 		
         webViewHome.loadUrl("file:///android_asset/welcomepage/index.html");
-
+        if(saving)
+        	webViewMain.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+        else
+        	webViewMain.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
 	}
 	private void initSpeechUtil(){
 		SpeechUtility.createUtility(getApplicationContext(), SpeechConstant.APPID +"=57163d34"); //568fba83   
@@ -1341,10 +1351,11 @@ public class MainActivity extends Activity implements ShakeListener
 			    autoread = sharedpref.getBoolean("autoread", false);
 			    blind = sharedpref.getBoolean("blind", false);
 			    shake = sharedpref.getBoolean("shake", true);
-//			    if(shake)
-//			    	Shake.registerListener(this, this);
-//			    else
-//			    	Shake.removeListener();
+			    saving = sharedpref.getBoolean("saving", false);
+			    if(saving)
+		        	webViewMain.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+		        else
+		        	webViewMain.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
 				break;
 			}
 			default:
@@ -1420,24 +1431,23 @@ public class MainActivity extends Activity implements ShakeListener
 		
 		public void onPageFinished(String url) {
 			// TODO Auto-generated method stub
-			if (url != null && url.length() > 0) 
+			if (url != null && url.length() > 0)
 			{
 				htmlBean.url = url;
 				int tag = ParsePageType.getPageType(url);
 				
 				switch (tag) {
 				case ParsePageType.MailLoginTag:
+					blind = false;
 					processLoginQQMail();
 					break;
 				case ParsePageType.MailHomePageTag:
+					blind = false;
 					processQQMailHome();
 					break;
 				case ParsePageType.MailListTag:
-	//				processMailList();
-	//				mailListCount++;
-	//				Log.e("MailListCount", mailListCount+"");
-	//				if(mailListCount == 3&& blind)
-	//					mViewPager.setCurrentItem(2);
+					final SharedPreferences sharedpref = MySharedPreferences.getInstance(getApplicationContext());
+				    blind = sharedpref.getBoolean("blind", false);
 					if(blind)
 						webViewMain.loadUrl("javascript:window.HTML.getHtml(document.getElementsByTagName('html')[0].innerHTML);");
 					break;
@@ -1474,6 +1484,7 @@ public class MainActivity extends Activity implements ShakeListener
 					}
 					break;
 				default:
+				{
 					if(cmdList.size() >0 && cmdList.get(cmdList.size() -1) == ParseCommand.Cmd_Mail)
 						break;
 					
@@ -1489,7 +1500,8 @@ public class MainActivity extends Activity implements ShakeListener
 						}
 					}
 					break;
-					}
+				}
+				}
 			}
 		}
 		@Override
